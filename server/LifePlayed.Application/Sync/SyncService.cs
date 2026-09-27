@@ -814,7 +814,7 @@ public sealed class SyncService
         return Applied(request, updated.Version, RestPeriodData(updated));
     }
 
-    private async Task ValidateCampaignReferenceAsync(
+    private static async Task ValidateCampaignReferenceAsync(
         ILifeOsUnitOfWork unitOfWork,
         EntityId accountId,
         Guid? campaignId,
