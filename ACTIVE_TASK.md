@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 1 / headless core skeleton
+**State:** ACTIVE — Milestone 1 / final validation & cleanup
 
 **Unity cloud usage:** 0 minutes required by this milestone.
 
@@ -184,13 +184,39 @@ Milestone 1 is complete only when:
 
 ## Changes
 
-No Milestone 1 code has been committed yet.
+Implemented on `feat/headless-core-skeleton`:
+
+- .NET 10 LTS solution using modern `.slnx`.
+- Domain, Contracts, Application, and API projects.
+- Strict warnings-as-errors/analyzer configuration.
+- UUIDv7-based opaque EntityId and MutationId primitives.
+- EntityVersion concurrency primitive.
+- Action/Quest/Campaign lifecycle states and transition rules.
+- Eight V1 Life Skill identifiers.
+- Versioned `EconomyRulesV1` for account XP, skill XP, duration/effort scoring, duplicate diminishing returns, focus taper, and Momentum bounds.
+- ProgressionEvent and RewardGrant primitives.
+- ClientMutation offline/idempotency primitive.
+- xUnit v3 / Microsoft Testing Platform test project.
+- Headless GitHub Actions CI.
+- Corrected the XP table in `docs/GAME_ECONOMY.md` to exactly match its formula.
+- Updated GitHub Actions to Node 24-based current majors.
 
 ---
 
 ## Validation / results
 
-Pending implementation.
+Validation history:
+
+- Initial CI exposed analyzer failures in manual range guards; fixed by using .NET framework guard APIs without weakening analyzers.
+- Next CI exposed missing xUnit global namespace; fixed using the standard test global using.
+- Next CI exposed CA1707 test naming violations; test names were corrected without disabling the analyzer.
+- Exact code head `7d22753a6e0da5adab33b36a76e679c1a6020aae`: Headless CI run #5 succeeded.
+  - Restore: success
+  - Release build: success
+  - Build warnings: 0
+  - Build errors: 0
+  - Tests: 30 succeeded, 0 failed, 0 skipped
+- Final expanded regression coverage and exact-head CI are pending this cleanup commit.
 
 ---
 
