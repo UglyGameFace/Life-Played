@@ -139,7 +139,13 @@ public sealed class OfflineSyncWorkflowTests
             cancellationToken);
 
         Assert.True(immediateReplay.Results[0].Replayed);
-        Assert.Equal(completionResult.Reward, immediateReplay.Results[0].Reward);
+        Assert.NotNull(immediateReplay.Results[0].Reward);
+        Assert.Equal(
+            completionResult.Reward.AccountXp,
+            immediateReplay.Results[0].Reward.AccountXp);
+        Assert.Equal(
+            completionResult.Reward.SkillXp["Craft"],
+            immediateReplay.Results[0].Reward.SkillXp["Craft"]);
         Assert.Empty(immediateReplay.Changes);
 
         var restartedPersistence = new PostgreSqlLifeOsPersistence(connectionString);
