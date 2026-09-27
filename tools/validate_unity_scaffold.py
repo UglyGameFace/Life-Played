@@ -233,3 +233,24 @@ if "StreamingAssetsContentGateway" not in runtime_services:
     raise SystemExit(
         "Runtime authoritative content manifest gateway is missing."
     )
+
+
+camera_code = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Presentation"
+    / "World"
+    / "TouchOrbitCamera.cs"
+).read_text(encoding="utf-8")
+
+for fragment in (
+    "EnhancedTouchSupport.Enable();",
+    "EnhancedTouch.activeTouches",
+    "minimumDistance",
+    "maximumDistance",
+):
+    if fragment not in camera_code:
+        raise SystemExit(
+            f"Touch camera is missing mobile gesture support: {fragment}"
+        )

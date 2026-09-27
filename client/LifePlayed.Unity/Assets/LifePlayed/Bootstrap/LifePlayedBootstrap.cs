@@ -15,6 +15,7 @@ namespace LifePlayed.Client.Bootstrap
         private static LifePlayedBootstrap _instance;
 
         private const string GraphicsTierKey = "settings.graphics_tier";
+        private const string LastRouteKey = "settings.last_route";
 
         private AppCoordinator _coordinator;
         private IClientSettingsStore _settingsStore;
@@ -164,7 +165,8 @@ namespace LifePlayed.Client.Bootstrap
 
             yield return LoadContentManifest();
 
-            _coordinator.Open(AppRoute.World);
+            _coordinator.Open(
+                RestoreInitialRoute());
         }
 
         private IEnumerator LoadContentManifest()
@@ -194,8 +196,29 @@ namespace LifePlayed.Client.Bootstrap
                 task.Result);
         }
 
+        private AppRoute RestoreInitialRoute()
+        {
+            var saved =
+                _settingsStore.Read(
+                    LastRouteKey);
+
+            AppRoute route;
+            if (System.Enum.TryParse(
+                saved,
+                out route))
+            {
+                return route;
+            }
+
+            return AppRoute.World;
+        }
+
         private void OnRouteChanged(AppRoute route)
         {
+            _settingsStore.Write(
+                LastRouteKey,
+                route.ToString());
+
             var worldActive = route == AppRoute.World;
 
             if (_worldHub != null)
