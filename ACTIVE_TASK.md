@@ -2,9 +2,9 @@
 
 ## Active task / desired outcome
 
-**Task:** Milestone 1 — Headless core skeleton.
+**Task:** Milestone 2 — Offline Life OS + sync contract.
 
-**Outcome:** Establish the first production code foundation for Life Played without using Unity cloud-build minutes: modern .NET solution structure, domain/application/contracts/API/test projects, core IDs/state primitives, deterministic reward/economy primitives, and automated headless validation.
+**Outcome:** Implement the first usable headless Life OS workflows and synchronization contract without Unity: offline-capable Action/Quest/Campaign/Habit/Focus/Rest mutations, durable idempotent sync behavior, canonical reward confirmation, concurrency/conflict rules, and real PostgreSQL persistence.
 
 This is the **only active implementation task** until its Definition of Done is satisfied.
 
@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 1 / final completeness patch
+**State:** ACTIVE — Milestone 2 / investigation and execution-path trace
 
 **Unity cloud usage:** 0 minutes required by this milestone.
 
@@ -20,245 +20,217 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Previous completed task
 
-### Production foundation — COMPLETE
+### Milestone 1 — Headless core skeleton — COMPLETE
 
-The pre-implementation product foundation was completed and cross-checked before production code began.
+Milestone 1 established the production-code foundation without using Unity cloud-build minutes.
 
-Authoritative documents:
+Implemented and merged:
 
-- `docs/FOUNDATION_INDEX.md`
-- `docs/MASTER_PRODUCT_BIBLE.md`
-- `docs/V1_SCOPE.md`
-- `docs/CORE_DOMAIN_MODEL.md`
-- `docs/GAME_ECONOMY.md`
-- `docs/STORY_CONTENT_ARCHITECTURE.md`
-- `docs/UNITY_MOBILE_ARCHITECTURE.md`
-- `docs/BACKEND_ARCHITECTURE.md`
-- `docs/COMMERCE_REWARDS_ARCHITECTURE.md`
-- `docs/PRIVACY_SECURITY_FRAUD.md`
-- `docs/VALIDATION_STRATEGY.md`
-- `docs/IMPLEMENTATION_PLAN.md`
+- .NET 10 LTS solution using modern `.slnx`.
+- Domain, Contracts, Application, Infrastructure, and API projects.
+- Strict warnings-as-errors/analyzer configuration.
+- UUIDv7-based opaque EntityId and MutationId primitives.
+- EntityVersion concurrency primitive.
+- Minimal Account, Action, Quest, Campaign, and CampaignPhase domain records.
+- Explicit Action/Quest/Campaign/CampaignPhase state transitions.
+- Eight V1 Life Skill identifiers.
+- Versioned `EconomyRulesV1`.
+- Deterministic `RewardEvaluation`.
+- ProgressionEvent and RewardGrant primitives.
+- ClientMutation offline/idempotency primitive.
+- Initial persistence abstraction.
+- PostgreSQL migration runner and first core schema migration.
+- Versioned content-release contract and JSON schema.
+- Domain and integration test projects.
+- Real PostgreSQL 17 Testcontainers validation.
+- Headless GitHub Actions CI.
+- Current Node 24-based GitHub Actions majors.
 
-Foundation validation completed:
+Milestone 1 merge history:
 
-- Product Bible exists and reflects the agreed product.
-- V1 scope and explicit post-V1 backlog are documented.
-- Core gameplay/progression rules are documented.
-- Identity-world/story architecture is documented.
-- Commerce, Deal Scout, location/reward, and fraud boundaries are documented.
-- Privacy/consent principles are documented.
-- Offline/sync and server-authority rules are documented.
-- Unity/mobile architecture is documented.
-- Backend architecture is documented.
-- Initial domain model is documented.
-- Validation strategy is documented.
-- Initial milestones and first vertical slice are documented.
-- Cross-document audit found no material V1/post-V1 contradiction.
-- No competing temporary design document remains.
-- README links to the authoritative foundation index.
+- PR #1 → `5c09a5cf3ea57f4af6f11ef7024d8bff72214994`
+- PR #2 → `19d89af7e011e63e05b102cd0391b4314c403723`
+- PR #3 → `a43c6a431bb4560152ef8b2b7ff04dda4d4504c2`
 
-No production code was present during foundation closeout.
+Final validation on merged `main`:
+
+- Headless CI run #13: success
+- Release build: success
+- Build warnings: 0
+- Build errors: 0
+- Tests: **46 passed, 0 failed, 0 skipped**
+- PostgreSQL migration applied twice successfully without duplicate migration records.
+- Domain dependency boundary regression-tested against Unity, ASP.NET, EF Core, and Npgsql.
+- Application dependency boundary regression-tested against Unity, ASP.NET, EF Core, and Npgsql.
+- Content-release schema validated as version 1.
+- No Unity cloud minutes used.
+
+Completion audit also corrected earlier missing scope items rather than hiding them.
 
 ---
 
-## Scope
+## Milestone 2 scope
 
-Milestone 1 includes only the headless foundation required by `docs/IMPLEMENTATION_PLAN.md`.
+Implement only the Offline Life OS + sync contract described in `docs/IMPLEMENTATION_PLAN.md`.
 
-### Required project structure
+### Required Life OS behavior
 
-- modern .NET SDK baseline
-- Domain project
-- Application project
-- Contracts project
-- API project
-- Worker project skeleton if useful to the outbox boundary
-- unit/integration test projects
-- shared build settings
+- Action create/edit/complete
+- Quest create/edit
+- Campaign create/edit
+- Campaign phase structure
+- HabitDefinition basic model
+- HabitOccurrence basic model
+- FocusSession
+- RestPeriod
 
-### Required first domain primitives
+### Required persistence behavior
 
-- opaque globally unique IDs
-- entity version/concurrency primitive
-- Action state
-- Quest state
-- Campaign state
-- Campaign phase state
-- Life Skill identifiers/definitions
-- Progression event
-- Reward grant
-- Client mutation/idempotency primitive
+- PostgreSQL repositories for Milestone 2 entities
+- optimistic concurrency using EntityVersion
+- durable persistence of client mutations
+- durable authoritative reward/progression records needed by Action completion
+- migrations for new Milestone 2 tables/columns/indexes
 
-### Required economy primitives
+### Required sync behavior
 
-Implement the current versioned foundation rules needed for tests, including:
+- client mutation batch contract
+- stable mutation IDs
+- idempotent mutation processing
+- per-mutation canonical result
+- sync cursor/incremental change concept
+- safe retry after network failure
+- partial batch failure behavior
+- stale-base-version conflict behavior
+- no duplicate reward on retry/replay
 
-- account-level next-XP curve
-- Life Skill next-XP curve
-- duration score
-- effort score inputs/bounds
-- ordinary account XP clamp
-- skill-XP pool
-- duplicate diminishing-return sequence
-- focus reward taper boundaries
-- Momentum value bounds/primitives
+### Required completion flow
+
+For ordinary Action completion:
+
+1. validate account/action ownership and current state
+2. check mutation/idempotency
+3. validate state transition
+4. evaluate versioned reward
+5. persist progression/reward state atomically
+6. update Action canonical state/version
+7. persist processed mutation/result
+8. return canonical result
+9. repeating the same mutation returns the original outcome without duplicating reward
 
 ### Required validation
 
-- build/compile
-- targeted unit tests
-- economy invariant tests
-- state-transition tests
-- no Unity dependency in Domain/Application
-- no secrets/generated junk
-- final diff review
+- offline mutation simulation
+- duplicate retry
+- mutation replay
+- stale version conflict
+- partial batch failure
+- two-device edit conflict scenario
+- app-restart/durable queue simulation
+- real PostgreSQL integration tests
+- reward/idempotency invariants
+- exact-head Release build/tests
+- final diff/secret/generated-junk review
 
 ---
 
 ## Out of scope
 
-Do not begin these during Milestone 1:
+Do not begin during Milestone 2:
 
-- Unity project scaffolding
-- 3D assets
-- Android/iOS builds
-- database provider deployment
-- production authentication provider
-- AI provider integration
-- Deal Scout provider integration
-- location permissions
+- Unity project
+- Android/iOS build
+- character/companion/world rendering
+- Chronicle UI
+- AI Quest Master
+- Deal Scout
+- affiliate providers
+- location
 - cashback
-- live merchant systems
-- Wild Renewal scene
-- Gridfall scene
+- production auth provider
+- production hosting deployment
+- Wild Renewal content engine
+- Gridfall
 
 These belong to later milestones.
 
 ---
 
-## Architecture decisions for this milestone
+## Architecture constraints
 
-- Backend/domain baseline: **.NET 10 LTS**
-- Client remains Unity later; this milestone contains no Unity runtime dependency.
-- PostgreSQL remains the planned authoritative relational database, but production provider selection/deployment is not part of this milestone.
-- Domain code remains free of ASP.NET, EF Core, Unity, provider SDKs, and platform SDKs.
-- Authoritative reward/economy rules are versioned and deterministic.
-- Client-originated IDs/mutations must be safe for offline creation and idempotent server processing.
+- Domain remains provider/framework independent.
+- Application remains free of Unity, ASP.NET, EF Core, and Npgsql.
+- Infrastructure owns PostgreSQL implementation.
+- API owns transport concerns only.
+- Reward logic remains deterministic/versioned.
+- Valuable state remains server-authoritative.
+- Offline client intent uses globally unique mutation IDs.
+- Replays must not create duplicate rewards.
+- Conflicts must be explicit, not silently overwritten where unsafe.
 
 ---
 
-## Findings / execution path
+## Investigation / execution path
 
-1. Scaffold the headless project structure.
-2. Establish shared compiler/analyzer settings.
-3. Implement domain IDs/value objects/state enums.
-4. Implement versioned economy calculation primitives from `docs/GAME_ECONOMY.md`.
-5. Implement first progression/reward/client-mutation records.
-6. Add focused unit tests.
-7. Add the cheapest headless CI/build validation.
-8. Run exact-head validation.
-9. Inspect final diff and remove accidental/generated/conflicting files.
+Before editing Milestone 2 behavior:
+
+1. inspect existing domain records and transition rules
+2. inspect current migration/schema and repository abstraction
+3. trace API/Application/Infrastructure dependency direction
+4. define mutation request/result contracts
+5. define entity-specific concurrency behavior
+6. implement smallest complete vertical headless flow
+7. add real PostgreSQL integration coverage
+8. expose API sync surface only after application behavior is proven
+9. validate exact PR head
+10. inspect final diff and merge only when the full Milestone 2 Definition of Done is satisfied
 
 ---
 
 ## Definition of Done
 
-Milestone 1 is complete only when:
+Milestone 2 is complete only when:
 
-- [ ] The .NET 10 headless project structure exists.
-- [ ] Domain has no Unity/ASP.NET/EF/provider dependency.
-- [ ] Core IDs and state primitives exist.
-- [ ] Versioned economy primitives exist.
-- [ ] Economy formula tests cover documented examples and boundaries.
-- [ ] Duplicate-diminishing-return tests pass.
-- [ ] Focus-taper boundary tests pass.
-- [ ] State-transition tests pass.
-- [ ] ClientMutation/idempotency primitive exists and is tested.
-- [ ] Solution/projects compile on exact head.
+- [ ] Action create/edit/complete works through Application + persistence.
+- [ ] Quest create/edit works through Application + persistence.
+- [ ] Campaign + CampaignPhase create/edit works.
+- [ ] HabitDefinition and HabitOccurrence basic models/persistence exist.
+- [ ] FocusSession and RestPeriod basic models/persistence exist.
+- [ ] Sync batch contract exists.
+- [ ] Client mutations are durably idempotent.
+- [ ] Action completion produces exactly one authoritative reward/progression result.
+- [ ] Duplicate retry returns prior canonical outcome.
+- [ ] Stale version conflicts are explicit.
+- [ ] Partial batch failure is tested.
+- [ ] Two-device conflict scenario is tested.
+- [ ] Restart/durable replay scenario is tested.
+- [ ] Relevant PostgreSQL migrations are idempotent and tested.
+- [ ] Release build passes with 0 errors.
 - [ ] Relevant automated tests pass on exact head.
+- [ ] No Unity dependency is introduced.
 - [ ] No production secret or generated junk is committed.
-- [ ] Final diff is focused on Milestone 1.
+- [ ] Final diff is focused on Milestone 2.
 - [ ] Remaining limitations/blockers are documented.
-
----
-
-## Changes
-
-Implemented on `feat/headless-core-skeleton`:
-
-- .NET 10 LTS solution using modern `.slnx`.
-- Domain, Contracts, Application, and API projects.
-- Strict warnings-as-errors/analyzer configuration.
-- UUIDv7-based opaque EntityId and MutationId primitives.
-- EntityVersion concurrency primitive.
-- Action/Quest/Campaign lifecycle states and transition rules.
-- Eight V1 Life Skill identifiers.
-- Versioned `EconomyRulesV1` for account XP, skill XP, duration/effort scoring, duplicate diminishing returns, focus taper, and Momentum bounds.
-- ProgressionEvent and RewardGrant primitives.
-- ClientMutation offline/idempotency primitive.
-- xUnit v3 / Microsoft Testing Platform domain test project.
-- PostgreSQL integration-test harness using Testcontainers + Npgsql.
-- Headless GitHub Actions CI.
-- Corrected the XP table in `docs/GAME_ECONOMY.md` to exactly match its formula.
-- Updated GitHub Actions to Node 24-based current majors.
-
----
-
-## Validation / results
-
-Validation history:
-
-- Initial CI exposed analyzer failures in manual range guards; fixed by using .NET framework guard APIs without weakening analyzers.
-- Next CI exposed missing xUnit global namespace; fixed using the standard test global using.
-- Next CI exposed CA1707 test naming violations; test names were corrected without disabling the analyzer.
-- Exact code head `7d22753a6e0da5adab33b36a76e679c1a6020aae`: Headless CI run #5 succeeded.
-  - Restore: success
-  - Release build: success
-  - Build warnings: 0
-  - Build errors: 0
-  - Tests: 30 succeeded, 0 failed, 0 skipped
-- Exact PR head `ffd88dd2ad07700c83dd00f1e52b08a37803a2b5`: Headless CI run #6 succeeded.
-  - Restore: success
-  - Release build: success
-  - Build warnings: 0
-  - Build errors: 0
-  - Tests: 40 succeeded, 0 failed, 0 skipped
-- PR #1 merged as `5c09a5cf3ea57f4af6f11ef7024d8bff72214994`.
-- Post-merge main Headless CI run #7 succeeded with 40/40 tests.
-- Completion audit then found one scope gap: the written Milestone 1 plan required a unit/integration test project structure and PostgreSQL test infrastructure, while PR #1 contained only domain unit tests.
-- PR #2 merged as `19d89af7e011e63e05b102cd0391b4314c403723`.
-- Post-merge main Headless CI run #10 succeeded with 41/41 tests, including the real PostgreSQL container test.
-- A second full checklist audit found the remaining planned Milestone 1 skeleton items were still absent: minimal Account/Action/Quest/Campaign/CampaignPhase records, persistence abstraction, migration runner/schema, deterministic reward-evaluation result, and versioned content-release schema.
-- This final patch is restricted to those already-planned Milestone 1 items.
-
----
-
-## Cleanup / conflicts
-
-Foundation documents are authoritative and must not be duplicated as code comments/spec files.
-
-No pre-existing production code exists to preserve.
 
 ---
 
 ## Blockers / risks
 
-- The Life Played product name remains a working name pending formal trademark/domain/store clearance; do not lock permanent mobile bundle IDs yet.
-- Exact Unity LTS version remains intentionally deferred until the Unity milestone.
-- Production backend hosting/auth/database provider remains intentionally deferred.
+- Production auth/account-provider selection is intentionally deferred; Milestone 2 tests use internal Account IDs.
+- Production hosting/database-provider selection is intentionally deferred.
+- Exact Unity LTS version remains deferred until the Unity milestone.
+- Life Played remains a working product name pending formal trademark/domain/store clearance.
 
 ---
 
 ## Backlog
 
-Post-Milestone-1 work remains in `docs/IMPLEMENTATION_PLAN.md`.
+Immediate next milestone after successful completion:
 
-Immediate next milestone after successful completion is:
-
-**Milestone 2 — Offline Life OS + sync contract.**
+**Milestone 3 — Content engine + Wild Renewal content skeleton.**
 
 ---
 
 ## Next step
 
-Validate this final Milestone 1 completeness patch on exact head and post-merge main, then close Milestone 1 and activate Milestone 2.
+Inspect the merged Milestone 1 execution path and create the dedicated Milestone 2 branch before implementing any new behavior.
