@@ -114,7 +114,8 @@ configurator = (
 
 required_configurator_fragments = (
     "public static void PreExport()",
-    "RenderPipelineGlobalSettingsUtils.Create(",
+    "ScriptableObject.CreateInstance(settingsType)",
+    "settings.Initialize(null);",
     "EditorGraphicsSettings.SetRenderPipelineGlobalSettingsAsset(",
     "ValidateForBuild();",
 )
@@ -127,6 +128,11 @@ for fragment in required_configurator_fragments:
 if "pipeline.EnsureGlobalSettings()" in configurator:
     raise SystemExit(
         "Do not call protected RenderPipelineAsset.EnsureGlobalSettings() directly."
+    )
+
+if "RenderPipelineGlobalSettingsUtils.Create(" in configurator:
+    raise SystemExit(
+        "Do not rely on the undocumented RenderPipelineGlobalSettingsUtils.Create path."
     )
 
 print(
