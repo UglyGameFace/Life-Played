@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using LifePlayed.Client.Application;
@@ -324,62 +325,349 @@ namespace LifePlayed.Client.Infrastructure
         }
     }
 
+    public static class ContentIntegrityVerifier
+    {
+        public static ClientContentManifest Validate(
+            string manifestJson,
+            string verificationJson,
+            byte[] contentBytes)
+        {
+            if (string.IsNullOrWhiteSpace(manifestJson))
+            {
+                throw new InvalidOperationException(
+                    "Content manifest is empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(verificationJson))
+            {
+                throw new InvalidOperationException(
+                    "Content verification record is empty.");
+            }
+
+            if (contentBytes == null ||
+                contentBytes.Length == 0)
+            {
+                throw new InvalidOperationException(
+                    "Content payload is empty.");
+            }
+
+            var manifest =
+                JsonUtility.FromJson<ClientContentManifest>(
+                    manifestJson);
+
+            var verification =
+                JsonUtility.FromJson<ClientContentVerification>(
+                    verificationJson);
+
+            if (manifest == null ||
+                manifest.schemaVersion <= 0 ||
+                string.IsNullOrWhiteSpace(manifest.releaseId) ||
+                string.IsNullOrWhiteSpace(manifest.releaseVersion))
+            {
+                throw new InvalidOperationException(
+                    "Content manifest is missing required fields.");
+            }
+
+            if (verification == null ||
+                verification.schemaVersion != manifest.schemaVersion ||
+                !string.Equals(
+                    verification.releaseId,
+                    manifest.releaseId,
+                    StringComparison.Ordinal) ||
+                !string.Equals(
+                    verification.releaseVersion,
+                    manifest.releaseVersion,
+                    StringComparison.Ordinal) ||
+                string.IsNullOrWhiteSpace(
+                    verification.contentSha256))
+            {
+                throw new InvalidOperationException(
+                    "Content verification metadata does not match the manifest.");
+            }
+
+            var actualHash =
+                ComputeSha256Hex(
+                    contentBytes);
+
+            if (!string.Equals(
+                actualHash,
+                verification.contentSha256,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException(
+                    "Content payload failed SHA-256 verification.");
+            }
+
+            return manifest;
+        }
+
+        public static string ComputeSha256Hex(
+            byte[] bytes)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hash = sha256.ComputeHash(bytes);
+                return BitConverter
+                    .ToString(hash)
+                    .Replace("-", string.Empty);
+            }
+        }
+    }
+
     public sealed class StreamingAssetsContentGateway : IClientContentGateway
     {
-        private const string ManifestRelativePath =
-            "LifePlayed/Content/wild-renewal-v1/manifest.json";
+        private const string ReleaseRelativeDirectory =
+            "LifePlayed/Content/wild-renewal-v1";
+
+        private const string ManifestFileName =
+            "manifest.json";
+
+        private const string ContentFileName =
+            "content.json";
+
+        private const string VerificationFileName =
+            "verification.json";
+
+        private readonly string _cacheDirectory;
+
+        public StreamingAssetsContentGateway()
+            : this(Path.Combine(
+                UnityEngine.Application.persistentDataPath,
+                "lifeplayed",
+                "content",
+                "wild-renewal-v1"))
+        {
+        }
+
+        public StreamingAssetsContentGateway(
+            string cacheDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(cacheDirectory))
+            {
+                throw new ArgumentException(
+                    "Content cache directory is required.",
+                    nameof(cacheDirectory));
+            }
+
+            _cacheDirectory = cacheDirectory;
+        }
+
+        public string LastLoadSource { get; private set; } =
+            "none";
 
         public async Task<ClientContentManifest> GetActiveManifestAsync(
             CancellationToken cancellationToken)
         {
-            var uri =
-                UnityEngine.Application.streamingAssetsPath.TrimEnd('/') +
-                "/" +
-                ManifestRelativePath;
-
-            var request = UnityWebRequest.Get(uri);
-            var completion =
-                new TaskCompletionSource<bool>(
-                    TaskCreationOptions.RunContinuationsAsynchronously);
-
-            var registration = cancellationToken.Register(
-                request.Abort);
+            Exception bundledFailure = null;
 
             try
             {
-                var operation = request.SendWebRequest();
-                operation.completed += _ =>
-                    completion.TrySetResult(true);
-
-                await completion.Task;
-                cancellationToken.ThrowIfCancellationRequested();
-
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    throw new InvalidOperationException(
-                        "Content manifest load failed: " +
-                        request.error);
-                }
+                var bundled =
+                    await LoadBundledReleaseAsync(
+                        cancellationToken);
 
                 var manifest =
-                    JsonUtility.FromJson<ClientContentManifest>(
-                        request.downloadHandler.text);
+                    ContentIntegrityVerifier.Validate(
+                        bundled.manifestJson,
+                        bundled.verificationJson,
+                        bundled.contentBytes);
 
-                if (manifest == null ||
-                    manifest.schemaVersion <= 0 ||
-                    string.IsNullOrWhiteSpace(manifest.releaseId))
-                {
-                    throw new InvalidOperationException(
-                        "Content manifest is missing required fields.");
-                }
+                SaveLastKnownGood(
+                    bundled.manifestJson,
+                    bundled.verificationJson,
+                    bundled.contentBytes);
 
+                LastLoadSource = "bundle";
                 return manifest;
             }
-            finally
+            catch (OperationCanceledException)
             {
-                registration.Dispose();
-                request.Dispose();
+                throw;
             }
+            catch (Exception exception)
+            {
+                bundledFailure = exception;
+            }
+
+            try
+            {
+                var cached =
+                    LoadLastKnownGood();
+
+                var manifest =
+                    ContentIntegrityVerifier.Validate(
+                        cached.manifestJson,
+                        cached.verificationJson,
+                        cached.contentBytes);
+
+                LastLoadSource = "cache";
+                return manifest;
+            }
+            catch (Exception cacheFailure)
+            {
+                throw new InvalidOperationException(
+                    "Bundled and cached content releases both failed validation.",
+                    new AggregateException(
+                        bundledFailure,
+                        cacheFailure));
+            }
+        }
+
+        private async Task<ContentReleaseBytes> LoadBundledReleaseAsync(
+            CancellationToken cancellationToken)
+        {
+            var basePath =
+                UnityEngine.Application.streamingAssetsPath.TrimEnd('/') +
+                "/" +
+                ReleaseRelativeDirectory +
+                "/";
+
+            var manifestBytes =
+                await ReadStreamingAssetAsync(
+                    basePath + ManifestFileName,
+                    cancellationToken);
+
+            var verificationBytes =
+                await ReadStreamingAssetAsync(
+                    basePath + VerificationFileName,
+                    cancellationToken);
+
+            var contentBytes =
+                await ReadStreamingAssetAsync(
+                    basePath + ContentFileName,
+                    cancellationToken);
+
+            return new ContentReleaseBytes(
+                System.Text.Encoding.UTF8.GetString(
+                    manifestBytes),
+                System.Text.Encoding.UTF8.GetString(
+                    verificationBytes),
+                contentBytes);
+        }
+
+        private static async Task<byte[]> ReadStreamingAssetAsync(
+            string uri,
+            CancellationToken cancellationToken)
+        {
+            using (var request = UnityWebRequest.Get(uri))
+            {
+                var completion =
+                    new TaskCompletionSource<bool>(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+
+                var registration =
+                    cancellationToken.Register(
+                        request.Abort);
+
+                try
+                {
+                    var operation =
+                        request.SendWebRequest();
+
+                    operation.completed += _ =>
+                        completion.TrySetResult(true);
+
+                    await completion.Task;
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (request.result !=
+                        UnityWebRequest.Result.Success)
+                    {
+                        throw new InvalidOperationException(
+                            "Streaming content load failed: " +
+                            request.error +
+                            " | " +
+                            uri);
+                    }
+
+                    return request.downloadHandler.data;
+                }
+                finally
+                {
+                    registration.Dispose();
+                }
+            }
+        }
+
+        private void SaveLastKnownGood(
+            string manifestJson,
+            string verificationJson,
+            byte[] contentBytes)
+        {
+            Directory.CreateDirectory(
+                _cacheDirectory);
+
+            WriteAtomic(
+                Path.Combine(
+                    _cacheDirectory,
+                    ManifestFileName),
+                System.Text.Encoding.UTF8.GetBytes(
+                    manifestJson));
+
+            WriteAtomic(
+                Path.Combine(
+                    _cacheDirectory,
+                    VerificationFileName),
+                System.Text.Encoding.UTF8.GetBytes(
+                    verificationJson));
+
+            WriteAtomic(
+                Path.Combine(
+                    _cacheDirectory,
+                    ContentFileName),
+                contentBytes);
+        }
+
+        private ContentReleaseBytes LoadLastKnownGood()
+        {
+            return new ContentReleaseBytes(
+                File.ReadAllText(
+                    Path.Combine(
+                        _cacheDirectory,
+                        ManifestFileName)),
+                File.ReadAllText(
+                    Path.Combine(
+                        _cacheDirectory,
+                        VerificationFileName)),
+                File.ReadAllBytes(
+                    Path.Combine(
+                        _cacheDirectory,
+                        ContentFileName)));
+        }
+
+        private static void WriteAtomic(
+            string path,
+            byte[] bytes)
+        {
+            var temporaryPath = path + ".tmp";
+            File.WriteAllBytes(
+                temporaryPath,
+                bytes);
+
+            File.Copy(
+                temporaryPath,
+                path,
+                true);
+
+            File.Delete(
+                temporaryPath);
+        }
+
+        private readonly struct ContentReleaseBytes
+        {
+            public ContentReleaseBytes(
+                string manifestJson,
+                string verificationJson,
+                byte[] contentBytes)
+            {
+                this.manifestJson = manifestJson;
+                this.verificationJson = verificationJson;
+                this.contentBytes = contentBytes;
+            }
+
+            public readonly string manifestJson;
+            public readonly string verificationJson;
+            public readonly byte[] contentBytes;
         }
     }
 

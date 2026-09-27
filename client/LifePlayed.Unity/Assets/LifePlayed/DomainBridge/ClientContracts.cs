@@ -37,6 +37,15 @@ namespace LifePlayed.Client.DomainBridge
     }
 
     [Serializable]
+    public sealed class ClientContentVerification
+    {
+        public int schemaVersion;
+        public string releaseId = string.Empty;
+        public string releaseVersion = string.Empty;
+        public string contentSha256 = string.Empty;
+    }
+
+    [Serializable]
     public sealed class ClientContentManifest
     {
         public int schemaVersion;

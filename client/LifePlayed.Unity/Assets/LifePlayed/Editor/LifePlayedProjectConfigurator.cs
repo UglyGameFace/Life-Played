@@ -1,4 +1,6 @@
 using System.IO;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using LifePlayed.Client.Bootstrap;
 using LifePlayed.Client.Presentation.UI;
 using LifePlayed.Client.Presentation.World;
@@ -22,6 +24,23 @@ namespace LifePlayed.Client.Editor
             SettingsDirectory + "/LifePlayedURPGlobalSettings.asset";
         private const string GeneratedContentDirectory =
             "Assets/StreamingAssets/LifePlayed/Content/wild-renewal-v1";
+
+        [System.Serializable]
+        private sealed class ManifestHeader
+        {
+            public int schemaVersion;
+            public string releaseId = string.Empty;
+            public string releaseVersion = string.Empty;
+        }
+
+        [System.Serializable]
+        private sealed class VerificationRecord
+        {
+            public int schemaVersion;
+            public string releaseId = string.Empty;
+            public string releaseVersion = string.Empty;
+            public string contentSha256 = string.Empty;
+        }
 
         private static readonly string[] ScenePaths =
         {
@@ -82,7 +101,65 @@ namespace LifePlayed.Client.Editor
                     "Authoritative Wild Renewal release is missing.");
             }
 
-            if (Directory.Exists(GeneratedContentDirectory))
+            var manifestJson =
+                File.ReadAllText(
+                    sourceManifest);
+
+            var header =
+                JsonUtility.FromJson<ManifestHeader>(
+                    manifestJson);
+
+            if (header == null ||
+                header.schemaVersion <= 0 ||
+                string.IsNullOrWhiteSpace(
+                    header.releaseId) ||
+                string.IsNullOrWhiteSpace(
+                    header.releaseVersion))
+            {
+                throw new System.InvalidOperationException(
+                    "Authoritative content manifest header is invalid.");
+            }
+
+            var hashMatch = Regex.Match(
+                manifestJson,
+                "\\\"content\\.json\\\"\\s*:\\s*\\\"([A-Fa-f0-9]{64})\\\"");
+
+            if (!hashMatch.Success)
+            {
+                throw new System.InvalidOperationException(
+                    "Authoritative manifest is missing the content.json SHA-256.");
+            }
+
+            var contentBytes =
+                File.ReadAllBytes(
+                    sourceContent);
+
+            string actualHash;
+            using (var sha256 = SHA256.Create())
+            {
+                actualHash = System.BitConverter
+                    .ToString(
+                        sha256.ComputeHash(
+                            contentBytes))
+                    .Replace(
+                        "-",
+                        string.Empty);
+            }
+
+            var expectedHash =
+                hashMatch.Groups[1].Value;
+
+            if (!string.Equals(
+                actualHash,
+                expectedHash,
+                System.StringComparison.OrdinalIgnoreCase))
+            {
+                throw new System.InvalidOperationException(
+                    "Authoritative content.json does not match its manifest SHA-256.");
+            }
+
+            if (Directory.Exists(
+                GeneratedContentDirectory))
             {
                 Directory.Delete(
                     GeneratedContentDirectory,
@@ -105,6 +182,27 @@ namespace LifePlayed.Client.Editor
                     GeneratedContentDirectory,
                     "content.json"),
                 true);
+
+            var verification =
+                new VerificationRecord
+                {
+                    schemaVersion =
+                        header.schemaVersion,
+                    releaseId =
+                        header.releaseId,
+                    releaseVersion =
+                        header.releaseVersion,
+                    contentSha256 =
+                        actualHash,
+                };
+
+            File.WriteAllText(
+                Path.Combine(
+                    GeneratedContentDirectory,
+                    "verification.json"),
+                JsonUtility.ToJson(
+                    verification,
+                    false));
         }
 
         private static void EnsureRenderPipeline()
@@ -321,8 +419,13 @@ namespace LifePlayed.Client.Editor
                 GeneratedContentDirectory,
                 "content.json");
 
+            var generatedVerification = Path.Combine(
+                GeneratedContentDirectory,
+                "verification.json");
+
             if (!File.Exists(generatedManifest) ||
-                !File.Exists(generatedContent))
+                !File.Exists(generatedContent) ||
+                !File.Exists(generatedVerification))
             {
                 throw new System.InvalidOperationException(
                     "Authoritative Wild Renewal content was not staged.");

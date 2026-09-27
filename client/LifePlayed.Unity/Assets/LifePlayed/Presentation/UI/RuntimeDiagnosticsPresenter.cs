@@ -42,12 +42,15 @@ namespace LifePlayed.Client.Presentation.UI
         }
 
         public void SetContentManifest(
-            LifePlayed.Client.DomainBridge.ClientContentManifest manifest)
+            LifePlayed.Client.DomainBridge.ClientContentManifest manifest,
+            string source = "bundle")
         {
             _contentStatus =
                 manifest.releaseVersion +
                 " • schema " +
-                manifest.schemaVersion;
+                manifest.schemaVersion +
+                " • " +
+                source;
             Refresh();
         }
 

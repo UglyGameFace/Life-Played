@@ -366,3 +366,35 @@ for fragment in (
         raise SystemExit(
             f"Android prototype backend configuration is missing: {fragment}"
         )
+
+
+content_gateway_code = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Infrastructure"
+    / "RuntimeServices.cs"
+).read_text(encoding="utf-8")
+
+for fragment in (
+    "ContentIntegrityVerifier",
+    "SHA256.Create()",
+    "LastLoadSource",
+    "LoadLastKnownGood()",
+    "Application.persistentDataPath",
+    "verification.json",
+):
+    if fragment not in content_gateway_code:
+        raise SystemExit(
+            f"Last-known-good content integrity path is missing: {fragment}"
+        )
+
+for fragment in (
+    "SHA256.Create()",
+    "content.json does not match its manifest SHA-256",
+    "verification.json",
+):
+    if fragment not in configurator:
+        raise SystemExit(
+            f"Pre-export content integrity check is missing: {fragment}"
+        )
