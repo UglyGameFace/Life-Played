@@ -3,6 +3,7 @@ using LifePlayed.Client.Bootstrap;
 using LifePlayed.Client.Presentation.UI;
 using LifePlayed.Client.Presentation.World;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,6 +18,8 @@ namespace LifePlayed.Client.Editor
         private const string SettingsDirectory = "Assets/LifePlayed/Generated";
         private const string PipelinePath =
             SettingsDirectory + "/LifePlayedMobileURP.asset";
+        private const string GlobalSettingsPath =
+            SettingsDirectory + "/LifePlayedURPGlobalSettings.asset";
 
         private static readonly string[] ScenePaths =
         {
@@ -24,6 +27,12 @@ namespace LifePlayed.Client.Editor
             ScenesDirectory + "/AppShell.unity",
             ScenesDirectory + "/WildRenewalHub.unity",
         };
+
+        public static void PreExport()
+        {
+            EnsureConfigured();
+            ValidateForBuild();
+        }
 
         [MenuItem("Life Played/Configure Client Foundation")]
         public static void EnsureConfigured()
@@ -61,11 +70,48 @@ namespace LifePlayed.Client.Editor
                     AssetDatabase.AddObjectToAsset(rendererData, pipeline);
                 }
 
-                pipeline.EnsureGlobalSettings();
             }
 
+            EnsureRenderPipelineGlobalSettings();
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;
+        }
+
+        private static void EnsureRenderPipelineGlobalSettings()
+        {
+            var existing =
+                EditorGraphicsSettings.GetRenderPipelineGlobalSettingsAsset(
+                    typeof(UniversalRenderPipeline));
+
+            if (existing != null)
+            {
+                return;
+            }
+
+            var settingsType = System.Type.GetType(
+                "UnityEngine.Rendering.Universal.UniversalRenderPipelineGlobalSettings, " +
+                "Unity.RenderPipelines.Universal.Runtime");
+
+            if (settingsType == null)
+            {
+                throw new System.InvalidOperationException(
+                    "URP global settings type could not be resolved.");
+            }
+
+            var settings = RenderPipelineGlobalSettingsUtils.Create(
+                settingsType,
+                GlobalSettingsPath);
+
+            if (settings == null)
+            {
+                throw new System.InvalidOperationException(
+                    "URP global settings could not be created.");
+            }
+
+            EditorGraphicsSettings.PopulateRenderPipelineGraphicsSettings(settings);
+            EditorGraphicsSettings.SetRenderPipelineGlobalSettingsAsset(
+                typeof(UniversalRenderPipeline),
+                settings);
         }
 
         private static void EnsureScenes()
@@ -111,6 +157,30 @@ namespace LifePlayed.Client.Editor
             configure(root);
 
             EditorSceneManager.SaveScene(scene, path);
+        }
+
+        private static void ValidateForBuild()
+        {
+            if (GraphicsSettings.defaultRenderPipeline == null)
+            {
+                throw new System.InvalidOperationException(
+                    "URP is not assigned in Graphics Settings.");
+            }
+
+            foreach (var scenePath in ScenePaths)
+            {
+                if (!File.Exists(scenePath))
+                {
+                    throw new System.InvalidOperationException(
+                        "Required scene was not generated: " + scenePath);
+                }
+            }
+
+            if (EditorBuildSettings.scenes.Length != ScenePaths.Length)
+            {
+                throw new System.InvalidOperationException(
+                    "Editor build settings do not contain the expected Life Played scenes.");
+            }
         }
 
         private static void EnsureMobileSettings()

@@ -101,6 +101,31 @@ for pattern in (
     if pattern not in gitignore:
         raise SystemExit(f"Missing nested Unity ignore rule: {pattern}")
 
+configurator = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Editor"
+    / "LifePlayedProjectConfigurator.cs"
+).read_text(encoding="utf-8")
+
+required_configurator_fragments = (
+    "public static void PreExport()",
+    "RenderPipelineGlobalSettingsUtils.Create(",
+    "EditorGraphicsSettings.SetRenderPipelineGlobalSettingsAsset(",
+    "ValidateForBuild();",
+)
+for fragment in required_configurator_fragments:
+    if fragment not in configurator:
+        raise SystemExit(
+            f"Unity Build Automation configurator is missing: {fragment}"
+        )
+
+if "pipeline.EnsureGlobalSettings()" in configurator:
+    raise SystemExit(
+        "Do not call protected RenderPipelineAsset.EnsureGlobalSettings() directly."
+    )
+
 print(
     f"Unity scaffold OK: {len(asmdefs)} assemblies, "
     f"Editor 6000.3.25f1, required packages pinned."
