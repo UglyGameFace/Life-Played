@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / Step 9: privacy, security & fraud
+**State:** ACTIVE — product foundation / Step 10: validation strategy
 
 **Code implementation:** Not started intentionally.
 
@@ -461,8 +461,8 @@ This active task is complete only when:
 - [x] V1 scope and explicit post-V1 backlog are documented.
 - [x] Core gameplay loop and progression rules are defined well enough to implement without inventing behavior ad hoc.
 - [x] Identity-world/story architecture is documented.
-- [ ] Commerce, Deal Scout, location/reward, and fraud boundaries are documented.
-- [ ] Privacy/consent principles are documented.
+- [x] Commerce, Deal Scout, location/reward, and fraud boundaries are documented.
+- [x] Privacy/consent principles are documented.
 - [ ] Offline/sync and server-authority rules are documented.
 - [x] Unity/mobile architecture is documented.
 - [x] Backend/service/domain architecture is documented.
@@ -489,6 +489,7 @@ Only after this Definition of Done is satisfied should production implementation
 - `docs/UNITY_MOBILE_ARCHITECTURE.md` created and verified with URP/mobile layering, offline local persistence, sync boundaries, Addressables direction, graphics tiers, Android/iOS platform isolation, and free-tier milestone build policy.
 - `docs/BACKEND_ARCHITECTURE.md` created and verified with modular-monolith boundaries, PostgreSQL, BFF/API isolation, idempotency/outbox, workers, provider adapters, observability, recovery, and growth scaling.
 - `docs/COMMERCE_REWARDS_ARCHITECTURE.md` created and verified with Need Graph, Deal Scout, affiliate attribution, offer freshness, Sponsored Quest, future visit/purchase evidence, cashback settlement/reversal, and reconciliation boundaries.
+- `docs/PRIVACY_SECURITY_FRAUD.md` created and verified with consent, data classification/minimization, current location-policy direction, attestation, spoof/replay controls, false-positive protection, restrictions, retention, deletion, and future cash-reward launch gates.
 - No production code has been added yet.
 
 ---
@@ -508,8 +509,9 @@ Current repository baseline contains:
 - `docs/UNITY_MOBILE_ARCHITECTURE.md`
 - `docs/BACKEND_ARCHITECTURE.md`
 - `docs/COMMERCE_REWARDS_ARCHITECTURE.md`
+- `docs/PRIVACY_SECURITY_FRAUD.md`
 
-README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, backend, and commerce/reward specifications are verified readable on `main`; player Need/offer relevance is separated from developer revenue and real-money rewards are separated from gameplay economy.
+README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, backend, commerce/reward, and privacy/security/fraud specifications are verified readable on `main`; sensitive evidence is isolated, location is minimum-scope/optional, and missing evidence is distinguished from fraud.
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -567,4 +569,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Define the **privacy, security & fraud model** in-repo: lock consent, sensitive-data exclusions, retention/minimization, account/device security, attestation, abuse controls, location spoofing defenses, evidence trust tiers, manual review, disclosure, deletion, and the rules that protect legitimate users from false fraud decisions.
+Define the **validation/test strategy** in-repo: lock unit/integration/runtime/device validation, offline/sync/retry tests, economy and reward invariants, content validation, security/privacy checks, Android/iOS matrix, performance/thermal testing, provider outage/reconciliation tests, and release-candidate evidence required before completion claims.
