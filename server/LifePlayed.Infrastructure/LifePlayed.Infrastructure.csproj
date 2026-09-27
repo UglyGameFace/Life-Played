@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LifePlayed.Infrastructure</RootNamespace>
+    <AssemblyName>LifePlayed.Infrastructure</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../LifePlayed.Application/LifePlayed.Application.csproj" />
+    <ProjectReference Include="../LifePlayed.Domain/LifePlayed.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Persistence/Migrations/*.sql" />
+  </ItemGroup>
+</Project>

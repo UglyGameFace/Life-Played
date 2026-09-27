@@ -10,4 +10,13 @@
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../server/LifePlayed.Application/LifePlayed.Application.csproj" />
+    <ProjectReference Include="../../server/LifePlayed.Infrastructure/LifePlayed.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../content/schemas/content-release.schema.json"
+          Link="content-release.schema.json"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

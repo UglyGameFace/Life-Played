@@ -40,6 +40,28 @@ public static class EconomyRulesV1
         return duration * complexity * campaign * repetition * integrity;
     }
 
+    public static RewardEvaluation EvaluateOrdinaryAction(
+        double expectedMinutes,
+        double complexityMultiplier = 1d,
+        double campaignMultiplier = 1d,
+        double repetitionMultiplier = 1d,
+        double integrityMultiplier = 1d)
+    {
+        var effort = EffortScore(
+            expectedMinutes,
+            complexityMultiplier,
+            campaignMultiplier,
+            repetitionMultiplier,
+            integrityMultiplier);
+
+        var accountXp = AccountXpFromEffort(effort);
+        return new RewardEvaluation(
+            RuleVersion,
+            effort,
+            accountXp,
+            TotalSkillXp(accountXp));
+    }
+
     public static int AccountXpFromEffort(double effortScore)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(effortScore);

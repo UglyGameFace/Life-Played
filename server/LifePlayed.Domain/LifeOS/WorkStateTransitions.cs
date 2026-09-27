@@ -11,6 +11,23 @@ public static class WorkStateTransitions
     public static bool CanTransition(CampaignStatus from, CampaignStatus to) =>
         CanTransitionCore((int)from, (int)to);
 
+    public static bool CanTransition(CampaignPhaseStatus from, CampaignPhaseStatus to)
+    {
+        if (from == to)
+        {
+            return true;
+        }
+
+        return from switch
+        {
+            CampaignPhaseStatus.Draft => to is CampaignPhaseStatus.Active or CampaignPhaseStatus.Archived,
+            CampaignPhaseStatus.Active => to is CampaignPhaseStatus.Completed or CampaignPhaseStatus.Archived,
+            CampaignPhaseStatus.Completed => to is CampaignPhaseStatus.Active or CampaignPhaseStatus.Archived,
+            CampaignPhaseStatus.Archived => to is CampaignPhaseStatus.Active,
+            _ => false,
+        };
+    }
+
     private static bool CanTransitionCore(int from, int to)
     {
         if (from == to)
