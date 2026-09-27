@@ -36,6 +36,13 @@ public sealed class PostgreSqlInfrastructureTests
             "progression.progression_events",
             "progression.reward_grants",
             "sync.client_mutations",
+            "life_os.habit_definitions",
+            "life_os.habit_occurrences",
+            "life_os.focus_sessions",
+            "life_os.rest_periods",
+            "progression.account_progression",
+            "progression.life_skill_progress",
+            "sync.change_log",
         };
 
         foreach (var table in expectedTables)
@@ -52,7 +59,7 @@ public sealed class PostgreSqlInfrastructureTests
             connection);
 
         var migrationCount = await migrationCountCommand.ExecuteScalarAsync(cancellationToken);
-        Assert.Equal(1, Assert.IsType<int>(migrationCount));
+        Assert.Equal(2, Assert.IsType<int>(migrationCount));
     }
 
     [Fact]
