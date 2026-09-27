@@ -300,12 +300,15 @@ Validation so far:
 - Unity Scaffold CI run #6 after the meaningful visual pass: success
 - Unity Scaffold CI run #7 after tree-hierarchy correction: success
 - Unity Scaffold CI run #8 after graphics persistence/platform-boundary pass: success
+- Unity Scaffold CI run #10 after documented URP global-settings API hardening: success
 - editor/package/asmdef JSON: valid
 - nested generated-directory protections: valid
 - pure client DomainBridge/Application assembly boundary: statically enforced
 - Build Automation dashboard handoff documented in `docs/UNITY_BUILD_AUTOMATION_SETUP.md`
 - official Build Automation pre-export hook wired as `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport`
-- final repository-side diff audit: 34 scoped files, no generated Unity folders/build artifacts, no secret-pattern findings
+- final repository-side diff audit after visual hardening: 36 scoped files, no generated Unity folders/build artifacts, no APK/AAB, no secret-pattern findings
+- PR #6 exact code head before this task-record update: `50c6325fdd4262e94685c0cdd76d86596899c6d5`
+- PR #6 merge state: clean / mergeable, intentionally draft
 - PR #6 merge state: clean, intentionally draft
 - Unity cloud minutes consumed: 0
 
