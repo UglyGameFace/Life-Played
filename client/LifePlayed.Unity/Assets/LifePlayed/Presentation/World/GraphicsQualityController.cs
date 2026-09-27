@@ -32,22 +32,31 @@ namespace LifePlayed.Client.Presentation.World
                 case GraphicsTier.Reduced:
                     Application.targetFrameRate = 30;
                     QualitySettings.shadows = ShadowQuality.Disable;
-                    QualitySettings.shadowDistance = 0f;
-                    SetRenderScale(0.72f);
+                    ConfigureUrp(
+                        0.72f,
+                        0f,
+                        1,
+                        1);
                     break;
 
                 case GraphicsTier.Standard:
                     Application.targetFrameRate = 30;
                     QualitySettings.shadows = ShadowQuality.HardOnly;
-                    QualitySettings.shadowDistance = 28f;
-                    SetRenderScale(0.90f);
+                    ConfigureUrp(
+                        0.90f,
+                        28f,
+                        2,
+                        2);
                     break;
 
                 case GraphicsTier.High:
                     Application.targetFrameRate = 60;
                     QualitySettings.shadows = ShadowQuality.All;
-                    QualitySettings.shadowDistance = 45f;
-                    SetRenderScale(1.0f);
+                    ConfigureUrp(
+                        1.0f,
+                        45f,
+                        2,
+                        4);
                     break;
 
                 default:
@@ -60,13 +69,22 @@ namespace LifePlayed.Client.Presentation.World
             TierChanged(tier);
         }
 
-        private static void SetRenderScale(float value)
+        private static void ConfigureUrp(
+            float renderScale,
+            float shadowDistance,
+            int shadowCascadeCount,
+            int msaaSampleCount)
         {
             var pipeline = UniversalRenderPipeline.asset;
-            if (pipeline != null)
+            if (pipeline == null)
             {
-                pipeline.renderScale = value;
+                return;
             }
+
+            pipeline.renderScale = renderScale;
+            pipeline.shadowDistance = shadowDistance;
+            pipeline.shadowCascadeCount = shadowCascadeCount;
+            pipeline.msaaSampleCount = msaaSampleCount;
         }
     }
 }

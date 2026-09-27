@@ -42,13 +42,34 @@ namespace LifePlayed.Client.Application
             CancellationToken cancellationToken);
     }
 
-    public interface ILocalStateStore
+    public interface IClientSettingsStore
     {
         string Read(string key);
 
         void Write(string key, string value);
 
         void Remove(string key);
+    }
+
+    public interface IClientOfflineStore
+    {
+        Task EnqueueMutationAsync(
+            ClientSyncMutation mutation,
+            CancellationToken cancellationToken);
+
+        Task<IReadOnlyList<ClientSyncMutation>> ReadPendingMutationsAsync(
+            int limit,
+            CancellationToken cancellationToken);
+
+        Task AcknowledgeMutationAsync(
+            string mutationId,
+            CancellationToken cancellationToken);
+
+        long ReadSyncCursor();
+
+        Task WriteSyncCursorAsync(
+            long cursor,
+            CancellationToken cancellationToken);
     }
 
     public interface IFeatureFlagProvider
