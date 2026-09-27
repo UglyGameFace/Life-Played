@@ -343,18 +343,28 @@ Implemented on `feat/unity-client-foundation` / PR #6:
 
 ## Repository-side validation evidence
 
-Latest candidate before this task-record update:
+Latest Playable Build #1 candidate:
 
-- PR #6 head: `7bbca4c111502b265cf2a7666488d52dc05282b9`
-- Unity Scaffold CI run #22: **success**
-- Unity Scaffold CI run #25 after content integrity/LKG cache: **success**
-- Unity Scaffold CI run #26 validates client-version compatibility additions
-- Unity Scaffold CI run #27 validates persistent development logging
+- PR #6 head: `20ad197db38d2984e20a20b8771eb9bb64526e87`
+- Unity Scaffold CI run #29: **success**
 - PR state: clean / mergeable / intentionally draft
+- changed files: 41 scoped files
 - generated-junk scan: clean
 - APK/AAB/keystore scan: clean
 - secret-pattern scan: clean
 - Unity cloud minutes consumed by repository preparation: **0**
+
+Additional candidate hardening:
+
+- pre-export SHA-256 verifies authoritative `content.json`
+- generated verification metadata is staged with the build
+- runtime SHA-256 verification happens before content activation
+- verified bundled content seeds a last-known-good cache
+- bundled content failure can fall back to cached verified content
+- content minimum-client version is enforced
+- diagnostics distinguish `bundle` vs `cache`
+- Development APK persists Unity logs from main and worker threads under `lifeplayed/diagnostics/development.log`
+- StreamingAssets loading follows Unity's Android-safe `UnityWebRequest` path
 
 The static validator currently protects:
 
@@ -423,6 +433,14 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 This ChatGPT workspace has no connected Unity Build Automation action/connector and GitHub reports no external Unity build check for PR #6. Repository preparation can be completed directly, but true Unity Editor/import/build/device proof must come from the configured Unity Build Automation target.
 
 ---
+
+## Repository freeze point
+
+Repository-side Milestone 4 preparation is now frozen at:
+
+`20ad197db38d2984e20a20b8771eb9bb64526e87`
+
+Do not add speculative code-only features before Playable Build #1 unless a newly discovered authoritative-document mismatch materially affects the build. At this point, additional unexecuted Unity code is more likely to increase first-build risk than reduce it.
 
 ## Next step
 
