@@ -98,9 +98,8 @@ namespace LifePlayed.Client.Editor
                     "URP global settings type could not be resolved.");
             }
 
-            var settings = RenderPipelineGlobalSettingsUtils.Create(
-                settingsType,
-                GlobalSettingsPath);
+            var settings = ScriptableObject.CreateInstance(settingsType)
+                as RenderPipelineGlobalSettings;
 
             if (settings == null)
             {
@@ -108,7 +107,14 @@ namespace LifePlayed.Client.Editor
                     "URP global settings could not be created.");
             }
 
-            EditorGraphicsSettings.PopulateRenderPipelineGraphicsSettings(settings);
+            settings.name = "LifePlayedURPGlobalSettings";
+            settings.Initialize(null);
+            AssetDatabase.CreateAsset(
+                settings,
+                GlobalSettingsPath);
+
+            EditorGraphicsSettings.PopulateRenderPipelineGraphicsSettings(
+                settings);
             EditorGraphicsSettings.SetRenderPipelineGlobalSettingsAsset(
                 typeof(UniversalRenderPipeline),
                 settings);
