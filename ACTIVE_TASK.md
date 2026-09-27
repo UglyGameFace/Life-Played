@@ -267,7 +267,26 @@ Implemented on `feat/unity-client-foundation` / PR #6:
 - Reduced / Standard / High graphics tier controller
 - Input System touch/pointer orbit camera
 - prototype Wild Renewal hub
-- prototype Waykeeper and starter companion presenters
+- visually meaningful Wild Renewal prototype pass:
+  - layered Hearthwild island/soil edge
+  - moss stepping path
+  - rebuilt Central Hearth + five-petal Quiet Bloom
+  - 12 multi-crown grove trees
+  - six waystones
+  - dormant workshop frame
+  - gathering stone circle
+  - grove arch
+  - rain pool
+  - eight animated Bloom Wisps
+- improved Waykeeper silhouette with limbs, mantle, pack, and glow sigil
+- starter companion now matches authoritative content identity: Leafglow Fox
+- animated Leafglow Fox body/head/legs/tail/glow charm
+- World route UI veil now exposes the 3D scene instead of obscuring it
+- World status card for The Quiet Bloom / Hearthwild
+- interactive Reduced / Standard / High graphics controls
+- selected graphics tier persists through PlayerPrefs
+- explicit Android/iOS runtime platform profile boundary
+- orbit camera ignores the bottom UI/control zone
 - reproducible Editor scene generator
 - reproducible URP asset generator
 - Android development-build entry point
@@ -278,6 +297,9 @@ Validation so far:
 - Unity Scaffold CI run #1: success
 - Unity Scaffold CI run #2: success
 - Unity Scaffold CI run #3 on exact head `d90a1c65729567c1b56b95f98ec4606a2c6f7ab9`: success
+- Unity Scaffold CI run #6 after the meaningful visual pass: success
+- Unity Scaffold CI run #7 after tree-hierarchy correction: success
+- Unity Scaffold CI run #8 after graphics persistence/platform-boundary pass: success
 - editor/package/asmdef JSON: valid
 - nested generated-directory protections: valid
 - pure client DomainBridge/Application assembly boundary: statically enforced
