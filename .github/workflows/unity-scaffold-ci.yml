@@ -5,6 +5,8 @@ on:
     paths:
       - "client/LifePlayed.Unity/**"
       - "tools/validate_unity_scaffold.py"
+      - "docs/UNITY_BUILD_AUTOMATION_SETUP.md"
+      - "ACTIVE_TASK.md"
       - ".gitignore"
       - ".github/workflows/unity-scaffold-ci.yml"
   push:
@@ -13,6 +15,8 @@ on:
     paths:
       - "client/LifePlayed.Unity/**"
       - "tools/validate_unity_scaffold.py"
+      - "docs/UNITY_BUILD_AUTOMATION_SETUP.md"
+      - "ACTIVE_TASK.md"
       - ".gitignore"
       - ".github/workflows/unity-scaffold-ci.yml"
   workflow_dispatch:
