@@ -27,6 +27,8 @@ namespace LifePlayed.Client.Presentation.UI
         private GameObject _worldCard;
         private GameObject _qualityBar;
 
+        public event System.Action CompanionCallRequested = delegate { };
+
         private static readonly Color32 Background =
             new Color32(13, 21, 18, 242);
 
@@ -455,7 +457,7 @@ namespace LifePlayed.Client.Presentation.UI
                 "WorldStatusCard",
                 parent,
                 new Vector2(0.05f, 0.72f),
-                new Vector2(0.58f, 0.82f),
+                new Vector2(0.74f, 0.82f),
                 Panel);
 
             _worldCard = card.gameObject;
@@ -470,7 +472,7 @@ namespace LifePlayed.Client.Presentation.UI
             SetAnchors(
                 eyebrow.rectTransform,
                 new Vector2(0.07f, 0.58f),
-                new Vector2(0.93f, 0.90f));
+                new Vector2(0.62f, 0.90f));
 
             var headline = CreateText(
                 "Headline",
@@ -481,7 +483,50 @@ namespace LifePlayed.Client.Presentation.UI
             SetAnchors(
                 headline.rectTransform,
                 new Vector2(0.07f, 0.15f),
-                new Vector2(0.93f, 0.62f));
+                new Vector2(0.62f, 0.62f));
+
+            CreateWorldActionButton(
+                card.transform);
+        }
+
+        private void CreateWorldActionButton(
+            Transform parent)
+        {
+            var buttonObject = new GameObject(
+                "LeafglowCallButton",
+                typeof(RectTransform));
+
+            buttonObject.transform.SetParent(
+                parent,
+                false);
+
+            var rect =
+                (RectTransform)buttonObject.transform;
+
+            SetAnchors(
+                rect,
+                new Vector2(0.65f, 0.18f),
+                new Vector2(0.95f, 0.82f));
+
+            var image =
+                buttonObject.AddComponent<Image>();
+            image.color = Active;
+
+            var button =
+                buttonObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.onClick.AddListener(
+                () => CompanionCallRequested());
+
+            var label = CreateText(
+                "Label",
+                buttonObject.transform,
+                "Call Leafglow",
+                18,
+                TextAnchor.MiddleCenter);
+
+            label.color = Background;
+            Stretch(label.rectTransform);
         }
 
         private void BuildQualityBar(

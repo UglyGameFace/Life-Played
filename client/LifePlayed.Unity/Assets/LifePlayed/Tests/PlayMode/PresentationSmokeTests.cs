@@ -27,6 +27,16 @@ namespace LifePlayed.Client.Tests.PlayMode
             Assert.That(GameObject.Find("GroveArch"), Is.Not.Null);
             Assert.That(GameObject.Find("BloomWisps"), Is.Not.Null);
 
+            var companion =
+                GameObject
+                    .Find("LeafglowFox")
+                    .GetComponent<PrototypeCompanionPresenter>();
+
+            companion.PlayReaction();
+            Assert.That(
+                companion.IsReacting,
+                Is.True);
+
             var hub = root.GetComponent<PrototypeWildRenewalHub>();
             hub.SetPresentationActive(false);
             Assert.That(hub.IsPresentationActive, Is.False);

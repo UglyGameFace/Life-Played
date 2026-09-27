@@ -7,6 +7,12 @@ namespace LifePlayed.Client.Presentation.World
     {
         private Vector3 _origin;
         private Transform _tailRoot;
+        private float _reactionStartedAt = -10f;
+        private const float ReactionDuration = 1.15f;
+
+        public bool IsReacting =>
+            Time.time - _reactionStartedAt <
+            ReactionDuration;
 
         public void Build(Material bodyMaterial, Material glowMaterial)
         {
@@ -97,15 +103,52 @@ namespace LifePlayed.Client.Presentation.World
                 glowMaterial);
         }
 
+        public void PlayReaction()
+        {
+            _reactionStartedAt = Time.time;
+        }
+
         private void Update()
         {
             var time = Time.time;
             var bob = Mathf.Sin(time * 2.2f) * 0.06f;
-            transform.position = _origin + Vector3.up * bob;
-            transform.localRotation = Quaternion.Euler(
-                0f,
-                Mathf.Sin(time * 0.85f) * 7f,
-                0f);
+            var reactionProgress = Mathf.Clamp01(
+                (time - _reactionStartedAt) /
+                ReactionDuration);
+
+            var reacting =
+                time - _reactionStartedAt <
+                ReactionDuration;
+
+            var hop = reacting
+                ? Mathf.Sin(
+                    reactionProgress * Mathf.PI) *
+                    0.42f
+                : 0f;
+
+            var spin = reacting
+                ? reactionProgress * 360f
+                : Mathf.Sin(time * 0.85f) * 7f;
+
+            transform.position =
+                _origin +
+                Vector3.up * (bob + hop);
+
+            transform.localRotation =
+                Quaternion.Euler(
+                    0f,
+                    spin,
+                    0f);
+
+            transform.localScale =
+                Vector3.one *
+                (reacting
+                    ? 1f +
+                        Mathf.Sin(
+                            reactionProgress *
+                            Mathf.PI) *
+                        0.08f
+                    : 1f);
 
             if (_tailRoot != null)
             {

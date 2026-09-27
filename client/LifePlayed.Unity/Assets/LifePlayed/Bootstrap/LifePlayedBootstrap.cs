@@ -23,6 +23,7 @@ namespace LifePlayed.Client.Bootstrap
         private PrototypeWildRenewalHub _worldHub;
         private RuntimeDiagnosticsPresenter _diagnostics;
         private IMobilePlatformProfile _platformProfile;
+        private AppShellPresenter _shell;
 
         public static LifePlayedBootstrap Instance => _instance;
 
@@ -89,6 +90,12 @@ namespace LifePlayed.Client.Bootstrap
             {
                 _coordinator.RouteChanged -= OnRouteChanged;
             }
+
+            if (_shell != null)
+            {
+                _shell.CompanionCallRequested -=
+                    OnCompanionCallRequested;
+            }
         }
 
         private void RestoreGraphicsTier(
@@ -129,20 +136,23 @@ namespace LifePlayed.Client.Bootstrap
                     return worldRoot.AddComponent<PrototypeWildRenewalHub>();
                 });
 
-            var shell = FindFirstObjectByType<AppShellPresenter>();
-            if (shell != null)
+            _shell = FindFirstObjectByType<AppShellPresenter>();
+            if (_shell != null)
             {
-                shell.Bind(
+                _shell.Bind(
                     _coordinator,
                     graphicsQuality);
 
+                _shell.CompanionCallRequested +=
+                    OnCompanionCallRequested;
+
                 _diagnostics =
-                    shell.GetComponent<RuntimeDiagnosticsPresenter>();
+                    _shell.GetComponent<RuntimeDiagnosticsPresenter>();
 
                 if (_diagnostics == null)
                 {
                     _diagnostics =
-                        shell.gameObject.AddComponent<RuntimeDiagnosticsPresenter>();
+                        _shell.gameObject.AddComponent<RuntimeDiagnosticsPresenter>();
                 }
 
                 _diagnostics.Bind(
@@ -194,6 +204,15 @@ namespace LifePlayed.Client.Bootstrap
 
             _diagnostics.SetContentManifest(
                 task.Result);
+        }
+
+        private void OnCompanionCallRequested()
+        {
+            if (_coordinator.CurrentRoute == AppRoute.World &&
+                _worldHub != null)
+            {
+                _worldHub.PlayCompanionReaction();
+            }
         }
 
         private AppRoute RestoreInitialRoute()

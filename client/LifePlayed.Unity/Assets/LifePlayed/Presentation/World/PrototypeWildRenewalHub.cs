@@ -20,6 +20,7 @@ namespace LifePlayed.Client.Presentation.World
         private Light _sunLight;
         private Light _hearthLight;
         private GameObject _wispRoot;
+        private PrototypeCompanionPresenter _leafglowFox;
 
         public bool IsPresentationActive { get; private set; } = true;
 
@@ -52,8 +53,11 @@ namespace LifePlayed.Client.Presentation.World
             companionRoot.transform.SetParent(transform, false);
             companionRoot.transform.position = new Vector3(1.55f, 0.42f, -0.72f);
 
-            var companion = companionRoot.AddComponent<PrototypeCompanionPresenter>();
-            companion.Build(_grassLight, _glow);
+            _leafglowFox =
+                companionRoot.AddComponent<PrototypeCompanionPresenter>();
+            _leafglowFox.Build(
+                _grassLight,
+                _glow);
 
             var cameraFocus = new GameObject("WorldCameraFocus");
             cameraFocus.transform.SetParent(transform, false);
@@ -81,6 +85,15 @@ namespace LifePlayed.Client.Presentation.World
             _graphicsQuality = graphicsQuality;
             _graphicsQuality.TierChanged += OnTierChanged;
             ApplyVisualQuality(_graphicsQuality.CurrentTier);
+        }
+
+        public void PlayCompanionReaction()
+        {
+            if (IsPresentationActive &&
+                _leafglowFox != null)
+            {
+                _leafglowFox.PlayReaction();
+            }
         }
 
         public void SetPresentationActive(bool active)
