@@ -251,81 +251,170 @@ That milestone proves:
 
 Implemented on `feat/unity-client-foundation` / PR #6:
 
-- Unity Editor pin `6000.3.25f1`
-- URP 17.3 package foundation
+### Project/toolchain
+
+- Unity Editor pinned to `6000.3.25f1`
+- URP 17.3
 - Input System 1.20.0
 - Addressables 2.10.3
 - Addressables for Android 1.1.0
-- nested Unity generated-folder ignore rules
-- DomainBridge and Application assemblies with `noEngineReferences=true`
-- Infrastructure / Platform / UI / World / Bootstrap assembly boundaries
-- EditMode / PlayMode test assembly structure
-- client sync/content/local-state/feature-flag seams
-- portrait-first safe-area app shell
-- Home / Quests / World / Hero / More navigation
-- platform pause/focus lifecycle bridge
-- Reduced / Standard / High graphics tier controller
-- Input System touch/pointer orbit camera
-- prototype Wild Renewal hub
-- visually meaningful Wild Renewal prototype pass:
-  - layered Hearthwild island/soil edge
-  - moss stepping path
-  - rebuilt Central Hearth + five-petal Quiet Bloom
-  - 12 multi-crown grove trees
-  - six waystones
-  - dormant workshop frame
-  - gathering stone circle
-  - grove arch
-  - rain pool
-  - eight animated Bloom Wisps
-- improved Waykeeper silhouette with limbs, mantle, pack, and glow sigil
-- starter companion now matches authoritative content identity: Leafglow Fox
-- animated Leafglow Fox body/head/legs/tail/glow charm
-- World route UI veil now exposes the 3D scene instead of obscuring it
+- Unity Test Framework 1.6.0
+- nested Unity-generated folders ignored
+- generated scenes, URP assets, and staged StreamingAssets content ignored
+- DomainBridge/Application assemblies remain free of UnityEngine references
+- Infrastructure / Platform / UI / World / Bootstrap assembly boundaries exist
+
+### App shell / mobile UX
+
+- portrait-first safe-area shell
+- real route bodies for Home / Quests / World / Hero / More
+- persisted last route
+- World route uses a translucent veil so the 3D scene remains visible
 - World status card for The Quiet Bloom / Hearthwild
-- interactive Reduced / Standard / High graphics controls
-- selected graphics tier persists through PlayerPrefs
-- explicit Android/iOS runtime platform profile boundary
-- orbit camera ignores the bottom UI/control zone
-- reproducible Editor scene generator
-- reproducible URP asset generator
-- Android development-build entry point
-- static scaffold validation workflow
+- Reduced / Standard / High quality controls
+- persisted graphics tier
+- development-only runtime diagnostics showing platform, route, quality tier, FPS, target FPS, world-render state, content release/schema, safe-area size, and pause state
 
-Validation so far:
+### Wild Renewal presentation
 
-- Unity Scaffold CI run #1: success
-- Unity Scaffold CI run #2: success
-- Unity Scaffold CI run #3 on exact head `d90a1c65729567c1b56b95f98ec4606a2c6f7ab9`: success
-- Unity Scaffold CI run #6 after the meaningful visual pass: success
-- Unity Scaffold CI run #7 after tree-hierarchy correction: success
-- Unity Scaffold CI run #8 after graphics persistence/platform-boundary pass: success
-- Unity Scaffold CI run #10 after documented URP global-settings API hardening: success
-- editor/package/asmdef JSON: valid
-- nested generated-directory protections: valid
-- pure client DomainBridge/Application assembly boundary: statically enforced
-- Build Automation dashboard handoff documented in `docs/UNITY_BUILD_AUTOMATION_SETUP.md`
-- official Build Automation pre-export hook wired as `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport`
-- final repository-side diff audit after visual hardening: 36 scoped files, no generated Unity folders/build artifacts, no APK/AAB, no secret-pattern findings
-- PR #6 exact code head before this task-record update: `50c6325fdd4262e94685c0cdd76d86596899c6d5`
-- PR #6 merge state: clean / mergeable, intentionally draft
-- PR #6 merge state: clean, intentionally draft
-- Unity cloud minutes consumed: 0
+- layered Hearthwild island and soil edge
+- moss stepping path
+- rebuilt Central Hearth and five-petal emissive Quiet Bloom
+- 12 multi-crown grove trees
+- six waystones/runes
+- dormant workshop frame
+- gathering circle
+- grove arch
+- rain pool
+- eight animated Bloom Wisps
+- improved Waykeeper silhouette with limbs, mantle, pack, and glow sigil
+- authored starter identity **Leafglow Fox**
+- animated Leafglow Fox body/head/legs/tail/glow charm
+- presentation-only **Call Leafglow** interaction with hop/spin/pulse reaction
+- one-finger orbit
+- two-finger Enhanced Touch pinch zoom
+- bottom UI/control zone excluded from world-camera gestures
 
-Still unvalidated:
+### Mobile runtime / resilience
+
+- 3D world suspends outside World
+- 3D world also suspends on app pause/focus loss
+- low-memory notification downshifts to Reduced quality and unloads unused assets
+- Android/iOS runtime platform boundary
+- Android edge-to-edge rendering with safe-area UI
+- Android optimized frame pacing
+- fullscreen start
+- `runInBackground=false`
+
+### Persistence / content
+
+- PlayerPrefs restricted to lightweight client settings
+- separate JSON-backed offline mutation queue + sync cursor
+- offline store recreation/deduplication/acknowledgement EditMode coverage
+- authoritative Wild Renewal release remains single-source under `content/releases/wild-renewal-v1`
+- pre-export stages the validated release into StreamingAssets
+- Android-safe `UnityWebRequest` manifest loader
+- runtime diagnostics expose loaded content release/schema
+
+### Build Automation / quota protection
+
+- official pre-export hook:
+  `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport`
+- hard gate for `ENABLE_INPUT_SYSTEM`
+- hard gate for Android target and Unity `6000.3.25f1`
+- mobile URP generation and validation
+- authored-content staging validation
+- Development APK forced on
+- profiler auto-connect and deep profiling forced off
+- ARM64-only target
+- IL2CPP backend
+- IL2CPP Debug C++ configuration for faster prototype compilation
+- EditMode and PlayMode tests configured for the cloud build
+- Addressables production content build intentionally deferred until it has real groups/catalog content
+
+---
+
+## Repository-side validation evidence
+
+Latest candidate before this task-record update:
+
+- PR #6 head: `7bbca4c111502b265cf2a7666488d52dc05282b9`
+- Unity Scaffold CI run #22: **success**
+- PR state: clean / mergeable / intentionally draft
+- generated-junk scan: clean
+- APK/AAB/keystore scan: clean
+- secret-pattern scan: clean
+- Unity cloud minutes consumed by repository preparation: **0**
+
+The static validator currently protects:
+
+- editor/package pins
+- assembly boundaries
+- generated-folder ignores
+- public URP global-settings APIs
+- URP runtime quality controls
+- Android safe-area/frame-pacing settings
+- settings-vs-offline-database separation
+- authoritative content staging
+- Enhanced Touch pinch support
+- route-body presence
+- Input System build preflight
+- Android diagnostic-build configuration
+- ARM64/IL2CPP/Debug compiler configuration
+- mobile lifecycle / low-memory wiring
+
+---
+
+## Playable Build #1 readiness
+
+Repository-side readiness is **GREEN**.
+
+The first Unity build is now expected to prove all remaining Editor/device-only facts in one attempt:
+
+1. package resolution/import
+2. C# compilation under Unity 6000.3.25f1
+3. Active Input Handling really defines `ENABLE_INPUT_SYSTEM`
+4. URP/global-settings/scenes generate correctly
+5. authoritative Wild Renewal content stages and loads
+6. EditMode tests pass
+7. PlayMode tests pass
+8. ARM64 IL2CPP Development APK exports
+9. APK installs and launches on Android
+10. safe-area UI is correct
+11. all five routes respond
+12. world sleeps outside World
+13. one-finger orbit and two-finger pinch work without fighting UI
+14. Call Leafglow triggers the companion reaction
+15. Reduced / Standard / High switch correctly
+16. selected route and graphics tier survive restart
+17. background/resume safely suspends/restores world presentation
+
+Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sheet.
+
+---
+
+## Still unvalidated
 
 - Unity Editor package resolution/import
-- C# compilation under Unity
+- Unity C# compilation
+- actual Active Input Handling serialized state
 - Editor-generated URP/scenes
 - EditMode/PlayMode execution inside Unity
-- Android player build/install/runtime
-- touch behavior on a real Android device
-- graphics-tier runtime behavior on device
+- Android Gradle/IL2CPP export
+- APK installation/runtime
+- real-device touch/safe-area/frame pacing
+- real-device suspend/resume behavior
+
+---
 
 ## Current blocker
 
-This ChatGPT workspace has no connected Unity Build Automation action/connector and GitHub currently reports no external Unity build check on PR #6. Static repository work is therefore complete enough to attempt the first purposeful Unity build, but Unity Editor/package compilation and Android runtime proof cannot be claimed from the available tools.
+This ChatGPT workspace has no connected Unity Build Automation action/connector and GitHub reports no external Unity build check for PR #6. Repository preparation can be completed directly, but true Unity Editor/import/build/device proof must come from the configured Unity Build Automation target.
+
+---
 
 ## Next step
 
-Use the Build Automation configuration in `docs/UNITY_BUILD_AUTOMATION_SETUP.md` for one manual Android prototype build from PR #6 / `feat/unity-client-foundation`. Capture the build ID/logs/test summary/APK evidence, repair any actual Unity compiler/import/runtime failure under this same Milestone 4 task, and do not merge until that evidence is green.
+Do **not** merge PR #6 yet.
+
+Run exactly one manual Build Automation attempt using `docs/UNITY_BUILD_AUTOMATION_SETUP.md`, then validate the resulting APK with `docs/PLAYABLE_BUILD_1_VALIDATION.md`. Capture the build ID, exact commit SHA, test summary, first compiler/import/Gradle error if any, and Android runtime observations. Repair only evidence-backed failures under this same Milestone 4 task.

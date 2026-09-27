@@ -128,3 +128,8 @@ Fix the first root cause in PR #6, rerun static validation, then spend another U
 - Pre-export methods: https://docs.unity.com/en-us/build-automation/advanced-build-configuration/run-custom-scripts-during-the-build-process
 - Unit tests in Build Automation: https://docs.unity.com/en-us/build-automation/reference/unit-tests
 - Supported builder OS/platforms: https://docs.unity.com/en-us/build-automation/reference/supported-platforms-on-each-builder-os
+
+
+## After the APK is produced
+
+Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the single authoritative device-validation sheet. Do not merge PR #6 or begin Milestone 5 until that sheet's merge gate is satisfied.

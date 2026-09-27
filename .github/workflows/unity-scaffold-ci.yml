@@ -6,6 +6,8 @@ on:
       - "client/LifePlayed.Unity/**"
       - "tools/validate_unity_scaffold.py"
       - "docs/UNITY_BUILD_AUTOMATION_SETUP.md"
+      - "docs/PLAYABLE_BUILD_1_VALIDATION.md"
+      - "docs/PLAYABLE_BUILD_1_VALIDATION.md"
       - "ACTIVE_TASK.md"
       - ".gitignore"
       - ".github/workflows/unity-scaffold-ci.yml"
