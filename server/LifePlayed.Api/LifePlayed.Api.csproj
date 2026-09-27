@@ -6,5 +6,6 @@
   <ItemGroup>
     <ProjectReference Include="../LifePlayed.Application/LifePlayed.Application.csproj" />
     <ProjectReference Include="../LifePlayed.Contracts/LifePlayed.Contracts.csproj" />
+    <ProjectReference Include="../LifePlayed.Infrastructure/LifePlayed.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
