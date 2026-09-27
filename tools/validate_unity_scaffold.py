@@ -352,3 +352,17 @@ for fragment in (
         raise SystemExit(
             f"Playable Build #1 diagnostic build setting is missing: {fragment}"
         )
+
+
+for fragment in (
+    "PlayerSettings.SetScriptingBackend(",
+    "ScriptingImplementation.IL2CPP",
+    "PlayerSettings.SetIl2CppCompilerConfiguration(",
+    "Il2CppCompilerConfiguration.Debug",
+    "PlayerSettings.Android.targetArchitectures =",
+    "AndroidArchitecture.ARM64",
+):
+    if fragment not in configurator:
+        raise SystemExit(
+            f"Android prototype backend configuration is missing: {fragment}"
+        )

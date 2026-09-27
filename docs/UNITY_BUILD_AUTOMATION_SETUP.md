@@ -20,6 +20,9 @@ Configure one temporary validation target in Unity Dashboard:
 - **Development Build:** ON
 - **Autoconnect Profiler:** OFF
 - **Deep Profiling:** OFF
+- **CPU architecture:** ARM64 only
+- **Scripting backend:** IL2CPP
+- **IL2CPP C++ configuration:** Debug
 
 Android is supported on the current Windows 11 24H2 Build Automation image. The project subfolder is required because the Unity project's `Assets` and `ProjectSettings` directories are nested below the repository root.
 
@@ -60,6 +63,8 @@ For the **first prototype validation build**, leave automatic Addressables conte
 Use **APK** for the first prototype validation build so it can be installed directly on Android test hardware.
 
 The pre-export hook also forces `EditorUserBuildSettings.development = true` and `buildAppBundle = false`. This guarantees the development-only runtime diagnostics HUD is present even if the dashboard configuration drifts. Profiler auto-connect and deep profiling remain disabled to avoid unnecessary runtime/build overhead.
+
+For this prototype only, pre-export also pins **ARM64-only IL2CPP** and the **Debug** IL2CPP compiler configuration. Unity documents ARM64 as requiring IL2CPP and documents Debug C++ configuration as faster to compile than optimized configurations. This avoids spending quota on extra CPU architectures or shipping-level C++ optimization while still producing a 64-bit Android APK.
 
 Do not use the Play Store AAB path for this milestone.
 

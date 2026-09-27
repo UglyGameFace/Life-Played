@@ -299,6 +299,20 @@ namespace LifePlayed.Client.Editor
                     "without profiler auto-connect or deep profiling.");
             }
 
+            if (PlayerSettings.GetScriptingBackend(
+                    UnityEditor.Build.NamedBuildTarget.Android) !=
+                ScriptingImplementation.IL2CPP ||
+                PlayerSettings.GetIl2CppCompilerConfiguration(
+                    UnityEditor.Build.NamedBuildTarget.Android) !=
+                Il2CppCompilerConfiguration.Debug ||
+                PlayerSettings.Android.targetArchitectures !=
+                AndroidArchitecture.ARM64)
+            {
+                throw new System.InvalidOperationException(
+                    "Playable Build #1 must use ARM64-only IL2CPP with " +
+                    "the faster Debug C++ compiler configuration.");
+            }
+
             var generatedManifest = Path.Combine(
                 GeneratedContentDirectory,
                 "manifest.json");
@@ -362,6 +376,17 @@ namespace LifePlayed.Client.Editor
             EditorUserBuildSettings.buildWithDeepProfilingSupport = false;
             EditorUserBuildSettings.allowDebugging = false;
             EditorUserBuildSettings.buildAppBundle = false;
+
+            PlayerSettings.SetScriptingBackend(
+                UnityEditor.Build.NamedBuildTarget.Android,
+                ScriptingImplementation.IL2CPP);
+
+            PlayerSettings.SetIl2CppCompilerConfiguration(
+                UnityEditor.Build.NamedBuildTarget.Android,
+                Il2CppCompilerConfiguration.Debug);
+
+            PlayerSettings.Android.targetArchitectures =
+                AndroidArchitecture.ARM64;
 
             EditorSettings.serializationMode = SerializationMode.ForceText;
             EditorSettings.externalVersionControl = "Visible Meta Files";
