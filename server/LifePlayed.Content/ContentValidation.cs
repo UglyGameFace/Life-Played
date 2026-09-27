@@ -59,9 +59,9 @@ public static class ContentValidationProfiles
                 StringComparer.Ordinal));
 }
 
-public sealed class ContentValidator
+public static class ContentValidator
 {
-    public ContentValidationResult Validate(
+    public static ContentValidationResult Validate(
         ContentReleaseDefinition release,
         ContentValidationProfile profile)
     {
@@ -89,7 +89,7 @@ public sealed class ContentValidator
 
     private static Dictionary<string, string> BuildIdIndex(
         ContentReleaseDefinition release,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         var ids = new Dictionary<string, string>(StringComparer.Ordinal);
 
@@ -169,7 +169,7 @@ public sealed class ContentValidator
 
     private static void ValidateLocalizationKeys(
         ContentReleaseDefinition release,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         foreach (var world in release.Worlds)
         {
@@ -228,7 +228,7 @@ public sealed class ContentValidator
     private static void ValidateWorlds(
         ContentReleaseDefinition release,
         IReadOnlyDictionary<string, string> ids,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         foreach (var world in release.Worlds)
         {
@@ -242,7 +242,7 @@ public sealed class ContentValidator
     private static void ValidateSagas(
         ContentReleaseDefinition release,
         IReadOnlyDictionary<string, string> ids,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         foreach (var saga in release.Sagas)
         {
@@ -261,7 +261,7 @@ public sealed class ContentValidator
         ContentReleaseDefinition release,
         IReadOnlyDictionary<string, string> ids,
         ContentValidationProfile profile,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         foreach (var chapter in AllChapters(release))
         {
@@ -347,7 +347,7 @@ public sealed class ContentValidator
     private static void ValidateEntityWorldReferences(
         ContentReleaseDefinition release,
         IReadOnlyDictionary<string, string> ids,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         foreach (var npc in release.Npcs)
         {
@@ -373,7 +373,7 @@ public sealed class ContentValidator
     private static void ValidateCampaignArchetypes(
         ContentReleaseDefinition release,
         IReadOnlyDictionary<string, string> ids,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         foreach (var archetype in release.CampaignArchetypes)
         {
@@ -384,7 +384,7 @@ public sealed class ContentValidator
     private static void ValidateChapterPrerequisiteCycle(
         ContentReleaseDefinition release,
         SagaDefinition saga,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         var chapters = saga.ChapterIds
             .Select(id => FindChapter(release, id))
@@ -488,7 +488,7 @@ public sealed class ContentValidator
         string contentId,
         string value,
         string fieldName,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         if (!string.IsNullOrWhiteSpace(value))
         {
@@ -507,7 +507,7 @@ public sealed class ContentValidator
         string referenceId,
         string expectedType,
         IReadOnlyDictionary<string, string> ids,
-        ICollection<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues)
     {
         if (ids.TryGetValue(referenceId, out var actualType) &&
             actualType == expectedType)
@@ -525,8 +525,8 @@ public sealed class ContentValidator
     private static void RequireLocalNode(
         ChapterDefinition chapter,
         string nodeId,
-        IReadOnlySet<string> nodeIds,
-        ICollection<ContentValidationIssue> issues)
+        HashSet<string> nodeIds,
+        List<ContentValidationIssue> issues)
     {
         if (nodeIds.Contains(nodeId))
         {

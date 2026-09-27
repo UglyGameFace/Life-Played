@@ -8,7 +8,7 @@ public sealed record LoadedContentRelease(
     ContentReleaseManifest Manifest,
     ContentReleaseDefinition Content);
 
-public sealed class ContentReleaseLoader
+public static class ContentReleaseLoader
 {
     private const string ManifestFileName = "manifest.json";
     private const string ContentFileName = "content.json";
@@ -16,7 +16,7 @@ public sealed class ContentReleaseLoader
     private static readonly JsonSerializerOptions JsonOptions =
         new(JsonSerializerDefaults.Web);
 
-    public async Task<LoadedContentRelease> LoadAsync(
+    public static async Task<LoadedContentRelease> LoadAsync(
         string directory,
         CancellationToken cancellationToken = default)
     {

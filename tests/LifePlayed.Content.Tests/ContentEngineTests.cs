@@ -11,12 +11,11 @@ public sealed class ContentEngineTests
     [Fact]
     public async Task WildRenewalReleaseLoadsAndValidatesEndToEnd()
     {
-        var loader = new ContentReleaseLoader();
-        var loaded = await loader.LoadAsync(
+        var loaded = await ContentReleaseLoader.LoadAsync(
             ReleaseDirectory,
             TestContext.Current.CancellationToken);
 
-        var validation = new ContentValidator().Validate(
+        var validation = ContentValidator.Validate(
             loaded.Content,
             ContentValidationProfiles.V1);
 
@@ -162,9 +161,7 @@ public sealed class ContentEngineTests
     public async Task FailedActivationKeepsLastKnownGoodRelease()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
-        var manager = new ContentReleaseManager(
-            new ContentReleaseLoader(),
-            new ContentValidator());
+        var manager = new ContentReleaseManager();
 
         var activated = await manager.TryActivateAsync(
             ReleaseDirectory,
@@ -247,7 +244,7 @@ public sealed class ContentEngineTests
 
     private static async Task<ContentReleaseDefinition> LoadContentAsync()
     {
-        var loaded = await new ContentReleaseLoader().LoadAsync(
+        var loaded = await ContentReleaseLoader.LoadAsync(
             ReleaseDirectory,
             TestContext.Current.CancellationToken);
         return loaded.Content;
@@ -257,7 +254,7 @@ public sealed class ContentEngineTests
         ContentReleaseDefinition release,
         string expectedCode)
     {
-        var result = new ContentValidator().Validate(
+        var result = ContentValidator.Validate(
             release,
             ContentValidationProfiles.V1);
 
