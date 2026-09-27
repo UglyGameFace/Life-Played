@@ -3,13 +3,19 @@ using LifePlayed.Domain.Progression;
 
 namespace LifePlayed.Domain.LifeOS;
 
-public sealed record LifeAction(
-    EntityId ActionId,
+public enum HabitStatus
+{
+    Active = 0,
+    Paused = 1,
+    Archived = 2,
+}
+
+public sealed record HabitDefinition(
+    EntityId HabitDefinitionId,
     EntityId AccountId,
     string Title,
-    ActionStatus Status,
+    string RecurrenceRule,
+    HabitStatus Status,
     TimeSpan? ExpectedDuration,
-    DateTimeOffset? DueAt,
-    DateTimeOffset? CompletedAt,
     EntityVersion Version,
     LifeSkill? PrimarySkill = null);

@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 2 / investigation and execution-path trace
+**State:** ACTIVE — Milestone 2 / implementation + exact-head validation
 
 **Unity cloud usage:** 0 minutes required by this milestone.
 
@@ -172,18 +172,16 @@ These belong to later milestones.
 
 ## Investigation / execution path
 
-Before editing Milestone 2 behavior:
+Execution path traced and implementation underway:
 
-1. inspect existing domain records and transition rules
-2. inspect current migration/schema and repository abstraction
-3. trace API/Application/Infrastructure dependency direction
-4. define mutation request/result contracts
-5. define entity-specific concurrency behavior
-6. implement smallest complete vertical headless flow
-7. add real PostgreSQL integration coverage
-8. expose API sync surface only after application behavior is proven
-9. validate exact PR head
-10. inspect final diff and merge only when the full Milestone 2 Definition of Done is satisfied
+1. Existing domain/state/migration/API paths inspected; no competing sync implementation existed.
+2. The superseded generic IEntityRepository abstraction was removed after confirming it had no callers.
+3. Sync batch and mutation result contracts were added.
+4. Application-owned mutation behavior now covers Action, Quest, Campaign/Phase, Habit, HabitOccurrence, FocusSession, and RestPeriod flows.
+5. PostgreSQL Infrastructure now owns transactional persistence, mutation claims/results, optimistic updates, progression ledgers, and change cursors.
+6. API transport exposes POST /sync when a database connection is configured and returns 503 otherwise.
+7. Real PostgreSQL integration coverage now exercises replay, restart, stale two-device conflict, partial batch success, exactly-once reward, and all Milestone 2 entity persistence.
+8. Exact-head CI and cleanup remain pending.
 
 ---
 
