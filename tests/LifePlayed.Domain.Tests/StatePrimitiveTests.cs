@@ -1,5 +1,6 @@
 using LifePlayed.Domain.Common;
 using LifePlayed.Domain.LifeOS;
+using LifePlayed.Domain.Progression;
 using LifePlayed.Domain.Sync;
 
 namespace LifePlayed.Domain.Tests;
@@ -52,6 +53,37 @@ public sealed class StatePrimitiveTests
     {
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Completed, ActionStatus.Active));
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Completed, ActionStatus.Archived));
+    }
+
+    [Fact]
+    public void RewardGrantCarriesIdempotencyAndRuleVersion()
+    {
+        var grant = new RewardGrant(
+            EntityId.New(),
+            EntityId.New(),
+            "action",
+            EntityId.New(),
+            EconomyRulesV1.RuleVersion,
+            "mutation:123",
+            RewardGrantState.Pending,
+            DateTimeOffset.UtcNow);
+
+        Assert.Equal("mutation:123", grant.IdempotencyKey);
+        Assert.Equal(EconomyRulesV1.RuleVersion, grant.RuleVersion);
+        Assert.Equal(RewardGrantState.Pending, grant.State);
+    }
+
+    [Fact]
+    public void DomainAssemblyHasNoFrameworkOrProviderDependencies()
+    {
+        var referenced = typeof(EntityId).Assembly
+            .GetReferencedAssemblies()
+            .Select(static assembly => assembly.Name ?? string.Empty)
+            .ToArray();
+
+        Assert.DoesNotContain(referenced, static name => name.StartsWith("Unity", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(referenced, static name => name.StartsWith("Microsoft.AspNetCore", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(referenced, static name => name.Contains("EntityFrameworkCore", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

@@ -16,6 +16,18 @@ public sealed class EconomyRulesV1Tests
         Assert.Equal(expected, EconomyRulesV1.AccountXpToNextLevel(level));
     }
 
+    [Theory]
+    [InlineData(1, 60)]
+    [InlineData(5, 173)]
+    [InlineData(10, 372)]
+    [InlineData(25, 1122)]
+    [InlineData(50, 2653)]
+    [InlineData(100, 6306)]
+    public void LifeSkillXpCurveMatchesVersionedFoundationFormula(int level, int expected)
+    {
+        Assert.Equal(expected, EconomyRulesV1.LifeSkillXpToNextLevel(level));
+    }
+
     [Fact]
     public void DurationScoreUsesLogarithmicGrowth()
     {
@@ -88,6 +100,45 @@ public sealed class EconomyRulesV1Tests
     public void MomentumIsBounded(double value, double expected)
     {
         Assert.Equal(expected, EconomyRulesV1.ClampMomentum(value));
+    }
+
+    [Fact]
+    public void EffortMultipliersAreClampedToDocumentedBounds()
+    {
+        var low = EconomyRulesV1.EffortScore(
+            60,
+            complexityMultiplier: -5,
+            campaignMultiplier: -5,
+            repetitionMultiplier: -5,
+            integrityMultiplier: -5);
+
+        var expectedLow = EconomyRulesV1.DurationScore(60) * 0.80d * 1.00d * 0.10d * 0d;
+        Assert.Equal(expectedLow, low, 8);
+
+        var high = EconomyRulesV1.EffortScore(
+            60,
+            complexityMultiplier: 99,
+            campaignMultiplier: 99,
+            repetitionMultiplier: 99,
+            integrityMultiplier: 99);
+
+        var expectedHigh = EconomyRulesV1.DurationScore(60) * 1.30d * 1.20d * 1.00d * 1.00d;
+        Assert.Equal(expectedHigh, high, 8);
+    }
+
+    [Fact]
+    public void InvalidEconomyInputsAreRejected()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => EconomyRulesV1.AccountXpToNextLevel(0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => EconomyRulesV1.LifeSkillXpToNextLevel(0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => EconomyRulesV1.DurationScore(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => EconomyRulesV1.AccountXpFromEffort(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => EconomyRulesV1.TotalSkillXp(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => EconomyRulesV1.DuplicateMultiplier(0));
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            EconomyRulesV1.EffectiveFocusMinutes(TimeSpan.FromMinutes(-1), TimeSpan.Zero));
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            EconomyRulesV1.EffectiveFocusMinutes(TimeSpan.Zero, TimeSpan.FromMinutes(-1)));
     }
 
     [Fact]
