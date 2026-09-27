@@ -1,0 +1,21 @@
+{
+  "name": "LifePlayed.Client.Editor",
+  "rootNamespace": "LifePlayed.Client.Editor",
+  "references": [
+    "LifePlayed.Client.Bootstrap",
+    "LifePlayed.Client.Presentation.UI",
+    "LifePlayed.Client.Presentation.World",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

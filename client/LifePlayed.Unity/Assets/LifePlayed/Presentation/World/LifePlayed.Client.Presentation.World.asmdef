@@ -1,0 +1,19 @@
+{
+  "name": "LifePlayed.Client.Presentation.World",
+  "rootNamespace": "LifePlayed.Client.Presentation.World",
+  "references": [
+    "LifePlayed.Client.Application",
+    "LifePlayed.Client.DomainBridge",
+    "Unity.InputSystem",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

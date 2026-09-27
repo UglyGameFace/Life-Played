@@ -1,0 +1,23 @@
+{
+  "name": "LifePlayed.Client.Tests.EditMode",
+  "rootNamespace": "LifePlayed.Client.Tests.EditMode",
+  "references": [
+    "LifePlayed.Client.DomainBridge",
+    "LifePlayed.Client.Application",
+    "LifePlayed.Client.Infrastructure"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}
