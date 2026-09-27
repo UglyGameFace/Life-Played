@@ -20,6 +20,8 @@ namespace LifePlayed.Client.Editor
             SettingsDirectory + "/LifePlayedMobileURP.asset";
         private const string GlobalSettingsPath =
             SettingsDirectory + "/LifePlayedURPGlobalSettings.asset";
+        private const string GeneratedContentDirectory =
+            "Assets/StreamingAssets/LifePlayed/Content/wild-renewal-v1";
 
         private static readonly string[] ScenePaths =
         {
@@ -39,6 +41,7 @@ namespace LifePlayed.Client.Editor
         {
             Directory.CreateDirectory(ScenesDirectory);
             Directory.CreateDirectory(SettingsDirectory);
+            CopyAuthoritativeContent();
             AssetDatabase.Refresh();
 
             EnsureRenderPipeline();
@@ -47,6 +50,61 @@ namespace LifePlayed.Client.Editor
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        private static void CopyAuthoritativeContent()
+        {
+            var repositoryRoot = Path.GetFullPath(
+                Path.Combine(
+                    Application.dataPath,
+                    "..",
+                    "..",
+                    ".."));
+
+            var sourceDirectory = Path.Combine(
+                repositoryRoot,
+                "content",
+                "releases",
+                "wild-renewal-v1");
+
+            var sourceManifest = Path.Combine(
+                sourceDirectory,
+                "manifest.json");
+
+            var sourceContent = Path.Combine(
+                sourceDirectory,
+                "content.json");
+
+            if (!File.Exists(sourceManifest) ||
+                !File.Exists(sourceContent))
+            {
+                throw new System.InvalidOperationException(
+                    "Authoritative Wild Renewal release is missing.");
+            }
+
+            if (Directory.Exists(GeneratedContentDirectory))
+            {
+                Directory.Delete(
+                    GeneratedContentDirectory,
+                    true);
+            }
+
+            Directory.CreateDirectory(
+                GeneratedContentDirectory);
+
+            File.Copy(
+                sourceManifest,
+                Path.Combine(
+                    GeneratedContentDirectory,
+                    "manifest.json"),
+                true);
+
+            File.Copy(
+                sourceContent,
+                Path.Combine(
+                    GeneratedContentDirectory,
+                    "content.json"),
+                true);
         }
 
         private static void EnsureRenderPipeline()
@@ -181,6 +239,21 @@ namespace LifePlayed.Client.Editor
             {
                 throw new System.InvalidOperationException(
                     "URP is not assigned in Graphics Settings.");
+            }
+
+            var generatedManifest = Path.Combine(
+                GeneratedContentDirectory,
+                "manifest.json");
+
+            var generatedContent = Path.Combine(
+                GeneratedContentDirectory,
+                "content.json");
+
+            if (!File.Exists(generatedManifest) ||
+                !File.Exists(generatedContent))
+            {
+                throw new System.InvalidOperationException(
+                    "Authoritative Wild Renewal content was not staged.");
             }
 
             foreach (var scenePath in ScenePaths)

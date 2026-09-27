@@ -67,3 +67,6 @@ mono_crash.*
 *.unitypackage.meta
 *.app
 crashlytics-build.properties
+
+# Generated authoritative content staged by Unity pre-export
+/client/LifePlayed.Unity/Assets/StreamingAssets/LifePlayed/Content/

@@ -192,3 +192,44 @@ for fragment in (
 ):
     if fragment not in configurator:
         raise SystemExit(f"Missing Android mobile setting: {fragment}")
+
+
+# Authoritative content must be staged at pre-export, not duplicated in Git.
+generated_content = (
+    UNITY
+    / "Assets"
+    / "StreamingAssets"
+    / "LifePlayed"
+    / "Content"
+)
+if generated_content.exists():
+    raise SystemExit(
+        "Generated Unity StreamingAssets content must not be committed before pre-export."
+    )
+
+if "/client/LifePlayed.Unity/Assets/StreamingAssets/LifePlayed/Content/" not in gitignore:
+    raise SystemExit(
+        "Generated authoritative Unity content staging directory must be ignored."
+    )
+
+for fragment in (
+    "CopyAuthoritativeContent();",
+    "wild-renewal-v1",
+):
+    if fragment not in configurator:
+        raise SystemExit(
+            f"Unity pre-export content staging is missing: {fragment}"
+        )
+
+runtime_services = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Infrastructure"
+    / "RuntimeServices.cs"
+).read_text(encoding="utf-8")
+
+if "StreamingAssetsContentGateway" not in runtime_services:
+    raise SystemExit(
+        "Runtime authoritative content manifest gateway is missing."
+    )
