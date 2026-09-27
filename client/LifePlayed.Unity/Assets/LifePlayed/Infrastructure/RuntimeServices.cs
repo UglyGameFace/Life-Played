@@ -401,6 +401,41 @@ namespace LifePlayed.Client.Infrastructure
             return manifest;
         }
 
+        public static void ValidateMinimumClientVersion(
+            ClientContentManifest manifest,
+            string currentClientVersion)
+        {
+            if (manifest == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(manifest));
+            }
+
+            Version current;
+            Version minimum;
+
+            if (!Version.TryParse(
+                    currentClientVersion,
+                    out current) ||
+                !Version.TryParse(
+                    manifest.minimumClientVersion,
+                    out minimum))
+            {
+                throw new InvalidOperationException(
+                    "Client/content version metadata is invalid.");
+            }
+
+            if (current < minimum)
+            {
+                throw new InvalidOperationException(
+                    "Content release requires client " +
+                    minimum +
+                    " or newer; current client is " +
+                    current +
+                    ".");
+            }
+        }
+
         public static string ComputeSha256Hex(
             byte[] bytes)
         {
@@ -472,6 +507,10 @@ namespace LifePlayed.Client.Infrastructure
                         bundled.verificationJson,
                         bundled.contentBytes);
 
+                ContentIntegrityVerifier.ValidateMinimumClientVersion(
+                    manifest,
+                    UnityEngine.Application.version);
+
                 SaveLastKnownGood(
                     bundled.manifestJson,
                     bundled.verificationJson,
@@ -499,6 +538,10 @@ namespace LifePlayed.Client.Infrastructure
                         cached.manifestJson,
                         cached.verificationJson,
                         cached.contentBytes);
+
+                ContentIntegrityVerifier.ValidateMinimumClientVersion(
+                    manifest,
+                    UnityEngine.Application.version);
 
                 LastLoadSource = "cache";
                 return manifest;

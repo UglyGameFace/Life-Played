@@ -218,7 +218,8 @@ namespace LifePlayed.Client.Bootstrap
             }
 
             _diagnostics.SetContentManifest(
-                task.Result);
+                task.Result,
+                gateway.LastLoadSource);
         }
 
         private void OnCompanionCallRequested()

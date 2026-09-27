@@ -398,3 +398,18 @@ for fragment in (
         raise SystemExit(
             f"Pre-export content integrity check is missing: {fragment}"
         )
+
+
+for fragment in (
+    "ValidateMinimumClientVersion",
+    "Application.version",
+):
+    if fragment not in content_gateway_code:
+        raise SystemExit(
+            f"Content minimum-client gate is missing: {fragment}"
+        )
+
+if 'PlayerSettings.bundleVersion = "0.1.0";' not in configurator:
+    raise SystemExit(
+        "Playable Build #1 client version must be pinned for content compatibility checks."
+    )

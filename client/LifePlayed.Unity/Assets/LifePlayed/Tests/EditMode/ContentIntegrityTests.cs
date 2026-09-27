@@ -45,6 +45,44 @@ namespace LifePlayed.Client.Tests.EditMode
         }
 
         [Test]
+        public void ContentRejectsIncompatibleClientVersion()
+        {
+            var manifest =
+                new LifePlayed.Client.DomainBridge.ClientContentManifest
+                {
+                    schemaVersion = 1,
+                    releaseId = "release.test",
+                    releaseVersion = "1.0.0",
+                    minimumClientVersion = "0.2.0",
+                };
+
+            Assert.Throws<InvalidOperationException>(
+                () =>
+                    ContentIntegrityVerifier.ValidateMinimumClientVersion(
+                        manifest,
+                        "0.1.0"));
+        }
+
+        [Test]
+        public void CompatibleClientVersionIsAccepted()
+        {
+            var manifest =
+                new LifePlayed.Client.DomainBridge.ClientContentManifest
+                {
+                    schemaVersion = 1,
+                    releaseId = "release.test",
+                    releaseVersion = "1.0.0",
+                    minimumClientVersion = "0.1.0",
+                };
+
+            Assert.DoesNotThrow(
+                () =>
+                    ContentIntegrityVerifier.ValidateMinimumClientVersion(
+                        manifest,
+                        "0.1.0"));
+        }
+
+        [Test]
         public void TamperedContentIsRejected()
         {
             var original =

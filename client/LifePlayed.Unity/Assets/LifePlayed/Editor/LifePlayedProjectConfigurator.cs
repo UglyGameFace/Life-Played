@@ -462,6 +462,7 @@ namespace LifePlayed.Client.Editor
         {
             PlayerSettings.productName = "Life Played";
             PlayerSettings.companyName = "Life Played";
+            PlayerSettings.bundleVersion = "0.1.0";
             PlayerSettings.colorSpace = ColorSpace.Linear;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.allowedAutorotateToPortrait = true;
