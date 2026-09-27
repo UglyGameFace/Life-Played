@@ -276,9 +276,15 @@ Implemented on `feat/unity-client-foundation` / PR #6:
 Validation so far:
 
 - Unity Scaffold CI run #1: success
+- Unity Scaffold CI run #2: success
+- Unity Scaffold CI run #3 on exact head `d90a1c65729567c1b56b95f98ec4606a2c6f7ab9`: success
 - editor/package/asmdef JSON: valid
 - nested generated-directory protections: valid
 - pure client DomainBridge/Application assembly boundary: statically enforced
+- Build Automation dashboard handoff documented in `docs/UNITY_BUILD_AUTOMATION_SETUP.md`
+- official Build Automation pre-export hook wired as `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport`
+- final repository-side diff audit: 34 scoped files, no generated Unity folders/build artifacts, no secret-pattern findings
+- PR #6 merge state: clean, intentionally draft
 - Unity cloud minutes consumed: 0
 
 Still unvalidated:
@@ -291,6 +297,10 @@ Still unvalidated:
 - touch behavior on a real Android device
 - graphics-tier runtime behavior on device
 
+## Current blocker
+
+This ChatGPT workspace has no connected Unity Build Automation action/connector and GitHub currently reports no external Unity build check on PR #6. Static repository work is therefore complete enough to attempt the first purposeful Unity build, but Unity Editor/package compilation and Android runtime proof cannot be claimed from the available tools.
+
 ## Next step
 
-Run one Unity-capable validation only when the project connection can execute the purposeful Android prototype build. Do not merge Milestone 4 based on static CI alone.
+Use the Build Automation configuration in `docs/UNITY_BUILD_AUTOMATION_SETUP.md` for one manual Android prototype build from PR #6 / `feat/unity-client-foundation`. Capture the build ID/logs/test summary/APK evidence, repair any actual Unity compiler/import/runtime failure under this same Milestone 4 task, and do not merge until that evidence is green.
