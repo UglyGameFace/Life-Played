@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / Unity version and project-foundation investigation
+**State:** ACTIVE — Milestone 4 / runtime foundation built, Unity import/build proof pending
 
 **Unity cloud usage so far:** **0 minutes**
 
@@ -247,6 +247,50 @@ That milestone proves:
 
 ---
 
+## Current implementation status
+
+Implemented on `feat/unity-client-foundation` / PR #6:
+
+- Unity Editor pin `6000.3.25f1`
+- URP 17.3 package foundation
+- Input System 1.20.0
+- Addressables 2.10.3
+- Addressables for Android 1.1.0
+- nested Unity generated-folder ignore rules
+- DomainBridge and Application assemblies with `noEngineReferences=true`
+- Infrastructure / Platform / UI / World / Bootstrap assembly boundaries
+- EditMode / PlayMode test assembly structure
+- client sync/content/local-state/feature-flag seams
+- portrait-first safe-area app shell
+- Home / Quests / World / Hero / More navigation
+- platform pause/focus lifecycle bridge
+- Reduced / Standard / High graphics tier controller
+- Input System touch/pointer orbit camera
+- prototype Wild Renewal hub
+- prototype Waykeeper and starter companion presenters
+- reproducible Editor scene generator
+- reproducible URP asset generator
+- Android development-build entry point
+- static scaffold validation workflow
+
+Validation so far:
+
+- Unity Scaffold CI run #1: success
+- editor/package/asmdef JSON: valid
+- nested generated-directory protections: valid
+- pure client DomainBridge/Application assembly boundary: statically enforced
+- Unity cloud minutes consumed: 0
+
+Still unvalidated:
+
+- Unity Editor package resolution/import
+- C# compilation under Unity
+- Editor-generated URP/scenes
+- EditMode/PlayMode execution inside Unity
+- Android player build/install/runtime
+- touch behavior on a real Android device
+- graphics-tier runtime behavior on device
+
 ## Next step
 
-Inspect repository ignore/client state and the headless Contracts/Content/Sync surfaces, then create the dedicated Milestone 4 branch. Do not trigger Unity Build Automation yet.
+Run one Unity-capable validation only when the project connection can execute the purposeful Android prototype build. Do not merge Milestone 4 based on static CI alone.

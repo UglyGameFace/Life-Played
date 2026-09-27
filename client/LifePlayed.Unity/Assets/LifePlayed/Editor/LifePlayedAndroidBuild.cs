@@ -29,7 +29,7 @@ namespace LifePlayed.Client.Editor
             var report = BuildPipeline.BuildPlayer(options);
             if (report.summary.result != BuildResult.Succeeded)
             {
-                throw new BuildFailedException(
+                throw new InvalidOperationException(
                     "Life Played Android build failed: " +
                     report.summary.result);
             }

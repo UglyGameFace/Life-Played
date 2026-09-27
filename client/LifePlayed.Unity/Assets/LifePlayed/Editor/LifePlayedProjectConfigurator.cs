@@ -50,10 +50,18 @@ namespace LifePlayed.Client.Editor
             {
                 pipeline = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
                 pipeline.name = "LifePlayedMobileURP";
-                pipeline.LoadBuiltinRendererData();
+                var rendererData = pipeline.LoadBuiltinRendererData();
                 pipeline.renderScale = 0.90f;
                 pipeline.useSRPBatcher = true;
                 AssetDatabase.CreateAsset(pipeline, PipelinePath);
+
+                if (rendererData != null)
+                {
+                    rendererData.name = "LifePlayedMobileRenderer";
+                    AssetDatabase.AddObjectToAsset(rendererData, pipeline);
+                }
+
+                pipeline.EnsureGlobalSettings();
             }
 
             GraphicsSettings.defaultRenderPipeline = pipeline;
