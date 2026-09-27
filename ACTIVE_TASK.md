@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / Step 10: validation strategy
+**State:** ACTIVE — product foundation / Step 11: implementation plan & final consistency review
 
 **Code implementation:** Not started intentionally.
 
@@ -467,7 +467,7 @@ This active task is complete only when:
 - [x] Unity/mobile architecture is documented.
 - [x] Backend/service/domain architecture is documented.
 - [x] Initial database/domain model is documented.
-- [ ] Validation/test strategy is documented.
+- [x] Validation/test strategy is documented.
 - [ ] Initial implementation milestones and first vertical slice are defined.
 - [ ] The final foundation docs are checked for contradictions, duplicate/conflicting systems, stale assumptions, or accidental scope gaps.
 - [ ] No temporary design notes remain as competing sources of truth.
@@ -490,6 +490,7 @@ Only after this Definition of Done is satisfied should production implementation
 - `docs/BACKEND_ARCHITECTURE.md` created and verified with modular-monolith boundaries, PostgreSQL, BFF/API isolation, idempotency/outbox, workers, provider adapters, observability, recovery, and growth scaling.
 - `docs/COMMERCE_REWARDS_ARCHITECTURE.md` created and verified with Need Graph, Deal Scout, affiliate attribution, offer freshness, Sponsored Quest, future visit/purchase evidence, cashback settlement/reversal, and reconciliation boundaries.
 - `docs/PRIVACY_SECURITY_FRAUD.md` created and verified with consent, data classification/minimization, current location-policy direction, attestation, spoof/replay controls, false-positive protection, restrictions, retention, deletion, and future cash-reward launch gates.
+- `docs/VALIDATION_STRATEGY.md` created and verified with domain/API/sync/economy/content/Unity/device/performance/security/privacy/recovery validation and completion evidence requirements.
 - No production code has been added yet.
 
 ---
@@ -510,8 +511,9 @@ Current repository baseline contains:
 - `docs/BACKEND_ARCHITECTURE.md`
 - `docs/COMMERCE_REWARDS_ARCHITECTURE.md`
 - `docs/PRIVACY_SECURITY_FRAUD.md`
+- `docs/VALIDATION_STRATEGY.md`
 
-README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, backend, commerce/reward, and privacy/security/fraud specifications are verified readable on `main`; sensitive evidence is isolated, location is minimum-scope/optional, and missing evidence is distinguished from fraud.
+README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, backend, commerce/reward, privacy/security/fraud, and validation specifications are verified readable on `main`; validation now requires concrete test/build/runtime evidence rather than edit-only completion claims.
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -569,4 +571,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Define the **validation/test strategy** in-repo: lock unit/integration/runtime/device validation, offline/sync/retry tests, economy and reward invariants, content validation, security/privacy checks, Android/iOS matrix, performance/thermal testing, provider outage/reconciliation tests, and release-candidate evidence required before completion claims.
+Define the **implementation plan** and first vertical slice in-repo, then perform a final cross-document contradiction/duplication/staleness review. Do not scaffold production code until that review is complete and the product-foundation Definition of Done is satisfied.
