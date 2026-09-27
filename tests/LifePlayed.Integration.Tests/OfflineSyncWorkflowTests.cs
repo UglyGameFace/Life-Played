@@ -129,9 +129,9 @@ public sealed class OfflineSyncWorkflowTests
         Assert.Equal(SyncMutationStatuses.Applied, completionResult.Status);
         Assert.False(completionResult.Replayed);
         Assert.Equal(3, completionResult.CanonicalVersion);
-        Assert.NotNull(completionResult.Reward);
-        Assert.Equal(39, completionResult.Reward.AccountXp);
-        Assert.Equal(29, completionResult.Reward.SkillXp["Craft"]);
+        var completionReward = Assert.IsType<SyncRewardReceipt>(completionResult.Reward);
+        Assert.Equal(39, completionReward.AccountXp);
+        Assert.Equal(29, completionReward.SkillXp["Craft"]);
         cursor = completion.NextCursor;
 
         var immediateReplay = await service.SyncAsync(
@@ -139,13 +139,9 @@ public sealed class OfflineSyncWorkflowTests
             cancellationToken);
 
         Assert.True(immediateReplay.Results[0].Replayed);
-        Assert.NotNull(immediateReplay.Results[0].Reward);
-        Assert.Equal(
-            completionResult.Reward.AccountXp,
-            immediateReplay.Results[0].Reward.AccountXp);
-        Assert.Equal(
-            completionResult.Reward.SkillXp["Craft"],
-            immediateReplay.Results[0].Reward.SkillXp["Craft"]);
+        var replayReward = Assert.IsType<SyncRewardReceipt>(immediateReplay.Results[0].Reward);
+        Assert.Equal(completionReward.AccountXp, replayReward.AccountXp);
+        Assert.Equal(completionReward.SkillXp["Craft"], replayReward.SkillXp["Craft"]);
         Assert.Empty(immediateReplay.Changes);
 
         var restartedPersistence = new PostgreSqlLifeOsPersistence(connectionString);
