@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:life-played:schema:content-definition:v1",
+  "title": "Life Played Content Release Definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "releaseId",
+    "releaseVersion",
+    "worlds",
+    "sagas",
+    "chapters",
+    "npcs",
+    "companions",
+    "worldStructures",
+    "chronicleTriggers",
+    "rewards",
+    "campaignArchetypes"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "releaseId": { "type": "string", "minLength": 1 },
+    "releaseVersion": { "type": "string", "minLength": 1 },
+    "worlds": { "type": "array", "items": { "$ref": "#/$defs/world" } },
+    "sagas": { "type": "array", "items": { "$ref": "#/$defs/saga" } },
+    "chapters": { "type": "array", "items": { "$ref": "#/$defs/chapter" } },
+    "npcs": { "type": "array", "items": { "$ref": "#/$defs/npc" } },
+    "companions": { "type": "array", "items": { "$ref": "#/$defs/companion" } },
+    "worldStructures": { "type": "array", "items": { "$ref": "#/$defs/worldStructure" } },
+    "chronicleTriggers": { "type": "array", "items": { "$ref": "#/$defs/chronicleTrigger" } },
+    "rewards": { "type": "array", "items": { "$ref": "#/$defs/reward" } },
+    "campaignArchetypes": { "type": "array", "items": { "$ref": "#/$defs/campaignArchetype" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "key": { "type": "string", "minLength": 1 },
+    "stringArray": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","nameKey","summaryKey","roleKey","hubNameKey","sagaIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameKey": { "$ref": "#/$defs/key" },
+        "summaryKey": { "$ref": "#/$defs/key" },
+        "roleKey": { "$ref": "#/$defs/key" },
+        "hubNameKey": { "$ref": "#/$defs/key" },
+        "sagaIds": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "saga": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","worldId","titleKey","summaryKey","chapterIds","postSagaStateKey"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "worldId": { "$ref": "#/$defs/id" },
+        "titleKey": { "$ref": "#/$defs/key" },
+        "summaryKey": { "$ref": "#/$defs/key" },
+        "chapterIds": { "$ref": "#/$defs/stringArray" },
+        "postSagaStateKey": { "$ref": "#/$defs/key" }
+      }
+    },
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","sagaId","titleKey","summaryKey","prerequisiteChapterIds","entryNodeId","completionNodeId","objectiveHooks","requiredFeatures","nodes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "sagaId": { "$ref": "#/$defs/id" },
+        "titleKey": { "$ref": "#/$defs/key" },
+        "summaryKey": { "$ref": "#/$defs/key" },
+        "prerequisiteChapterIds": { "$ref": "#/$defs/stringArray" },
+        "entryNodeId": { "$ref": "#/$defs/id" },
+        "completionNodeId": { "$ref": "#/$defs/id" },
+        "objectiveHooks": { "$ref": "#/$defs/stringArray" },
+        "requiredFeatures": { "$ref": "#/$defs/stringArray" },
+        "nodes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } }
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","kind","localizationKey","nextNodeIds","npcIds","companionIds","worldStructureIds","rewardIds","chronicleTriggerIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "$ref": "#/$defs/id" },
+        "localizationKey": { "$ref": "#/$defs/key" },
+        "nextNodeIds": { "$ref": "#/$defs/stringArray" },
+        "npcIds": { "$ref": "#/$defs/stringArray" },
+        "companionIds": { "$ref": "#/$defs/stringArray" },
+        "worldStructureIds": { "$ref": "#/$defs/stringArray" },
+        "rewardIds": { "$ref": "#/$defs/stringArray" },
+        "chronicleTriggerIds": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "npc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","worldId","nameKey","roleKey"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "worldId": { "$ref": "#/$defs/id" },
+        "nameKey": { "$ref": "#/$defs/key" },
+        "roleKey": { "$ref": "#/$defs/key" }
+      }
+    },
+    "companion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","worldId","nameKey","familyKey","tier"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "worldId": { "$ref": "#/$defs/id" },
+        "nameKey": { "$ref": "#/$defs/key" },
+        "familyKey": { "$ref": "#/$defs/key" },
+        "tier": { "$ref": "#/$defs/id" }
+      }
+    },
+    "worldStructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","worldId","nameKey","structureType"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "worldId": { "$ref": "#/$defs/id" },
+        "nameKey": { "$ref": "#/$defs/key" },
+        "structureType": { "$ref": "#/$defs/id" }
+      }
+    },
+    "chronicleTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","worldId","entryType","titleKey"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "worldId": { "$ref": "#/$defs/id" },
+        "entryType": { "$ref": "#/$defs/id" },
+        "titleKey": { "$ref": "#/$defs/key" }
+      }
+    },
+    "reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","ruleKey"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "ruleKey": { "$ref": "#/$defs/key" }
+      }
+    },
+    "campaignArchetype": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","worldId","archetype","titleTemplateKey","summaryTemplateKey"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "worldId": { "$ref": "#/$defs/id" },
+        "archetype": { "$ref": "#/$defs/id" },
+        "titleTemplateKey": { "$ref": "#/$defs/key" },
+        "summaryTemplateKey": { "$ref": "#/$defs/key" }
+      }
+    }
+  }
+}

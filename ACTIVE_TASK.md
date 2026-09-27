@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 3 / investigation and content-engine trace
+**State:** ACTIVE — Milestone 3 / content implementation + validation
 
 **Unity cloud usage:** 0 minutes required by this milestone.
 
@@ -181,15 +181,13 @@ These belong to later milestones.
 
 ## Investigation / execution path
 
-1. inspect the existing content-release contract/schema
-2. inspect story/domain definitions to avoid duplicate models
-3. define the smallest reusable content model
-4. implement deterministic content loader + validator
-5. create Wild Renewal content data from the authoritative eight-chapter spine
-6. add valid and intentionally broken fixtures
-7. run headless exact-head validation
-8. inspect final diff
-9. merge only when the full Milestone 3 Definition of Done is satisfied
+1. Existing manifest/schema and story/domain definitions inspected; no competing content engine existed.
+2. A dedicated headless LifePlayed.Content project now owns loading, integrity verification, validation, and last-known-good activation.
+3. Chapters were corrected to be first-class versioned release data rather than an in-memory side registry.
+4. Wild Renewal Saga I source data now implements the authoritative eight-chapter spine with NPC, companion, world-structure, reward, Chronicle, feature, and objective-hook references.
+5. All ten Campaign archetype framings are represented with localization keys.
+6. Regression coverage now includes the valid release plus intentionally broken duplicate-ID, missing-reference, prerequisite-cycle, dead-end, post-V1-feature, localization, and corrupt-hash cases.
+7. Exact-head CI, cleanup, and merge validation remain pending.
 
 ---
 
@@ -244,4 +242,4 @@ That milestone is the first one that can require Unity cloud-build usage.
 
 ## Next step
 
-Inspect the current content contract/schema and create the dedicated Milestone 3 branch before implementing content definitions.
+Run exact-head headless CI on the complete Wild Renewal content release, fix any validator/loader defects without weakening rules, then perform the Milestone 3 completion audit.

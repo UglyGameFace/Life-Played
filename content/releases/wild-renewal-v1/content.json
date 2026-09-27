@@ -1,0 +1,870 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "release.wild_renewal.v1.skeleton",
+  "releaseVersion": "1.0.0",
+  "worlds": [
+    {
+      "id": "world.wild_renewal",
+      "nameKey": "world.wild_renewal.name",
+      "summaryKey": "world.wild_renewal.summary",
+      "roleKey": "world.wild_renewal.role.waykeeper",
+      "hubNameKey": "world.wild_renewal.hub.hearthwild",
+      "sagaIds": [
+        "saga.wild_renewal.quiet_bloom"
+      ]
+    }
+  ],
+  "sagas": [
+    {
+      "id": "saga.wild_renewal.quiet_bloom",
+      "worldId": "world.wild_renewal",
+      "titleKey": "saga.wild_renewal.quiet_bloom.title",
+      "summaryKey": "saga.wild_renewal.quiet_bloom.summary",
+      "chapterIds": [
+        "chapter.wr.01.empty_hearth",
+        "chapter.wr.02.footprints_moss",
+        "chapter.wr.03.workshop_wakes",
+        "chapter.wr.04.voices_return",
+        "chapter.wr.05.faded_grove",
+        "chapter.wr.06.long_rain",
+        "chapter.wr.07.roots_remember",
+        "chapter.wr.08.quiet_bloom"
+      ],
+      "postSagaStateKey": "world.wild_renewal.state.quiet_bloom_complete"
+    }
+  ],
+  "chapters": [
+    {
+      "id": "chapter.wr.01.empty_hearth",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.01.title",
+      "summaryKey": "chapter.wr.01.summary",
+      "prerequisiteChapterIds": [],
+      "entryNodeId": "chapter.wr.01.empty_hearth.open",
+      "completionNodeId": "chapter.wr.01.empty_hearth.complete",
+      "objectiveHooks": [
+        "action"
+      ],
+      "requiredFeatures": [
+        "action",
+        "world_structure",
+        "chronicle"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.01.empty_hearth.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.01.node.open",
+          "nextNodeIds": [
+            "chapter.wr.01.empty_hearth.objective"
+          ],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.01.empty_hearth.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.01.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.01.empty_hearth.complete"
+          ],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.01.empty_hearth.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.01.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [
+            "structure.wr.central_hearth"
+          ],
+          "rewardIds": [
+            "reward.chapter.standard"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.first_hearth"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.02.footprints_moss",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.02.title",
+      "summaryKey": "chapter.wr.02.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.01.empty_hearth"
+      ],
+      "entryNodeId": "chapter.wr.02.footprints_moss.open",
+      "completionNodeId": "chapter.wr.02.footprints_moss.complete",
+      "objectiveHooks": [
+        "habit"
+      ],
+      "requiredFeatures": [
+        "habit",
+        "companion",
+        "world_structure"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.02.footprints_moss.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.02.node.open",
+          "nextNodeIds": [
+            "chapter.wr.02.footprints_moss.objective"
+          ],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.02.footprints_moss.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.02.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.02.footprints_moss.complete"
+          ],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [
+            "companion.wr.leafglow_fox"
+          ],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.02.footprints_moss.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.02.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [
+            "companion.wr.leafglow_fox"
+          ],
+          "worldStructureIds": [
+            "structure.wr.moss_path"
+          ],
+          "rewardIds": [
+            "reward.chapter.standard"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.first_companion"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.03.workshop_wakes",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.03.title",
+      "summaryKey": "chapter.wr.03.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.02.footprints_moss"
+      ],
+      "entryNodeId": "chapter.wr.03.workshop_wakes.open",
+      "completionNodeId": "chapter.wr.03.workshop_wakes.complete",
+      "objectiveHooks": [
+        "campaign_phase"
+      ],
+      "requiredFeatures": [
+        "quest",
+        "campaign",
+        "campaign_phase",
+        "world_structure"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.03.workshop_wakes.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.03.node.open",
+          "nextNodeIds": [
+            "chapter.wr.03.workshop_wakes.objective"
+          ],
+          "npcIds": [
+            "npc.wr.crafter"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.03.workshop_wakes.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.03.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.03.workshop_wakes.complete"
+          ],
+          "npcIds": [
+            "npc.wr.crafter"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.03.workshop_wakes.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.03.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.crafter"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [
+            "structure.wr.workshop"
+          ],
+          "rewardIds": [
+            "reward.chapter.major"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.workshop_wakes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.04.voices_return",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.04.title",
+      "summaryKey": "chapter.wr.04.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.03.workshop_wakes"
+      ],
+      "entryNodeId": "chapter.wr.04.voices_return.open",
+      "completionNodeId": "chapter.wr.04.voices_return.complete",
+      "objectiveHooks": [
+        "life_skill"
+      ],
+      "requiredFeatures": [
+        "life_skill",
+        "npc_relationship",
+        "rest_period",
+        "world_structure"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.04.voices_return.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.04.node.open",
+          "nextNodeIds": [
+            "chapter.wr.04.voices_return.objective"
+          ],
+          "npcIds": [
+            "npc.wr.gardener"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.04.voices_return.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.04.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.04.voices_return.complete"
+          ],
+          "npcIds": [
+            "npc.wr.gardener",
+            "npc.wr.caretaker"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.04.voices_return.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.04.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.caretaker"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [
+            "structure.wr.gathering_place"
+          ],
+          "rewardIds": [
+            "reward.chapter.standard"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.voices_return"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.05.faded_grove",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.05.title",
+      "summaryKey": "chapter.wr.05.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.04.voices_return"
+      ],
+      "entryNodeId": "chapter.wr.05.faded_grove.open",
+      "completionNodeId": "chapter.wr.05.faded_grove.complete",
+      "objectiveHooks": [
+        "campaign"
+      ],
+      "requiredFeatures": [
+        "campaign",
+        "companion",
+        "world_structure"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.05.faded_grove.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.05.node.open",
+          "nextNodeIds": [
+            "chapter.wr.05.faded_grove.objective"
+          ],
+          "npcIds": [
+            "npc.wr.pathfinder"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.05.faded_grove.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.05.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.05.faded_grove.complete"
+          ],
+          "npcIds": [
+            "npc.wr.pathfinder"
+          ],
+          "companionIds": [
+            "companion.wr.ember_owl"
+          ],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.05.faded_grove.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.05.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.pathfinder"
+          ],
+          "companionIds": [
+            "companion.wr.ember_owl"
+          ],
+          "worldStructureIds": [
+            "structure.wr.faded_grove"
+          ],
+          "rewardIds": [
+            "reward.chapter.major"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.faded_grove"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.06.long_rain",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.06.title",
+      "summaryKey": "chapter.wr.06.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.05.faded_grove"
+      ],
+      "entryNodeId": "chapter.wr.06.long_rain.open",
+      "completionNodeId": "chapter.wr.06.long_rain.complete",
+      "objectiveHooks": [
+        "rest_period"
+      ],
+      "requiredFeatures": [
+        "rest_period",
+        "world_structure"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.06.long_rain.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.06.node.open",
+          "nextNodeIds": [
+            "chapter.wr.06.long_rain.objective"
+          ],
+          "npcIds": [
+            "npc.wr.caretaker"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.06.long_rain.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.06.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.06.long_rain.complete"
+          ],
+          "npcIds": [
+            "npc.wr.caretaker"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.06.long_rain.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.06.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.caretaker"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [
+            "structure.wr.rain_garden"
+          ],
+          "rewardIds": [
+            "reward.chapter.standard"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.long_rain"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.07.roots_remember",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.07.title",
+      "summaryKey": "chapter.wr.07.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.06.long_rain"
+      ],
+      "entryNodeId": "chapter.wr.07.roots_remember.open",
+      "completionNodeId": "chapter.wr.07.roots_remember.complete",
+      "objectiveHooks": [
+        "chronicle"
+      ],
+      "requiredFeatures": [
+        "chronicle",
+        "campaign",
+        "world_structure"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.07.roots_remember.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.07.node.open",
+          "nextNodeIds": [
+            "chapter.wr.07.roots_remember.objective"
+          ],
+          "npcIds": [
+            "npc.wr.archivist"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.07.roots_remember.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.07.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.07.roots_remember.complete"
+          ],
+          "npcIds": [
+            "npc.wr.archivist"
+          ],
+          "companionIds": [
+            "companion.wr.moss_rabbit"
+          ],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.07.roots_remember.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.07.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.archivist"
+          ],
+          "companionIds": [
+            "companion.wr.moss_rabbit"
+          ],
+          "worldStructureIds": [
+            "structure.wr.memory_landmark"
+          ],
+          "rewardIds": [
+            "reward.chapter.major"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.roots_remember"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter.wr.08.quiet_bloom",
+      "sagaId": "saga.wild_renewal.quiet_bloom",
+      "titleKey": "chapter.wr.08.title",
+      "summaryKey": "chapter.wr.08.summary",
+      "prerequisiteChapterIds": [
+        "chapter.wr.07.roots_remember"
+      ],
+      "entryNodeId": "chapter.wr.08.quiet_bloom.open",
+      "completionNodeId": "chapter.wr.08.quiet_bloom.complete",
+      "objectiveHooks": [
+        "campaign"
+      ],
+      "requiredFeatures": [
+        "campaign",
+        "companion",
+        "world_structure",
+        "chronicle"
+      ],
+      "nodes": [
+        {
+          "id": "chapter.wr.08.quiet_bloom.open",
+          "kind": "opening",
+          "localizationKey": "chapter.wr.08.node.open",
+          "nextNodeIds": [
+            "chapter.wr.08.quiet_bloom.objective"
+          ],
+          "npcIds": [
+            "npc.wr.wayfinder"
+          ],
+          "companionIds": [],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.08.quiet_bloom.objective",
+          "kind": "objective",
+          "localizationKey": "chapter.wr.08.node.objective",
+          "nextNodeIds": [
+            "chapter.wr.08.quiet_bloom.complete"
+          ],
+          "npcIds": [
+            "npc.wr.wayfinder",
+            "npc.wr.archivist"
+          ],
+          "companionIds": [
+            "companion.wr.grove_guardian"
+          ],
+          "worldStructureIds": [],
+          "rewardIds": [],
+          "chronicleTriggerIds": []
+        },
+        {
+          "id": "chapter.wr.08.quiet_bloom.complete",
+          "kind": "completion",
+          "localizationKey": "chapter.wr.08.node.complete",
+          "nextNodeIds": [],
+          "npcIds": [
+            "npc.wr.archivist"
+          ],
+          "companionIds": [
+            "companion.wr.grove_guardian"
+          ],
+          "worldStructureIds": [
+            "structure.wr.bloom_monument"
+          ],
+          "rewardIds": [
+            "reward.saga.major"
+          ],
+          "chronicleTriggerIds": [
+            "chronicle.wr.quiet_bloom"
+          ]
+        }
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "npc.wr.wayfinder",
+      "worldId": "world.wild_renewal",
+      "nameKey": "npc.wr.wayfinder.name",
+      "roleKey": "npc.wr.wayfinder.role"
+    },
+    {
+      "id": "npc.wr.crafter",
+      "worldId": "world.wild_renewal",
+      "nameKey": "npc.wr.crafter.name",
+      "roleKey": "npc.wr.crafter.role"
+    },
+    {
+      "id": "npc.wr.gardener",
+      "worldId": "world.wild_renewal",
+      "nameKey": "npc.wr.gardener.name",
+      "roleKey": "npc.wr.gardener.role"
+    },
+    {
+      "id": "npc.wr.caretaker",
+      "worldId": "world.wild_renewal",
+      "nameKey": "npc.wr.caretaker.name",
+      "roleKey": "npc.wr.caretaker.role"
+    },
+    {
+      "id": "npc.wr.pathfinder",
+      "worldId": "world.wild_renewal",
+      "nameKey": "npc.wr.pathfinder.name",
+      "roleKey": "npc.wr.pathfinder.role"
+    },
+    {
+      "id": "npc.wr.archivist",
+      "worldId": "world.wild_renewal",
+      "nameKey": "npc.wr.archivist.name",
+      "roleKey": "npc.wr.archivist.role"
+    }
+  ],
+  "companions": [
+    {
+      "id": "companion.wr.leafglow_fox",
+      "worldId": "world.wild_renewal",
+      "nameKey": "companion.wr.leafglow_fox.name",
+      "familyKey": "companion.family.fox",
+      "tier": "starter"
+    },
+    {
+      "id": "companion.wr.ember_owl",
+      "worldId": "world.wild_renewal",
+      "nameKey": "companion.wr.ember_owl.name",
+      "familyKey": "companion.family.owl",
+      "tier": "early"
+    },
+    {
+      "id": "companion.wr.moss_rabbit",
+      "worldId": "world.wild_renewal",
+      "nameKey": "companion.wr.moss_rabbit.name",
+      "familyKey": "companion.family.rabbit",
+      "tier": "early"
+    },
+    {
+      "id": "companion.wr.grove_guardian",
+      "worldId": "world.wild_renewal",
+      "nameKey": "companion.wr.grove_guardian.name",
+      "familyKey": "companion.family.guardian",
+      "tier": "guardian"
+    }
+  ],
+  "worldStructures": [
+    {
+      "id": "structure.wr.central_hearth",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.central_hearth.name",
+      "structureType": "hub_core"
+    },
+    {
+      "id": "structure.wr.moss_path",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.moss_path.name",
+      "structureType": "route"
+    },
+    {
+      "id": "structure.wr.workshop",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.workshop.name",
+      "structureType": "workshop"
+    },
+    {
+      "id": "structure.wr.gathering_place",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.gathering_place.name",
+      "structureType": "community"
+    },
+    {
+      "id": "structure.wr.faded_grove",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.faded_grove.name",
+      "structureType": "region"
+    },
+    {
+      "id": "structure.wr.rain_garden",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.rain_garden.name",
+      "structureType": "environment"
+    },
+    {
+      "id": "structure.wr.memory_landmark",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.memory_landmark.name",
+      "structureType": "landmark"
+    },
+    {
+      "id": "structure.wr.bloom_monument",
+      "worldId": "world.wild_renewal",
+      "nameKey": "structure.wr.bloom_monument.name",
+      "structureType": "saga_monument"
+    }
+  ],
+  "chronicleTriggers": [
+    {
+      "id": "chronicle.wr.first_hearth",
+      "worldId": "world.wild_renewal",
+      "entryType": "chapter",
+      "titleKey": "chronicle.wr.first_hearth.title"
+    },
+    {
+      "id": "chronicle.wr.first_companion",
+      "worldId": "world.wild_renewal",
+      "entryType": "companion",
+      "titleKey": "chronicle.wr.first_companion.title"
+    },
+    {
+      "id": "chronicle.wr.workshop_wakes",
+      "worldId": "world.wild_renewal",
+      "entryType": "chapter",
+      "titleKey": "chronicle.wr.workshop_wakes.title"
+    },
+    {
+      "id": "chronicle.wr.voices_return",
+      "worldId": "world.wild_renewal",
+      "entryType": "chapter",
+      "titleKey": "chronicle.wr.voices_return.title"
+    },
+    {
+      "id": "chronicle.wr.faded_grove",
+      "worldId": "world.wild_renewal",
+      "entryType": "chapter",
+      "titleKey": "chronicle.wr.faded_grove.title"
+    },
+    {
+      "id": "chronicle.wr.long_rain",
+      "worldId": "world.wild_renewal",
+      "entryType": "recovery",
+      "titleKey": "chronicle.wr.long_rain.title"
+    },
+    {
+      "id": "chronicle.wr.roots_remember",
+      "worldId": "world.wild_renewal",
+      "entryType": "landmark",
+      "titleKey": "chronicle.wr.roots_remember.title"
+    },
+    {
+      "id": "chronicle.wr.quiet_bloom",
+      "worldId": "world.wild_renewal",
+      "entryType": "saga",
+      "titleKey": "chronicle.wr.quiet_bloom.title"
+    }
+  ],
+  "rewards": [
+    {
+      "id": "reward.chapter.standard",
+      "ruleKey": "reward.rule.chapter.standard.v1"
+    },
+    {
+      "id": "reward.chapter.major",
+      "ruleKey": "reward.rule.chapter.major.v1"
+    },
+    {
+      "id": "reward.saga.major",
+      "ruleKey": "reward.rule.saga.major.v1"
+    }
+  ],
+  "campaignArchetypes": [
+    {
+      "id": "campaign_frame.wr.build_create",
+      "worldId": "world.wild_renewal",
+      "archetype": "build_create",
+      "titleTemplateKey": "campaign_frame.wr.build_create.title",
+      "summaryTemplateKey": "campaign_frame.wr.build_create.summary"
+    },
+    {
+      "id": "campaign_frame.wr.learn_master",
+      "worldId": "world.wild_renewal",
+      "archetype": "learn_master",
+      "titleTemplateKey": "campaign_frame.wr.learn_master.title",
+      "summaryTemplateKey": "campaign_frame.wr.learn_master.summary"
+    },
+    {
+      "id": "campaign_frame.wr.restore_organize",
+      "worldId": "world.wild_renewal",
+      "archetype": "restore_organize",
+      "titleTemplateKey": "campaign_frame.wr.restore_organize.title",
+      "summaryTemplateKey": "campaign_frame.wr.restore_organize.summary"
+    },
+    {
+      "id": "campaign_frame.wr.train_improve",
+      "worldId": "world.wild_renewal",
+      "archetype": "train_improve",
+      "titleTemplateKey": "campaign_frame.wr.train_improve.title",
+      "summaryTemplateKey": "campaign_frame.wr.train_improve.summary"
+    },
+    {
+      "id": "campaign_frame.wr.prepare_plan",
+      "worldId": "world.wild_renewal",
+      "archetype": "prepare_plan",
+      "titleTemplateKey": "campaign_frame.wr.prepare_plan.title",
+      "summaryTemplateKey": "campaign_frame.wr.prepare_plan.summary"
+    },
+    {
+      "id": "campaign_frame.wr.explore_travel",
+      "worldId": "world.wild_renewal",
+      "archetype": "explore_travel",
+      "titleTemplateKey": "campaign_frame.wr.explore_travel.title",
+      "summaryTemplateKey": "campaign_frame.wr.explore_travel.summary"
+    },
+    {
+      "id": "campaign_frame.wr.save_financial",
+      "worldId": "world.wild_renewal",
+      "archetype": "save_financial",
+      "titleTemplateKey": "campaign_frame.wr.save_financial.title",
+      "summaryTemplateKey": "campaign_frame.wr.save_financial.summary"
+    },
+    {
+      "id": "campaign_frame.wr.connect_social",
+      "worldId": "world.wild_renewal",
+      "archetype": "connect_social",
+      "titleTemplateKey": "campaign_frame.wr.connect_social.title",
+      "summaryTemplateKey": "campaign_frame.wr.connect_social.summary"
+    },
+    {
+      "id": "campaign_frame.wr.maintain_routine",
+      "worldId": "world.wild_renewal",
+      "archetype": "maintain_routine",
+      "titleTemplateKey": "campaign_frame.wr.maintain_routine.title",
+      "summaryTemplateKey": "campaign_frame.wr.maintain_routine.summary"
+    },
+    {
+      "id": "campaign_frame.wr.launch_publish",
+      "worldId": "world.wild_renewal",
+      "archetype": "launch_publish",
+      "titleTemplateKey": "campaign_frame.wr.launch_publish.title",
+      "summaryTemplateKey": "campaign_frame.wr.launch_publish.summary"
+    }
+  ]
+}
