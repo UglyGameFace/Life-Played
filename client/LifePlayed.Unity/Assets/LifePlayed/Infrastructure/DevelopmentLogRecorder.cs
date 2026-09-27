@@ -41,7 +41,7 @@ namespace LifePlayed.Client.Infrastructure
             RotateOversizedPreviousLog();
         }
 
-        public string Path => _path;
+        public string LogPath => _path;
 
         public void Start(string buildHeader)
         {

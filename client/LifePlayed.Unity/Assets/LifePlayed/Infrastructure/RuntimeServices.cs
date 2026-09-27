@@ -594,10 +594,6 @@ namespace LifePlayed.Client.Infrastructure
         {
             using (var request = UnityWebRequest.Get(uri))
             {
-                var completion =
-                    new TaskCompletionSource<bool>(
-                        TaskCreationOptions.RunContinuationsAsynchronously);
-
                 var registration =
                     cancellationToken.Register(
                         request.Abort);
@@ -607,10 +603,12 @@ namespace LifePlayed.Client.Infrastructure
                     var operation =
                         request.SendWebRequest();
 
-                    operation.completed += _ =>
-                        completion.TrySetResult(true);
+                    while (!operation.isDone)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await Task.Yield();
+                    }
 
-                    await completion.Task;
                     cancellationToken.ThrowIfCancellationRequested();
 
                     if (request.result !=
