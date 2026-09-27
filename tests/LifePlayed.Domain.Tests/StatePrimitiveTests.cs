@@ -1,3 +1,4 @@
+using LifePlayed.Domain.Accounts;
 using LifePlayed.Domain.Common;
 using LifePlayed.Domain.LifeOS;
 using LifePlayed.Domain.Progression;
@@ -35,6 +36,65 @@ public sealed class StatePrimitiveTests
     }
 
     [Fact]
+    public void MinimalDomainRecordsCarryStableIdentityAndVersion()
+    {
+        var accountId = EntityId.New();
+        var campaignId = EntityId.New();
+
+        var account = new Account(
+            accountId,
+            AccountStatus.Active,
+            "en-US",
+            "America/New_York",
+            DateTimeOffset.UtcNow,
+            EntityVersion.Initial);
+
+        var action = new LifeAction(
+            EntityId.New(),
+            accountId,
+            "Write tests",
+            ActionStatus.Active,
+            TimeSpan.FromMinutes(30),
+            null,
+            null,
+            EntityVersion.Initial);
+
+        var quest = new Quest(
+            EntityId.New(),
+            accountId,
+            "Ship foundation",
+            QuestStatus.Active,
+            null,
+            campaignId,
+            EntityVersion.Initial);
+
+        var campaign = new Campaign(
+            campaignId,
+            accountId,
+            "Launch app",
+            null,
+            CampaignStatus.Active,
+            DateTimeOffset.UtcNow,
+            null,
+            null,
+            EntityVersion.Initial);
+
+        var phase = new CampaignPhase(
+            EntityId.New(),
+            campaignId,
+            "Foundation",
+            0,
+            CampaignPhaseStatus.Active,
+            EntityVersion.Initial);
+
+        Assert.Equal(accountId, account.AccountId);
+        Assert.Equal(accountId, action.AccountId);
+        Assert.Equal(campaignId, quest.CampaignId);
+        Assert.Equal(campaignId, campaign.CampaignId);
+        Assert.Equal(campaignId, phase.CampaignId);
+    }
+
+    [Fact]
     public void DraftWorkMustBecomeActiveBeforeCompletion()
     {
         Assert.False(WorkStateTransitions.CanTransition(ActionStatus.Draft, ActionStatus.Completed));
@@ -53,6 +113,14 @@ public sealed class StatePrimitiveTests
     {
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Completed, ActionStatus.Active));
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Completed, ActionStatus.Archived));
+    }
+
+    [Fact]
+    public void CampaignPhaseStateTransitionsAreExplicit()
+    {
+        Assert.False(WorkStateTransitions.CanTransition(CampaignPhaseStatus.Draft, CampaignPhaseStatus.Completed));
+        Assert.True(WorkStateTransitions.CanTransition(CampaignPhaseStatus.Draft, CampaignPhaseStatus.Active));
+        Assert.True(WorkStateTransitions.CanTransition(CampaignPhaseStatus.Completed, CampaignPhaseStatus.Archived));
     }
 
     [Fact]
@@ -84,6 +152,7 @@ public sealed class StatePrimitiveTests
         Assert.DoesNotContain(referenced, static name => name.StartsWith("Unity", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(referenced, static name => name.StartsWith("Microsoft.AspNetCore", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(referenced, static name => name.Contains("EntityFrameworkCore", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(referenced, static name => name.StartsWith("Npgsql", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

@@ -40,6 +40,17 @@ public sealed class EconomyRulesV1Tests
         Assert.InRange(fourHours, 64.37d, 64.39d);
     }
 
+    [Fact]
+    public void RewardEvaluationIsDeterministicAndVersioned()
+    {
+        var first = EconomyRulesV1.EvaluateOrdinaryAction(60, 1.2d, 1.1d, 1d, 1d);
+        var second = EconomyRulesV1.EvaluateOrdinaryAction(60, 1.2d, 1.1d, 1d, 1d);
+
+        Assert.Equal(first, second);
+        Assert.Equal(EconomyRulesV1.RuleVersion, first.RuleVersion);
+        Assert.Equal(EconomyRulesV1.TotalSkillXp(first.AccountXp), first.TotalSkillXp);
+    }
+
     [Theory]
     [InlineData(1, 1.00)]
     [InlineData(2, 0.50)]

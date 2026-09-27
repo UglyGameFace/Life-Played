@@ -3,6 +3,7 @@
     <Project Path="server/LifePlayed.Domain/LifePlayed.Domain.csproj" />
     <Project Path="server/LifePlayed.Contracts/LifePlayed.Contracts.csproj" />
     <Project Path="server/LifePlayed.Application/LifePlayed.Application.csproj" />
+    <Project Path="server/LifePlayed.Infrastructure/LifePlayed.Infrastructure.csproj" />
     <Project Path="server/LifePlayed.Api/LifePlayed.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">

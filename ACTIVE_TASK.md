@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 1 / completion-gap repair
+**State:** ACTIVE — Milestone 1 / final completeness patch
 
 **Unity cloud usage:** 0 minutes required by this milestone.
 
@@ -226,7 +226,10 @@ Validation history:
 - PR #1 merged as `5c09a5cf3ea57f4af6f11ef7024d8bff72214994`.
 - Post-merge main Headless CI run #7 succeeded with 40/40 tests.
 - Completion audit then found one scope gap: the written Milestone 1 plan required a unit/integration test project structure and PostgreSQL test infrastructure, while PR #1 contained only domain unit tests.
-- This repair adds the missing real PostgreSQL integration harness before Milestone 1 is closed.
+- PR #2 merged as `19d89af7e011e63e05b102cd0391b4314c403723`.
+- Post-merge main Headless CI run #10 succeeded with 41/41 tests, including the real PostgreSQL container test.
+- A second full checklist audit found the remaining planned Milestone 1 skeleton items were still absent: minimal Account/Action/Quest/Campaign/CampaignPhase records, persistence abstraction, migration runner/schema, deterministic reward-evaluation result, and versioned content-release schema.
+- This final patch is restricted to those already-planned Milestone 1 items.
 
 ---
 
@@ -258,4 +261,4 @@ Immediate next milestone after successful completion is:
 
 ## Next step
 
-Complete the missing PostgreSQL integration-test harness, validate it on exact head and post-merge main, then close Milestone 1 and activate Milestone 2.
+Validate this final Milestone 1 completeness patch on exact head and post-merge main, then close Milestone 1 and activate Milestone 2.
