@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LifePlayed.Client.Application;
 using LifePlayed.Client.DomainBridge;
+using UnityEngine;
 
 namespace LifePlayed.Client.Infrastructure
 {
@@ -24,6 +25,28 @@ namespace LifePlayed.Client.Infrastructure
 
             _currentRoute = route;
             RouteChanged(route);
+        }
+    }
+
+    public sealed class PlayerPrefsLocalStateStore : ILocalStateStore
+    {
+        public string Read(string key)
+        {
+            return PlayerPrefs.HasKey(key)
+                ? PlayerPrefs.GetString(key)
+                : null;
+        }
+
+        public void Write(string key, string value)
+        {
+            PlayerPrefs.SetString(key, value);
+            PlayerPrefs.Save();
+        }
+
+        public void Remove(string key)
+        {
+            PlayerPrefs.DeleteKey(key);
+            PlayerPrefs.Save();
         }
     }
 

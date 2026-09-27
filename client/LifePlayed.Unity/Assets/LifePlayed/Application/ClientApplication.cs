@@ -22,6 +22,13 @@ namespace LifePlayed.Client.Application
         High = 2,
     }
 
+    public enum MobilePlatformKind
+    {
+        Other = 0,
+        Android = 1,
+        IOS = 2,
+    }
+
     public interface IClientSyncGateway
     {
         Task<IReadOnlyList<ClientSyncResult>> SyncAsync(
@@ -63,6 +70,13 @@ namespace LifePlayed.Client.Application
         event Action<GraphicsTier> TierChanged;
 
         void Apply(GraphicsTier tier);
+    }
+
+    public interface IMobilePlatformProfile
+    {
+        MobilePlatformKind Platform { get; }
+
+        bool UsesSafeAreaInsets { get; }
     }
 
     public interface IAppNavigator

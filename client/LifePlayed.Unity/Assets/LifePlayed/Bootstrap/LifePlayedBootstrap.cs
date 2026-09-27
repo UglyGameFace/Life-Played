@@ -14,7 +14,10 @@ namespace LifePlayed.Client.Bootstrap
     {
         private static LifePlayedBootstrap _instance;
 
+        private const string GraphicsTierKey = "settings.graphics_tier";
+
         private AppCoordinator _coordinator;
+        private ILocalStateStore _localState;
 
         public static LifePlayedBootstrap Instance => _instance;
 
@@ -55,6 +58,10 @@ namespace LifePlayed.Client.Bootstrap
                 quality = gameObject.AddComponent<GraphicsQualityController>();
             }
 
+            _localState = new PlayerPrefsLocalStateStore();
+            RestoreGraphicsTier(quality);
+            quality.TierChanged += SaveGraphicsTier;
+
             var navigator = new RuntimeNavigator();
             _coordinator = new AppCoordinator(
                 navigator,
@@ -62,6 +69,34 @@ namespace LifePlayed.Client.Bootstrap
 
             StartCoroutine(
                 EnsurePresentation(quality));
+        }
+
+        private void OnDestroy()
+        {
+            var quality = GetComponent<GraphicsQualityController>();
+            if (quality != null)
+            {
+                quality.TierChanged -= SaveGraphicsTier;
+            }
+        }
+
+        private void RestoreGraphicsTier(
+            IGraphicsQualityController graphicsQuality)
+        {
+            var saved = _localState.Read(GraphicsTierKey);
+            GraphicsTier tier;
+
+            if (System.Enum.TryParse(saved, out tier))
+            {
+                graphicsQuality.Apply(tier);
+            }
+        }
+
+        private void SaveGraphicsTier(GraphicsTier tier)
+        {
+            _localState.Write(
+                GraphicsTierKey,
+                tier.ToString());
         }
 
         private IEnumerator EnsurePresentation(
