@@ -4,10 +4,12 @@
     <Project Path="server/LifePlayed.Contracts/LifePlayed.Contracts.csproj" />
     <Project Path="server/LifePlayed.Application/LifePlayed.Application.csproj" />
     <Project Path="server/LifePlayed.Infrastructure/LifePlayed.Infrastructure.csproj" />
+    <Project Path="server/LifePlayed.Content/LifePlayed.Content.csproj" />
     <Project Path="server/LifePlayed.Api/LifePlayed.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/LifePlayed.Domain.Tests/LifePlayed.Domain.Tests.csproj" />
     <Project Path="tests/LifePlayed.Integration.Tests/LifePlayed.Integration.Tests.csproj" />
+    <Project Path="tests/LifePlayed.Content.Tests/LifePlayed.Content.Tests.csproj" />
   </Folder>
 </Solution>
