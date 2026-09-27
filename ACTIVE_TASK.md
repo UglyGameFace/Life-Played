@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / Step 3: core domain model
+**State:** ACTIVE — product foundation / Step 4: game economy & progression
 
 **Code implementation:** Not started intentionally.
 
@@ -466,7 +466,7 @@ This active task is complete only when:
 - [ ] Offline/sync and server-authority rules are documented.
 - [ ] Unity/mobile architecture is documented.
 - [ ] Backend/service/domain architecture is documented.
-- [ ] Initial database/domain model is documented.
+- [x] Initial database/domain model is documented.
 - [ ] Validation/test strategy is documented.
 - [ ] Initial implementation milestones and first vertical slice are defined.
 - [ ] The final foundation docs are checked for contradictions, duplicate/conflicting systems, stale assumptions, or accidental scope gaps.
@@ -483,6 +483,7 @@ Only after this Definition of Done is satisfied should production implementation
 - `ACTIVE_TASK.md` established as the active-task source of truth.
 - `docs/MASTER_PRODUCT_BIBLE.md` created and verified as the authoritative product definition.
 - `docs/V1_SCOPE.md` created and verified as the authoritative V1 boundary and post-V1 backlog.
+- `docs/CORE_DOMAIN_MODEL.md` created and verified with entity, relationship, lifecycle, sensitivity, offline, and client/server authority boundaries.
 - No production code has been added yet.
 
 ---
@@ -496,8 +497,9 @@ Current repository baseline contains:
 - `ACTIVE_TASK.md` (this file)
 - `docs/MASTER_PRODUCT_BIBLE.md`
 - `docs/V1_SCOPE.md`
+- `docs/CORE_DOMAIN_MODEL.md`
 
-README aligns with the high-level product direction. The Master Product Bible and V1 Scope are both verified readable on `main`; the V1 scope explicitly separates launch requirements from the post-V1 backlog.
+README aligns with the high-level product direction. The Master Product Bible, V1 Scope, and Core Domain Model are verified readable on `main`; the domain model separates content from player state and valuable server-authoritative state from client-originated intent.
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -555,4 +557,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Define the **core domain model** in-repo: establish the authoritative entities, ownership boundaries, relationships, lifecycle/state models, and server-vs-client authority for accounts, actions, quests, campaigns, progression, worlds, companions, Chronicle, commerce needs/offers, evidence/rewards, and entitlements.
+Define the **game economy & progression specification** in-repo: lock Life Skill behavior, XP curves, Momentum, task valuation, anti-farming/diminishing returns, reward tiers, currency/resource boundaries, companion/world progression, and rules preventing spending from becoming pay-to-win.
