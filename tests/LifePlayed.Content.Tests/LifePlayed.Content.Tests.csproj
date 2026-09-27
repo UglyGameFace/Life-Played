@@ -12,4 +12,12 @@
     <ProjectReference Include="../../server/LifePlayed.Content/LifePlayed.Content.csproj" />
     <ProjectReference Include="../../server/LifePlayed.Contracts/LifePlayed.Contracts.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="../../content/releases/wild-renewal-v1/**"
+          Link="Fixtures/wild-renewal-v1/%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../content/schemas/content-definition.schema.json"
+          Link="Fixtures/content-definition.schema.json"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

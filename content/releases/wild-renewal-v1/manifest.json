@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "release.wild_renewal.v1.skeleton",
+  "releaseVersion": "1.0.0",
+  "minimumClientVersion": "0.1.0",
+  "publishedAt": "2026-09-27T15:00:00Z",
+  "fileHashes": {
+    "content.json": "B0C4397495163E31328BA7CC799A9656D6A209707F6B9F08FD0B1A06239FC4F3"
+  }
+}
