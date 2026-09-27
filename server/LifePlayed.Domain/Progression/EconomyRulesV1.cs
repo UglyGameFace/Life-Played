@@ -68,15 +68,8 @@ public static class EconomyRulesV1
         TimeSpan sessionDuration,
         TimeSpan alreadyQualifiedToday)
     {
-        if (sessionDuration < TimeSpan.Zero)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sessionDuration));
-        }
-
-        if (alreadyQualifiedToday < TimeSpan.Zero)
-        {
-            throw new ArgumentOutOfRangeException(nameof(alreadyQualifiedToday));
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(sessionDuration, TimeSpan.Zero);
+        ArgumentOutOfRangeException.ThrowIfLessThan(alreadyQualifiedToday, TimeSpan.Zero);
 
         var sessionMinutes = sessionDuration.TotalMinutes;
         var priorMinutes = alreadyQualifiedToday.TotalMinutes;
