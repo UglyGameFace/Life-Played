@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / pre-implementation
+**State:** ACTIVE — product foundation / Step 2: V1 scope lock
 
 **Code implementation:** Not started intentionally.
 
@@ -457,7 +457,7 @@ The product foundation must be completed in this order before production impleme
 
 This active task is complete only when:
 
-- [ ] The Master Product Bible exists in-repo and reflects the agreed product.
+- [x] The Master Product Bible exists in-repo and reflects the agreed product.
 - [ ] V1 scope and explicit post-V1 backlog are documented.
 - [ ] Core gameplay loop and progression rules are defined well enough to implement without inventing behavior ad hoc.
 - [ ] Identity-world/story architecture is documented.
@@ -481,6 +481,7 @@ Only after this Definition of Done is satisfied should production implementation
 - Repository inspected.
 - Existing README reviewed.
 - `ACTIVE_TASK.md` established as the active-task source of truth.
+- `docs/MASTER_PRODUCT_BIBLE.md` created and verified as the authoritative product definition.
 - No production code has been added yet.
 
 ---
@@ -492,8 +493,9 @@ Current repository baseline contains:
 - `.gitignore`
 - `README.md`
 - `ACTIVE_TASK.md` (this file)
+- `docs/MASTER_PRODUCT_BIBLE.md`
 
-README aligns with the current high-level product direction.
+README aligns with the high-level product direction, and the Master Product Bible has been verified readable on `main` (32,566 characters at this checkpoint).
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -551,4 +553,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Create the **Master Product Bible** in-repo, consolidating the full Life Played vision into an authoritative specification with explicit V1 vs post-V1 boundaries and terminology.
+Lock the **V1 scope boundary** in-repo: define the smallest complete Play Store/App Store release that proves the real-life → 3D-world loop, and explicitly move nonessential systems into a post-V1 backlog without weakening the long-term architecture.
