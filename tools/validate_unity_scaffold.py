@@ -22,11 +22,13 @@ required = [
     UNITY / "Assets" / "LifePlayed" / "Infrastructure" / "RuntimeServices.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "AppShellPresenter.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "SafeAreaFitter.cs",
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "RuntimeDiagnosticsPresenter.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "GraphicsQualityController.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "PrototypeWildRenewalHub.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "PrototypeAmbientWisp.cs",
     UNITY / "Assets" / "LifePlayed" / "Editor" / "LifePlayedProjectConfigurator.cs",
     UNITY / "Assets" / "LifePlayed" / "Editor" / "LifePlayedAndroidBuild.cs",
+    UNITY / "Assets" / "LifePlayed" / "Tests" / "EditMode" / "OfflineStoreTests.cs",
 ]
 
 missing = [str(path.relative_to(ROOT)) for path in required if not path.is_file()]
@@ -139,3 +141,54 @@ print(
     f"Unity scaffold OK: {len(asmdefs)} assemblies, "
     f"Editor 6000.3.25f1, required packages pinned."
 )
+
+
+# Milestone 4 architecture regressions.
+application_code = (
+    UNITY / "Assets" / "LifePlayed" / "Application" / "ClientApplication.cs"
+).read_text(encoding="utf-8")
+infrastructure_code = (
+    UNITY / "Assets" / "LifePlayed" / "Infrastructure" / "RuntimeServices.cs"
+).read_text(encoding="utf-8")
+quality_code = (
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "GraphicsQualityController.cs"
+).read_text(encoding="utf-8")
+
+if "ILocalStateStore" in application_code:
+    raise SystemExit(
+        "PlayerPrefs/settings storage must not masquerade as the application database."
+    )
+
+for fragment in (
+    "IClientSettingsStore",
+    "IClientOfflineStore",
+):
+    if fragment not in application_code:
+        raise SystemExit(f"Missing client persistence boundary: {fragment}")
+
+for fragment in (
+    "PlayerPrefsClientSettingsStore",
+    "JsonFileOfflineStore",
+):
+    if fragment not in infrastructure_code:
+        raise SystemExit(f"Missing persistence adapter: {fragment}")
+
+if "QualitySettings.shadowDistance" in quality_code:
+    raise SystemExit(
+        "URP shadow distance must be configured through UniversalRenderPipelineAsset."
+    )
+
+for fragment in (
+    "pipeline.shadowDistance = shadowDistance;",
+    "pipeline.msaaSampleCount = msaaSampleCount;",
+    "pipeline.shadowCascadeCount = shadowCascadeCount;",
+):
+    if fragment not in quality_code:
+        raise SystemExit(f"Missing URP runtime quality control: {fragment}")
+
+for fragment in (
+    "PlayerSettings.Android.renderOutsideSafeArea = true;",
+    "PlayerSettings.Android.optimizedFramePacing = true;",
+):
+    if fragment not in configurator:
+        raise SystemExit(f"Missing Android mobile setting: {fragment}")

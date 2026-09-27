@@ -17,7 +17,11 @@ namespace LifePlayed.Client.Bootstrap
         private const string GraphicsTierKey = "settings.graphics_tier";
 
         private AppCoordinator _coordinator;
-        private ILocalStateStore _localState;
+        private IClientSettingsStore _settingsStore;
+        private GraphicsQualityController _quality;
+        private PrototypeWildRenewalHub _worldHub;
+        private RuntimeDiagnosticsPresenter _diagnostics;
+        private IMobilePlatformProfile _platformProfile;
 
         public static LifePlayedBootstrap Instance => _instance;
 
@@ -52,15 +56,17 @@ namespace LifePlayed.Client.Bootstrap
                 lifecycle = gameObject.AddComponent<PlatformLifecycleBridge>();
             }
 
-            var quality = GetComponent<GraphicsQualityController>();
-            if (quality == null)
+            _quality = GetComponent<GraphicsQualityController>();
+            if (_quality == null)
             {
-                quality = gameObject.AddComponent<GraphicsQualityController>();
+                _quality = gameObject.AddComponent<GraphicsQualityController>();
             }
 
-            _localState = new PlayerPrefsLocalStateStore();
-            RestoreGraphicsTier(quality);
-            quality.TierChanged += SaveGraphicsTier;
+            _platformProfile = new RuntimeMobilePlatformProfile();
+            _settingsStore = new PlayerPrefsClientSettingsStore();
+
+            RestoreGraphicsTier(_quality);
+            _quality.TierChanged += SaveGraphicsTier;
 
             var navigator = new RuntimeNavigator();
             _coordinator = new AppCoordinator(
@@ -68,22 +74,26 @@ namespace LifePlayed.Client.Bootstrap
                 lifecycle);
 
             StartCoroutine(
-                EnsurePresentation(quality));
+                EnsurePresentation(_quality));
         }
 
         private void OnDestroy()
         {
-            var quality = GetComponent<GraphicsQualityController>();
-            if (quality != null)
+            if (_quality != null)
             {
-                quality.TierChanged -= SaveGraphicsTier;
+                _quality.TierChanged -= SaveGraphicsTier;
+            }
+
+            if (_coordinator != null)
+            {
+                _coordinator.RouteChanged -= OnRouteChanged;
             }
         }
 
         private void RestoreGraphicsTier(
             IGraphicsQualityController graphicsQuality)
         {
-            var saved = _localState.Read(GraphicsTierKey);
+            var saved = _settingsStore.Read(GraphicsTierKey);
             GraphicsTier tier;
 
             if (System.Enum.TryParse(saved, out tier))
@@ -94,7 +104,7 @@ namespace LifePlayed.Client.Bootstrap
 
         private void SaveGraphicsTier(GraphicsTier tier)
         {
-            _localState.Write(
+            _settingsStore.Write(
                 GraphicsTierKey,
                 tier.ToString());
         }
@@ -124,9 +134,51 @@ namespace LifePlayed.Client.Bootstrap
                 shell.Bind(
                     _coordinator,
                     graphicsQuality);
+
+                _diagnostics =
+                    shell.GetComponent<RuntimeDiagnosticsPresenter>();
+
+                if (_diagnostics == null)
+                {
+                    _diagnostics =
+                        shell.gameObject.AddComponent<RuntimeDiagnosticsPresenter>();
+                }
+
+                _diagnostics.Bind(
+                    _coordinator,
+                    graphicsQuality,
+                    _platformProfile);
             }
 
+            _worldHub =
+                FindFirstObjectByType<PrototypeWildRenewalHub>();
+
+            if (_worldHub != null)
+            {
+                _worldHub.BindGraphicsQuality(
+                    graphicsQuality);
+            }
+
+            _coordinator.RouteChanged += OnRouteChanged;
+            OnRouteChanged(_coordinator.CurrentRoute);
             _coordinator.Open(AppRoute.World);
+        }
+
+        private void OnRouteChanged(AppRoute route)
+        {
+            var worldActive = route == AppRoute.World;
+
+            if (_worldHub != null)
+            {
+                _worldHub.SetPresentationActive(
+                    worldActive);
+            }
+
+            if (_diagnostics != null)
+            {
+                _diagnostics.SetWorldRenderingActive(
+                    worldActive);
+            }
         }
 
         private static IEnumerator EnsureSceneOrFallback<T>(

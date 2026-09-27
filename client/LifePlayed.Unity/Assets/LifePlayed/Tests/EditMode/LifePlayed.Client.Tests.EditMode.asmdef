@@ -3,7 +3,8 @@
   "rootNamespace": "LifePlayed.Client.Tests.EditMode",
   "references": [
     "LifePlayed.Client.DomainBridge",
-    "LifePlayed.Client.Application"
+    "LifePlayed.Client.Application",
+    "LifePlayed.Client.Infrastructure"
   ],
   "includePlatforms": [
     "Editor"

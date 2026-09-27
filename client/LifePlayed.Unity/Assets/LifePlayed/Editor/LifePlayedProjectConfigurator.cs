@@ -60,8 +60,6 @@ namespace LifePlayed.Client.Editor
                 pipeline = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
                 pipeline.name = "LifePlayedMobileURP";
                 var rendererData = pipeline.LoadBuiltinRendererData();
-                pipeline.renderScale = 0.90f;
-                pipeline.useSRPBatcher = true;
                 AssetDatabase.CreateAsset(pipeline, PipelinePath);
 
                 if (rendererData != null)
@@ -71,6 +69,18 @@ namespace LifePlayed.Client.Editor
                 }
 
             }
+
+            pipeline.renderScale = 0.90f;
+            pipeline.useSRPBatcher = true;
+            pipeline.supportsHDR = false;
+            pipeline.supportsCameraDepthTexture = false;
+            pipeline.supportsCameraOpaqueTexture = false;
+            pipeline.supportsDynamicBatching = true;
+            pipeline.maxAdditionalLightsCount = 2;
+            pipeline.msaaSampleCount = 2;
+            pipeline.shadowDistance = 28f;
+            pipeline.shadowCascadeCount = 2;
+            EditorUtility.SetDirty(pipeline);
 
             EnsureRenderPipelineGlobalSettings();
             GraphicsSettings.defaultRenderPipeline = pipeline;
@@ -200,6 +210,10 @@ namespace LifePlayed.Client.Editor
             PlayerSettings.allowedAutorotateToLandscapeLeft = false;
             PlayerSettings.allowedAutorotateToLandscapeRight = false;
             PlayerSettings.runInBackground = false;
+
+            PlayerSettings.Android.renderOutsideSafeArea = true;
+            PlayerSettings.Android.optimizedFramePacing = true;
+            PlayerSettings.Android.startInFullscreen = true;
 
             EditorSettings.serializationMode = SerializationMode.ForceText;
             EditorSettings.externalVersionControl = "Visible Meta Files";

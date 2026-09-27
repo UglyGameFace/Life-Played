@@ -27,6 +27,13 @@ namespace LifePlayed.Client.Tests.PlayMode
             Assert.That(GameObject.Find("GroveArch"), Is.Not.Null);
             Assert.That(GameObject.Find("BloomWisps"), Is.Not.Null);
 
+            var hub = root.GetComponent<PrototypeWildRenewalHub>();
+            hub.SetPresentationActive(false);
+            Assert.That(hub.IsPresentationActive, Is.False);
+
+            hub.SetPresentationActive(true);
+            Assert.That(hub.IsPresentationActive, Is.True);
+
             Object.Destroy(root);
         }
 

@@ -1,3 +1,4 @@
+using LifePlayed.Client.Application;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -15,6 +16,12 @@ namespace LifePlayed.Client.Presentation.World
         private Material _hero;
         private Material _soil;
         private Material _water;
+        private IGraphicsQualityController _graphicsQuality;
+        private Light _sunLight;
+        private Light _hearthLight;
+        private GameObject _wispRoot;
+
+        public bool IsPresentationActive { get; private set; } = true;
 
         private void Awake()
         {
@@ -59,7 +66,82 @@ namespace LifePlayed.Client.Presentation.World
                 orbit = camera.gameObject.AddComponent<TouchOrbitCamera>();
             }
 
+            camera.transform.SetParent(transform, true);
             orbit.SetTarget(cameraFocus.transform);
+        }
+
+        public void BindGraphicsQuality(
+            IGraphicsQualityController graphicsQuality)
+        {
+            if (_graphicsQuality != null)
+            {
+                _graphicsQuality.TierChanged -= OnTierChanged;
+            }
+
+            _graphicsQuality = graphicsQuality;
+            _graphicsQuality.TierChanged += OnTierChanged;
+            ApplyVisualQuality(_graphicsQuality.CurrentTier);
+        }
+
+        public void SetPresentationActive(bool active)
+        {
+            IsPresentationActive = active;
+
+            for (var index = 0; index < transform.childCount; index++)
+            {
+                transform.GetChild(index).gameObject.SetActive(active);
+            }
+
+            if (_graphicsQuality != null)
+            {
+                ApplyVisualQuality(_graphicsQuality.CurrentTier);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_graphicsQuality != null)
+            {
+                _graphicsQuality.TierChanged -= OnTierChanged;
+            }
+        }
+
+        private void OnTierChanged(GraphicsTier tier)
+        {
+            ApplyVisualQuality(tier);
+        }
+
+        private void ApplyVisualQuality(GraphicsTier tier)
+        {
+            if (_sunLight != null)
+            {
+                _sunLight.shadows = !IsPresentationActive
+                    ? LightShadows.None
+                    : tier == GraphicsTier.High
+                        ? LightShadows.Soft
+                        : tier == GraphicsTier.Standard
+                            ? LightShadows.Hard
+                            : LightShadows.None;
+            }
+
+            if (_hearthLight != null)
+            {
+                _hearthLight.enabled =
+                    IsPresentationActive &&
+                    tier != GraphicsTier.Reduced;
+
+                _hearthLight.intensity =
+                    tier == GraphicsTier.High
+                        ? 2.2f
+                        : 1.55f;
+            }
+
+            if (_wispRoot != null)
+            {
+                _wispRoot.SetActive(
+                    IsPresentationActive &&
+                    tier != GraphicsTier.Reduced);
+            }
         }
 
         private void CreateMaterials()
@@ -258,12 +340,12 @@ namespace LifePlayed.Client.Presentation.World
             hearthLightObject.transform.SetParent(hearthRoot.transform, false);
             hearthLightObject.transform.localPosition = new Vector3(0f, 1.05f, 0f);
 
-            var hearthLight = hearthLightObject.AddComponent<Light>();
-            hearthLight.type = LightType.Point;
-            hearthLight.color = new Color32(112, 255, 181, 255);
-            hearthLight.intensity = 2.2f;
-            hearthLight.range = 5.5f;
-            hearthLight.shadows = LightShadows.None;
+            _hearthLight = hearthLightObject.AddComponent<Light>();
+            _hearthLight.type = LightType.Point;
+            _hearthLight.color = new Color32(112, 255, 181, 255);
+            _hearthLight.intensity = 2.2f;
+            _hearthLight.range = 5.5f;
+            _hearthLight.shadows = LightShadows.None;
         }
 
         private void CreateTrees()
@@ -465,8 +547,8 @@ namespace LifePlayed.Client.Presentation.World
 
         private void CreateAmbientWisps()
         {
-            var wispRoot = new GameObject("BloomWisps");
-            wispRoot.transform.SetParent(transform, false);
+            _wispRoot = new GameObject("BloomWisps");
+            _wispRoot.transform.SetParent(transform, false);
 
             for (var index = 0; index < 8; index++)
             {
@@ -477,7 +559,7 @@ namespace LifePlayed.Client.Presentation.World
                     Vector3.one * (0.09f + (index % 3) * 0.025f),
                     Vector3.zero,
                     _glow,
-                    wispRoot.transform);
+                    _wispRoot.transform);
 
                 var motion = wisp.AddComponent<PrototypeAmbientWisp>();
                 motion.Configure(
@@ -503,11 +585,11 @@ namespace LifePlayed.Client.Presentation.World
             lightObject.transform.SetParent(transform, false);
             lightObject.transform.rotation = Quaternion.Euler(46f, -32f, 0f);
 
-            var light = lightObject.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.intensity = 1.30f;
-            light.color = new Color32(255, 232, 199, 255);
-            light.shadows = LightShadows.Soft;
+            _sunLight = lightObject.AddComponent<Light>();
+            _sunLight.type = LightType.Directional;
+            _sunLight.intensity = 1.30f;
+            _sunLight.color = new Color32(255, 232, 199, 255);
+            _sunLight.shadows = LightShadows.Hard;
         }
 
         private static Camera EnsureCamera()
