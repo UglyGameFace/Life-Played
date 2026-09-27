@@ -38,6 +38,58 @@ namespace LifePlayed.Client.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator AppShellBuildsAllPrimaryRouteBodies()
+        {
+            var shellRoot = new GameObject("AppShellTest");
+            shellRoot.AddComponent<
+                LifePlayed.Client.Presentation.UI.AppShellPresenter>();
+
+            yield return null;
+
+            Assert.That(
+                GameObject.Find("HomeRoutePanel"),
+                Is.Not.Null);
+
+            shellRoot
+                .transform
+                .Find("Background/SafeArea/QuestsRoutePanel")
+                .gameObject
+                .SetActive(true);
+
+            Assert.That(
+                GameObject.Find("QuestsRoutePanel"),
+                Is.Not.Null);
+
+            shellRoot
+                .transform
+                .Find("Background/SafeArea/HeroRoutePanel")
+                .gameObject
+                .SetActive(true);
+
+            Assert.That(
+                GameObject.Find("HeroRoutePanel"),
+                Is.Not.Null);
+
+            shellRoot
+                .transform
+                .Find("Background/SafeArea/MoreRoutePanel")
+                .gameObject
+                .SetActive(true);
+
+            Assert.That(
+                GameObject.Find("MoreRoutePanel"),
+                Is.Not.Null);
+
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                Object.Destroy(
+                    UnityEngine.EventSystems.EventSystem.current.gameObject);
+            }
+
+            Object.Destroy(shellRoot);
+        }
+
+        [UnityTest]
         public IEnumerator GraphicsTiersCanSwitchAtRuntime()
         {
             var root = new GameObject("QualityTest");

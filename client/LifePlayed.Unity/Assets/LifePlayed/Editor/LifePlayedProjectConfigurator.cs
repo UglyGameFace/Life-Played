@@ -235,10 +235,58 @@ namespace LifePlayed.Client.Editor
 
         private static void ValidateForBuild()
         {
-            if (GraphicsSettings.defaultRenderPipeline == null)
+#if !ENABLE_INPUT_SYSTEM
+            throw new System.InvalidOperationException(
+                "Active Input Handling must enable the Input System package. " +
+                "Set Player > Other Settings > Active Input Handling to " +
+                "Input System Package (New) or Both, restart the Editor, " +
+                "then rerun the build.");
+#endif
+
+            if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
+            {
+                throw new System.InvalidOperationException(
+                    "Playable Build #1 must run with Android as the active build target.");
+            }
+
+            if (!Application.unityVersion.StartsWith("6000.3.25f1"))
+            {
+                throw new System.InvalidOperationException(
+                    "Unexpected Unity editor version: " +
+                    Application.unityVersion);
+            }
+
+            var pipeline =
+                GraphicsSettings.defaultRenderPipeline
+                    as UniversalRenderPipelineAsset;
+
+            if (pipeline == null)
             {
                 throw new System.InvalidOperationException(
                     "URP is not assigned in Graphics Settings.");
+            }
+
+            if (pipeline.supportsHDR ||
+                pipeline.supportsCameraDepthTexture ||
+                pipeline.supportsCameraOpaqueTexture)
+            {
+                throw new System.InvalidOperationException(
+                    "The mobile URP asset has expensive features enabled unexpectedly.");
+            }
+
+            if (PlayerSettings.defaultInterfaceOrientation !=
+                UIOrientation.Portrait)
+            {
+                throw new System.InvalidOperationException(
+                    "Life Played V1 must remain portrait-first.");
+            }
+
+            if (!PlayerSettings.Android.renderOutsideSafeArea ||
+                !PlayerSettings.Android.optimizedFramePacing ||
+                !PlayerSettings.Android.startInFullscreen)
+            {
+                throw new System.InvalidOperationException(
+                    "Required Android display/frame-pacing settings are missing.");
             }
 
             var generatedManifest = Path.Combine(
@@ -270,6 +318,17 @@ namespace LifePlayed.Client.Editor
                 throw new System.InvalidOperationException(
                     "Editor build settings do not contain the expected Life Played scenes.");
             }
+
+            Debug.Log(
+                "[Life Played Build Preflight] PASS | Editor=" +
+                Application.unityVersion +
+                " | Target=" +
+                EditorUserBuildSettings.activeBuildTarget +
+                " | Scenes=" +
+                EditorBuildSettings.scenes.Length +
+                " | URP renderScale=" +
+                pipeline.renderScale +
+                " | Content=wild-renewal-v1");
         }
 
         private static void EnsureMobileSettings()

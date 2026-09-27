@@ -254,3 +254,34 @@ for fragment in (
         raise SystemExit(
             f"Touch camera is missing mobile gesture support: {fragment}"
         )
+
+
+app_shell_code = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Presentation"
+    / "UI"
+    / "AppShellPresenter.cs"
+).read_text(encoding="utf-8")
+
+for route_panel in (
+    "HomeRoutePanel",
+    "QuestsRoutePanel",
+    "HeroRoutePanel",
+    "MoreRoutePanel",
+):
+    if route_panel not in app_shell_code:
+        raise SystemExit(
+            f"Playable Build #1 route body is missing: {route_panel}"
+        )
+
+for fragment in (
+    "#if !ENABLE_INPUT_SYSTEM",
+    "EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android",
+    "[Life Played Build Preflight] PASS",
+):
+    if fragment not in configurator:
+        raise SystemExit(
+            f"Unity build preflight is missing: {fragment}"
+        )

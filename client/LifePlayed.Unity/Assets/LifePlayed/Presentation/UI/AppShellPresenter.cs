@@ -13,6 +13,9 @@ namespace LifePlayed.Client.Presentation.UI
         private readonly Dictionary<AppRoute, Image> _buttonImages =
             new Dictionary<AppRoute, Image>();
 
+        private readonly Dictionary<AppRoute, GameObject> _routePanels =
+            new Dictionary<AppRoute, GameObject>();
+
         private readonly Dictionary<GraphicsTier, Image> _qualityImages =
             new Dictionary<GraphicsTier, Image>();
 
@@ -32,6 +35,9 @@ namespace LifePlayed.Client.Presentation.UI
 
         private static readonly Color32 Panel =
             new Color32(24, 38, 31, 232);
+
+        private static readonly Color32 Card =
+            new Color32(31, 49, 40, 238);
 
         private static readonly Color32 Active =
             new Color32(106, 224, 145, 255);
@@ -100,9 +106,7 @@ namespace LifePlayed.Client.Presentation.UI
 
             if (_subtitle != null)
             {
-                _subtitle.text = worldMode
-                    ? "The Hearthwild • First World"
-                    : "Your life builds the world";
+                _subtitle.text = SubtitleFor(route);
             }
 
             if (_background != null)
@@ -119,12 +123,19 @@ namespace LifePlayed.Client.Presentation.UI
 
             if (_qualityBar != null)
             {
-                _qualityBar.SetActive(worldMode);
+                _qualityBar.SetActive(
+                    worldMode ||
+                    route == AppRoute.More);
             }
+
+            SetRoutePanelVisibility(route);
 
             foreach (var pair in _buttonImages)
             {
-                pair.Value.color = pair.Key == route ? Active : Inactive;
+                pair.Value.color =
+                    pair.Key == route
+                        ? Active
+                        : Inactive;
             }
         }
 
@@ -132,7 +143,10 @@ namespace LifePlayed.Client.Presentation.UI
         {
             foreach (var pair in _qualityImages)
             {
-                pair.Value.color = pair.Key == tier ? Active : Inactive;
+                pair.Value.color =
+                    pair.Key == tier
+                        ? Active
+                        : Inactive;
             }
         }
 
@@ -152,8 +166,10 @@ namespace LifePlayed.Client.Presentation.UI
                 scaler = gameObject.AddComponent<CanvasScaler>();
             }
 
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1080f, 2400f);
+            scaler.uiScaleMode =
+                CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution =
+                new Vector2(1080f, 2400f);
             scaler.matchWidthOrHeight = 0.5f;
 
             if (GetComponent<GraphicRaycaster>() == null)
@@ -192,7 +208,7 @@ namespace LifePlayed.Client.Presentation.UI
             _subtitle = CreateText(
                 "Status",
                 safe.transform,
-                "Your life builds the world",
+                SubtitleFor(AppRoute.Home),
                 26,
                 TextAnchor.UpperLeft);
             _subtitle.color = SubtleText;
@@ -201,8 +217,14 @@ namespace LifePlayed.Client.Presentation.UI
                 new Vector2(0.05f, 0.84f),
                 new Vector2(0.95f, 0.90f));
 
-            BuildWorldCard(safe.transform);
-            BuildQualityBar(safe.transform);
+            BuildUtilityRoutePanels(
+                safe.transform);
+
+            BuildWorldCard(
+                safe.transform);
+
+            BuildQualityBar(
+                safe.transform);
 
             var nav = CreatePanel(
                 "BottomNavigation",
@@ -220,7 +242,9 @@ namespace LifePlayed.Client.Presentation.UI
                 AppRoute.More,
             };
 
-            for (var index = 0; index < routes.Length; index++)
+            for (var index = 0;
+                index < routes.Length;
+                index++)
             {
                 CreateNavigationButton(
                     nav.transform,
@@ -228,9 +252,204 @@ namespace LifePlayed.Client.Presentation.UI
                     index,
                     routes.Length);
             }
+
+            SetRoutePanelVisibility(
+                AppRoute.Home);
+
+            _worldCard.SetActive(false);
+            _qualityBar.SetActive(false);
         }
 
-        private void BuildWorldCard(Transform parent)
+        private void BuildUtilityRoutePanels(
+            Transform parent)
+        {
+            _routePanels[AppRoute.Home] =
+                CreateRoutePanel(
+                    parent,
+                    AppRoute.Home,
+                    "TODAY",
+                    "Life Played is ready to become useful.",
+                    "The mobile foundation now separates fast utility screens from the 3D world.",
+                    new RouteCard(
+                        "OFFLINE READY",
+                        "Durable local queue",
+                        "Pending mutations and the sync cursor survive an app restart without turning PlayerPrefs into a database."),
+                    new RouteCard(
+                        "FIRST WORLD",
+                        "Wild Renewal",
+                        "The validated Wild Renewal release is staged into the build and loaded as the current authored world."));
+
+            _routePanels[AppRoute.Quests] =
+                CreateRoutePanel(
+                    parent,
+                    AppRoute.Quests,
+                    "QUEST JOURNAL",
+                    "Your real life becomes the adventure.",
+                    "This foundation exposes the authored story shape without pretending the Milestone 5 Action loop is already finished.",
+                    new RouteCard(
+                        "SAGA I",
+                        "The Quiet Bloom",
+                        "Eight validated chapters lead from The Empty Hearth to the Quiet Bloom finale."),
+                    new RouteCard(
+                        "CAMPAIGNS",
+                        "Built for real goals",
+                        "Campaign framing exists for building, learning, restoring, training, planning, travel, finance, social goals, routines, and launches."));
+
+            _routePanels[AppRoute.Hero] =
+                CreateRoutePanel(
+                    parent,
+                    AppRoute.Hero,
+                    "WAYKEEPER",
+                    "A persistent identity, not a disposable avatar.",
+                    "Character presentation stays separate from authoritative progression so visual upgrades cannot rewrite game rules.",
+                    new RouteCard(
+                        "FOUNDING WORLD",
+                        "Wild Renewal",
+                        "The Hearthwild is the first persistent world tied to this player identity."),
+                    new RouteCard(
+                        "COMPANION",
+                        "Leafglow Fox • Starter",
+                        "The first authored companion is represented in 3D now, with its final production model still intentionally deferred."));
+
+            _routePanels[AppRoute.More] =
+                CreateRoutePanel(
+                    parent,
+                    AppRoute.More,
+                    "CLIENT",
+                    "Mobile-first settings and diagnostics.",
+                    "The first APK is designed to tell us what is actually happening on-device instead of making us guess.",
+                    new RouteCard(
+                        "DISPLAY",
+                        "Portrait + safe area",
+                        "Cutouts, rounded corners, frame pacing, and quality tiers are part of the build gate."),
+                    new RouteCard(
+                        "POWER",
+                        "World sleeps off-route",
+                        "Home, Quests, Hero, and More suspend the 3D world so ordinary planning screens do not waste GPU time."));
+        }
+
+        private GameObject CreateRoutePanel(
+            Transform parent,
+            AppRoute route,
+            string eyebrow,
+            string headline,
+            string description,
+            RouteCard firstCard,
+            RouteCard secondCard)
+        {
+            var panel = CreatePanel(
+                route + "RoutePanel",
+                parent,
+                new Vector2(0.05f, 0.20f),
+                new Vector2(0.95f, 0.80f),
+                Panel);
+
+            var tag = CreateText(
+                "Eyebrow",
+                panel.transform,
+                eyebrow,
+                19,
+                TextAnchor.UpperLeft);
+            tag.color = Active;
+            SetAnchors(
+                tag.rectTransform,
+                new Vector2(0.05f, 0.87f),
+                new Vector2(0.95f, 0.96f));
+
+            var title = CreateText(
+                "Headline",
+                panel.transform,
+                headline,
+                34,
+                TextAnchor.UpperLeft);
+            SetAnchors(
+                title.rectTransform,
+                new Vector2(0.05f, 0.72f),
+                new Vector2(0.95f, 0.88f));
+
+            var body = CreateText(
+                "Description",
+                panel.transform,
+                description,
+                22,
+                TextAnchor.UpperLeft);
+            body.color = SubtleText;
+            SetTextWrapping(body);
+            SetAnchors(
+                body.rectTransform,
+                new Vector2(0.05f, 0.57f),
+                new Vector2(0.95f, 0.73f));
+
+            CreateInfoCard(
+                panel.transform,
+                "PrimaryCard",
+                new Vector2(0.05f, 0.30f),
+                new Vector2(0.95f, 0.53f),
+                firstCard);
+
+            CreateInfoCard(
+                panel.transform,
+                "SecondaryCard",
+                new Vector2(0.05f, 0.05f),
+                new Vector2(0.95f, 0.28f),
+                secondCard);
+
+            return panel.gameObject;
+        }
+
+        private void CreateInfoCard(
+            Transform parent,
+            string name,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            RouteCard card)
+        {
+            var panel = CreatePanel(
+                name,
+                parent,
+                anchorMin,
+                anchorMax,
+                Card);
+
+            var tag = CreateText(
+                "Tag",
+                panel.transform,
+                card.Tag,
+                17,
+                TextAnchor.UpperLeft);
+            tag.color = Active;
+            SetAnchors(
+                tag.rectTransform,
+                new Vector2(0.04f, 0.68f),
+                new Vector2(0.96f, 0.92f));
+
+            var title = CreateText(
+                "Title",
+                panel.transform,
+                card.Title,
+                27,
+                TextAnchor.MiddleLeft);
+            SetAnchors(
+                title.rectTransform,
+                new Vector2(0.04f, 0.42f),
+                new Vector2(0.96f, 0.70f));
+
+            var body = CreateText(
+                "Body",
+                panel.transform,
+                card.Body,
+                19,
+                TextAnchor.UpperLeft);
+            body.color = SubtleText;
+            SetTextWrapping(body);
+            SetAnchors(
+                body.rectTransform,
+                new Vector2(0.04f, 0.08f),
+                new Vector2(0.96f, 0.43f));
+        }
+
+        private void BuildWorldCard(
+            Transform parent)
         {
             var card = CreatePanel(
                 "WorldStatusCard",
@@ -265,7 +484,8 @@ namespace LifePlayed.Client.Presentation.UI
                 new Vector2(0.93f, 0.62f));
         }
 
-        private void BuildQualityBar(Transform parent)
+        private void BuildQualityBar(
+            Transform parent)
         {
             var bar = CreatePanel(
                 "GraphicsQualityBar",
@@ -283,7 +503,9 @@ namespace LifePlayed.Client.Presentation.UI
                 GraphicsTier.High,
             };
 
-            for (var index = 0; index < tiers.Length; index++)
+            for (var index = 0;
+                index < tiers.Length;
+                index++)
             {
                 CreateQualityButton(
                     bar.transform,
@@ -302,20 +524,34 @@ namespace LifePlayed.Client.Presentation.UI
             var buttonObject = new GameObject(
                 route + "Button",
                 typeof(RectTransform));
-            buttonObject.transform.SetParent(parent, false);
+            buttonObject.transform.SetParent(
+                parent,
+                false);
 
-            var rect = (RectTransform)buttonObject.transform;
+            var rect =
+                (RectTransform)buttonObject.transform;
+
             var width = 1f / count;
-            rect.anchorMin = new Vector2(index * width + 0.01f, 0.12f);
-            rect.anchorMax = new Vector2((index + 1) * width - 0.01f, 0.88f);
+            rect.anchorMin =
+                new Vector2(
+                    index * width + 0.01f,
+                    0.12f);
+
+            rect.anchorMax =
+                new Vector2(
+                    (index + 1) * width - 0.01f,
+                    0.88f);
+
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            var image = buttonObject.AddComponent<Image>();
+            var image =
+                buttonObject.AddComponent<Image>();
             image.color = Inactive;
             _buttonImages[route] = image;
 
-            var button = buttonObject.AddComponent<Button>();
+            var button =
+                buttonObject.AddComponent<Button>();
             button.targetGraphic = image;
             button.onClick.AddListener(() =>
             {
@@ -343,20 +579,34 @@ namespace LifePlayed.Client.Presentation.UI
             var buttonObject = new GameObject(
                 tier + "QualityButton",
                 typeof(RectTransform));
-            buttonObject.transform.SetParent(parent, false);
+            buttonObject.transform.SetParent(
+                parent,
+                false);
 
-            var rect = (RectTransform)buttonObject.transform;
+            var rect =
+                (RectTransform)buttonObject.transform;
+
             var width = 1f / count;
-            rect.anchorMin = new Vector2(index * width + 0.025f, 0.15f);
-            rect.anchorMax = new Vector2((index + 1) * width - 0.025f, 0.85f);
+            rect.anchorMin =
+                new Vector2(
+                    index * width + 0.025f,
+                    0.15f);
+
+            rect.anchorMax =
+                new Vector2(
+                    (index + 1) * width - 0.025f,
+                    0.85f);
+
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            var image = buttonObject.AddComponent<Image>();
+            var image =
+                buttonObject.AddComponent<Image>();
             image.color = Inactive;
             _qualityImages[tier] = image;
 
-            var button = buttonObject.AddComponent<Button>();
+            var button =
+                buttonObject.AddComponent<Button>();
             button.targetGraphic = image;
             button.onClick.AddListener(() =>
             {
@@ -369,10 +619,42 @@ namespace LifePlayed.Client.Presentation.UI
             var label = CreateText(
                 "Label",
                 buttonObject.transform,
-                tier == GraphicsTier.Standard ? "Std" : tier.ToString(),
+                tier == GraphicsTier.Standard
+                    ? "Std"
+                    : tier.ToString(),
                 18,
                 TextAnchor.MiddleCenter);
             Stretch(label.rectTransform);
+        }
+
+        private void SetRoutePanelVisibility(
+            AppRoute route)
+        {
+            foreach (var pair in _routePanels)
+            {
+                pair.Value.SetActive(
+                    pair.Key == route);
+            }
+        }
+
+        private static string SubtitleFor(
+            AppRoute route)
+        {
+            switch (route)
+            {
+                case AppRoute.Home:
+                    return "Today • Life OS";
+                case AppRoute.Quests:
+                    return "Campaigns, habits & real-life quests";
+                case AppRoute.World:
+                    return "The Hearthwild • First World";
+                case AppRoute.Hero:
+                    return "Waykeeper • Wild Renewal";
+                case AppRoute.More:
+                    return "Settings • Mobile foundation";
+                default:
+                    return "Your life builds the world";
+            }
         }
 
         private static Image CreatePanel(
@@ -385,17 +667,25 @@ namespace LifePlayed.Client.Presentation.UI
             var panelObject = new GameObject(
                 name,
                 typeof(RectTransform));
-            panelObject.transform.SetParent(parent, false);
 
-            var rect = (RectTransform)panelObject.transform;
+            panelObject.transform.SetParent(
+                parent,
+                false);
+
+            var rect =
+                (RectTransform)panelObject.transform;
+
             rect.anchorMin = anchorMin;
             rect.anchorMax = anchorMax;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            var image = panelObject.AddComponent<Image>();
+            var image =
+                panelObject.AddComponent<Image>();
+
             image.color = color;
             image.raycastTarget = false;
+
             return image;
         }
 
@@ -409,17 +699,34 @@ namespace LifePlayed.Client.Presentation.UI
             var textObject = new GameObject(
                 name,
                 typeof(RectTransform));
-            textObject.transform.SetParent(parent, false);
 
-            var text = textObject.AddComponent<Text>();
+            textObject.transform.SetParent(
+                parent,
+                false);
+
+            var text =
+                textObject.AddComponent<Text>();
+
             text.text = value;
-            text.font = Resources.GetBuiltinResource<Font>(
-                "LegacyRuntime.ttf");
+            text.font =
+                Resources.GetBuiltinResource<Font>(
+                    "LegacyRuntime.ttf");
+
             text.fontSize = fontSize;
             text.alignment = alignment;
             text.color = TextColor;
             text.raycastTarget = false;
+
             return text;
+        }
+
+        private static void SetTextWrapping(
+            Text text)
+        {
+            text.horizontalOverflow =
+                HorizontalWrapMode.Wrap;
+            text.verticalOverflow =
+                VerticalWrapMode.Overflow;
         }
 
         private static void EnsureEventSystem()
@@ -433,7 +740,9 @@ namespace LifePlayed.Client.Presentation.UI
                 "EventSystem",
                 typeof(EventSystem),
                 typeof(InputSystemUIInputModule));
-            DontDestroyOnLoad(eventSystemObject);
+
+            DontDestroyOnLoad(
+                eventSystemObject);
         }
 
         private static void SetAnchors(
@@ -447,12 +756,32 @@ namespace LifePlayed.Client.Presentation.UI
             rect.offsetMax = Vector2.zero;
         }
 
-        private static void Stretch(RectTransform rect)
+        private static void Stretch(
+            RectTransform rect)
         {
             SetAnchors(
                 rect,
                 Vector2.zero,
                 Vector2.one);
+        }
+
+        private sealed class RouteCard
+        {
+            public RouteCard(
+                string tag,
+                string title,
+                string body)
+            {
+                Tag = tag;
+                Title = title;
+                Body = body;
+            }
+
+            public string Tag { get; }
+
+            public string Title { get; }
+
+            public string Body { get; }
         }
     }
 }
