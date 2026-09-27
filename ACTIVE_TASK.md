@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / Step 8: commerce & rewards architecture
+**State:** ACTIVE — product foundation / Step 9: privacy, security & fraud
 
 **Code implementation:** Not started intentionally.
 
@@ -488,6 +488,7 @@ Only after this Definition of Done is satisfied should production implementation
 - `docs/STORY_CONTENT_ARCHITECTURE.md` created and verified with complete V1 Saga spines for Wild Renewal and Gridfall plus reusable NPC, companion, seasonal, Archive, and player-Campaign content rules.
 - `docs/UNITY_MOBILE_ARCHITECTURE.md` created and verified with URP/mobile layering, offline local persistence, sync boundaries, Addressables direction, graphics tiers, Android/iOS platform isolation, and free-tier milestone build policy.
 - `docs/BACKEND_ARCHITECTURE.md` created and verified with modular-monolith boundaries, PostgreSQL, BFF/API isolation, idempotency/outbox, workers, provider adapters, observability, recovery, and growth scaling.
+- `docs/COMMERCE_REWARDS_ARCHITECTURE.md` created and verified with Need Graph, Deal Scout, affiliate attribution, offer freshness, Sponsored Quest, future visit/purchase evidence, cashback settlement/reversal, and reconciliation boundaries.
 - No production code has been added yet.
 
 ---
@@ -506,8 +507,9 @@ Current repository baseline contains:
 - `docs/STORY_CONTENT_ARCHITECTURE.md`
 - `docs/UNITY_MOBILE_ARCHITECTURE.md`
 - `docs/BACKEND_ARCHITECTURE.md`
+- `docs/COMMERCE_REWARDS_ARCHITECTURE.md`
 
-README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, and backend specifications are verified readable on `main`; authoritative state, async work, provider portability, recovery, and scale-up boundaries are explicit.
+README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, backend, and commerce/reward specifications are verified readable on `main`; player Need/offer relevance is separated from developer revenue and real-money rewards are separated from gameplay economy.
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -565,4 +567,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Define the **commerce & rewards architecture** in-repo: lock the Need Graph, Deal Scout ranking, offer/coupon ingestion, affiliate attribution, future location/purchase evidence, Sponsored Quest lifecycle, cashback/settlement/reversal model, provider reconciliation, and the separation between player savings, developer revenue, and game progression.
+Define the **privacy, security & fraud model** in-repo: lock consent, sensitive-data exclusions, retention/minimization, account/device security, attestation, abuse controls, location spoofing defenses, evidence trust tiers, manual review, disclosure, deletion, and the rules that protect legitimate users from false fraud decisions.
