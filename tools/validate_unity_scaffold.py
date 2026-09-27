@@ -265,15 +265,20 @@ app_shell_code = (
     / "AppShellPresenter.cs"
 ).read_text(encoding="utf-8")
 
-for route_panel in (
-    "HomeRoutePanel",
-    "QuestsRoutePanel",
-    "HeroRoutePanel",
-    "MoreRoutePanel",
+if 'route + "RoutePanel"' not in app_shell_code:
+    raise SystemExit(
+        "Playable Build #1 route panels must use stable route-derived names."
+    )
+
+for route_registration in (
+    "_routePanels[AppRoute.Home]",
+    "_routePanels[AppRoute.Quests]",
+    "_routePanels[AppRoute.Hero]",
+    "_routePanels[AppRoute.More]",
 ):
-    if route_panel not in app_shell_code:
+    if route_registration not in app_shell_code:
         raise SystemExit(
-            f"Playable Build #1 route body is missing: {route_panel}"
+            f"Playable Build #1 route body is missing: {route_registration}"
         )
 
 for fragment in (
