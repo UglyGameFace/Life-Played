@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 1 / final validation & cleanup
+**State:** ACTIVE — Milestone 1 / completion-gap repair
 
 **Unity cloud usage:** 0 minutes required by this milestone.
 
@@ -196,7 +196,8 @@ Implemented on `feat/headless-core-skeleton`:
 - Versioned `EconomyRulesV1` for account XP, skill XP, duration/effort scoring, duplicate diminishing returns, focus taper, and Momentum bounds.
 - ProgressionEvent and RewardGrant primitives.
 - ClientMutation offline/idempotency primitive.
-- xUnit v3 / Microsoft Testing Platform test project.
+- xUnit v3 / Microsoft Testing Platform domain test project.
+- PostgreSQL integration-test harness using Testcontainers + Npgsql.
 - Headless GitHub Actions CI.
 - Corrected the XP table in `docs/GAME_ECONOMY.md` to exactly match its formula.
 - Updated GitHub Actions to Node 24-based current majors.
@@ -216,7 +217,16 @@ Validation history:
   - Build warnings: 0
   - Build errors: 0
   - Tests: 30 succeeded, 0 failed, 0 skipped
-- Final expanded regression coverage and exact-head CI are pending this cleanup commit.
+- Exact PR head `ffd88dd2ad07700c83dd00f1e52b08a37803a2b5`: Headless CI run #6 succeeded.
+  - Restore: success
+  - Release build: success
+  - Build warnings: 0
+  - Build errors: 0
+  - Tests: 40 succeeded, 0 failed, 0 skipped
+- PR #1 merged as `5c09a5cf3ea57f4af6f11ef7024d8bff72214994`.
+- Post-merge main Headless CI run #7 succeeded with 40/40 tests.
+- Completion audit then found one scope gap: the written Milestone 1 plan required a unit/integration test project structure and PostgreSQL test infrastructure, while PR #1 contained only domain unit tests.
+- This repair adds the missing real PostgreSQL integration harness before Milestone 1 is closed.
 
 ---
 
@@ -248,4 +258,4 @@ Immediate next milestone after successful completion is:
 
 ## Next step
 
-Create a dedicated Milestone 1 branch and scaffold the .NET 10 headless projects and tests.
+Complete the missing PostgreSQL integration-test harness, validate it on exact head and post-merge main, then close Milestone 1 and activate Milestone 2.
