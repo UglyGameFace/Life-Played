@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / Step 2: V1 scope lock
+**State:** ACTIVE — product foundation / Step 3: core domain model
 
 **Code implementation:** Not started intentionally.
 
@@ -458,7 +458,7 @@ The product foundation must be completed in this order before production impleme
 This active task is complete only when:
 
 - [x] The Master Product Bible exists in-repo and reflects the agreed product.
-- [ ] V1 scope and explicit post-V1 backlog are documented.
+- [x] V1 scope and explicit post-V1 backlog are documented.
 - [ ] Core gameplay loop and progression rules are defined well enough to implement without inventing behavior ad hoc.
 - [ ] Identity-world/story architecture is documented.
 - [ ] Commerce, Deal Scout, location/reward, and fraud boundaries are documented.
@@ -482,6 +482,7 @@ Only after this Definition of Done is satisfied should production implementation
 - Existing README reviewed.
 - `ACTIVE_TASK.md` established as the active-task source of truth.
 - `docs/MASTER_PRODUCT_BIBLE.md` created and verified as the authoritative product definition.
+- `docs/V1_SCOPE.md` created and verified as the authoritative V1 boundary and post-V1 backlog.
 - No production code has been added yet.
 
 ---
@@ -494,8 +495,9 @@ Current repository baseline contains:
 - `README.md`
 - `ACTIVE_TASK.md` (this file)
 - `docs/MASTER_PRODUCT_BIBLE.md`
+- `docs/V1_SCOPE.md`
 
-README aligns with the high-level product direction, and the Master Product Bible has been verified readable on `main` (32,566 characters at this checkpoint).
+README aligns with the high-level product direction. The Master Product Bible and V1 Scope are both verified readable on `main`; the V1 scope explicitly separates launch requirements from the post-V1 backlog.
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -553,4 +555,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Lock the **V1 scope boundary** in-repo: define the smallest complete Play Store/App Store release that proves the real-life → 3D-world loop, and explicitly move nonessential systems into a post-V1 backlog without weakening the long-term architecture.
+Define the **core domain model** in-repo: establish the authoritative entities, ownership boundaries, relationships, lifecycle/state models, and server-vs-client authority for accounts, actions, quests, campaigns, progression, worlds, companions, Chronicle, commerce needs/offers, evidence/rewards, and entitlements.
