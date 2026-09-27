@@ -1,0 +1,18 @@
+{
+  "name": "LifePlayed.Client.Presentation.UI",
+  "rootNamespace": "LifePlayed.Client.Presentation.UI",
+  "references": [
+    "LifePlayed.Client.Application",
+    "LifePlayed.Client.DomainBridge",
+    "Unity.ugui"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

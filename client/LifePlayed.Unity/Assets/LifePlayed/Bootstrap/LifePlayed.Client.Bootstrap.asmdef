@@ -1,0 +1,21 @@
+{
+  "name": "LifePlayed.Client.Bootstrap",
+  "rootNamespace": "LifePlayed.Client.Bootstrap",
+  "references": [
+    "LifePlayed.Client.DomainBridge",
+    "LifePlayed.Client.Application",
+    "LifePlayed.Client.Infrastructure",
+    "LifePlayed.Client.Presentation.UI",
+    "LifePlayed.Client.Presentation.World",
+    "LifePlayed.Client.Platform"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

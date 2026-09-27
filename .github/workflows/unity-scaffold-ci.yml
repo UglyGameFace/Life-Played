@@ -1,0 +1,33 @@
+name: Unity Scaffold CI
+
+on:
+  pull_request:
+    paths:
+      - "client/LifePlayed.Unity/**"
+      - "tools/validate_unity_scaffold.py"
+      - ".gitignore"
+      - ".github/workflows/unity-scaffold-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "client/LifePlayed.Unity/**"
+      - "tools/validate_unity_scaffold.py"
+      - ".gitignore"
+      - ".github/workflows/unity-scaffold-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate Unity scaffold
+        run: python3 tools/validate_unity_scaffold.py
