@@ -8,6 +8,9 @@ public sealed class ContentEngineTests
     private static readonly string ReleaseDirectory =
         Path.Combine(AppContext.BaseDirectory, "Fixtures", "wild-renewal-v1");
 
+    private static readonly string[] PostV1FeatureFixture =
+        ["background_location_rewards"];
+
     [Fact]
     public async Task WildRenewalReleaseLoadsAndValidatesEndToEnd()
     {
@@ -139,7 +142,7 @@ public sealed class ContentEngineTests
         var chapter = release.Chapters[0] with
         {
             RequiredFeatures = release.Chapters[0].RequiredFeatures
-                .Concat(new[] { "background_location_rewards" })
+                .Concat(PostV1FeatureFixture)
                 .ToArray(),
         };
         var broken = ReplaceChapter(release, chapter);
@@ -274,7 +277,7 @@ public sealed class ContentEngineTests
                 .ToArray(),
         };
 
-    private static IReadOnlyList<StoryNodeDefinition> ReplaceNode(
+    private static StoryNodeDefinition[] ReplaceNode(
         IReadOnlyList<StoryNodeDefinition> nodes,
         StoryNodeDefinition replacement) =>
         nodes
