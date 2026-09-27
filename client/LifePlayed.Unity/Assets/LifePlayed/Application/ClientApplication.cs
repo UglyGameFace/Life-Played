@@ -82,6 +82,8 @@ namespace LifePlayed.Client.Application
         bool IsPaused { get; }
 
         event Action<bool> PauseChanged;
+
+        event Action LowMemory;
     }
 
     public interface IGraphicsQualityController

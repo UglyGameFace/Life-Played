@@ -290,3 +290,42 @@ for fragment in (
         raise SystemExit(
             f"Unity build preflight is missing: {fragment}"
         )
+
+
+lifecycle_code = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Platform"
+    / "PlatformLifecycleBridge.cs"
+).read_text(encoding="utf-8")
+
+bootstrap_code = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Bootstrap"
+    / "LifePlayedBootstrap.cs"
+).read_text(encoding="utf-8")
+
+for fragment in (
+    "Application.lowMemory +=",
+    "OnApplicationPause(",
+    "OnApplicationFocus(",
+):
+    if fragment not in lifecycle_code:
+        raise SystemExit(
+            f"Mobile lifecycle bridge is missing: {fragment}"
+        )
+
+for fragment in (
+    "_lifecycle.PauseChanged +=",
+    "_lifecycle.LowMemory +=",
+    "Resources.UnloadUnusedAssets();",
+    "GraphicsTier.Reduced",
+    "UpdateWorldPresentation();",
+):
+    if fragment not in bootstrap_code:
+        raise SystemExit(
+            f"Mobile lifecycle handling is missing: {fragment}"
+        )

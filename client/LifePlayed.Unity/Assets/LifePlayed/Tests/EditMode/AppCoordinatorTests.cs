@@ -36,6 +36,8 @@ namespace LifePlayed.Client.Tests.EditMode
             public bool IsPaused { get; private set; }
 
             public event System.Action<bool> PauseChanged = delegate { };
+
+            public event System.Action LowMemory = delegate { };
         }
     }
 }

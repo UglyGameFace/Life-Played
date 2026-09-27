@@ -17,6 +17,7 @@ namespace LifePlayed.Client.Presentation.UI
         private float _smoothedFps;
         private bool _worldRenderingActive;
         private string _contentStatus = "CONTENT …";
+        private string _runtimeStatus = "READY";
 
         public void Bind(
             AppCoordinator coordinator,
@@ -53,6 +54,12 @@ namespace LifePlayed.Client.Presentation.UI
         public void SetContentStatus(string status)
         {
             _contentStatus = status;
+            Refresh();
+        }
+
+        public void SetRuntimeStatus(string status)
+        {
+            _runtimeStatus = status;
             Refresh();
         }
 
@@ -166,6 +173,8 @@ namespace LifePlayed.Client.Presentation.UI
                 (_worldRenderingActive ? "ON" : "OFF") +
                 "\nContent " +
                 _contentStatus +
+                "  " +
+                _runtimeStatus +
                 "\nSafe " +
                 Mathf.RoundToInt(safeArea.width) +
                 "x" +

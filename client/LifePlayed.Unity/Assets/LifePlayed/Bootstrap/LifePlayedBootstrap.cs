@@ -24,6 +24,7 @@ namespace LifePlayed.Client.Bootstrap
         private RuntimeDiagnosticsPresenter _diagnostics;
         private IMobilePlatformProfile _platformProfile;
         private AppShellPresenter _shell;
+        private IPlatformLifecycle _lifecycle;
 
         public static LifePlayedBootstrap Instance => _instance;
 
@@ -57,6 +58,12 @@ namespace LifePlayed.Client.Bootstrap
             {
                 lifecycle = gameObject.AddComponent<PlatformLifecycleBridge>();
             }
+
+            _lifecycle = lifecycle;
+            _lifecycle.PauseChanged +=
+                OnPauseChanged;
+            _lifecycle.LowMemory +=
+                OnLowMemory;
 
             _quality = GetComponent<GraphicsQualityController>();
             if (_quality == null)
@@ -95,6 +102,14 @@ namespace LifePlayed.Client.Bootstrap
             {
                 _shell.CompanionCallRequested -=
                     OnCompanionCallRequested;
+            }
+
+            if (_lifecycle != null)
+            {
+                _lifecycle.PauseChanged -=
+                    OnPauseChanged;
+                _lifecycle.LowMemory -=
+                    OnLowMemory;
             }
         }
 
@@ -238,7 +253,43 @@ namespace LifePlayed.Client.Bootstrap
                 LastRouteKey,
                 route.ToString());
 
-            var worldActive = route == AppRoute.World;
+            UpdateWorldPresentation();
+        }
+
+        private void OnPauseChanged(bool paused)
+        {
+            UpdateWorldPresentation();
+
+            if (_diagnostics != null)
+            {
+                _diagnostics.SetRuntimeStatus(
+                    paused
+                        ? "SUSPENDED"
+                        : "RESUMED");
+            }
+        }
+
+        private void OnLowMemory()
+        {
+            _quality.Apply(
+                GraphicsTier.Reduced);
+
+            Resources.UnloadUnusedAssets();
+
+            if (_diagnostics != null)
+            {
+                _diagnostics.SetRuntimeStatus(
+                    "LOW MEMORY • REDUCED");
+            }
+        }
+
+        private void UpdateWorldPresentation()
+        {
+            var worldActive =
+                _coordinator != null &&
+                _coordinator.CurrentRoute ==
+                    AppRoute.World &&
+                !_coordinator.IsPaused;
 
             if (_worldHub != null)
             {
