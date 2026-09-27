@@ -17,6 +17,13 @@ required = [
     UNITY / "Assets" / "LifePlayed" / "Bootstrap" / "LifePlayed.Client.Bootstrap.asmdef",
     UNITY / "Assets" / "LifePlayed" / "Tests" / "EditMode" / "LifePlayed.Client.Tests.EditMode.asmdef",
     UNITY / "Assets" / "LifePlayed" / "Tests" / "PlayMode" / "LifePlayed.Client.Tests.PlayMode.asmdef",
+    UNITY / "Assets" / "LifePlayed" / "Bootstrap" / "LifePlayedBootstrap.cs",
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "AppShellPresenter.cs",
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "SafeAreaFitter.cs",
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "GraphicsQualityController.cs",
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "PrototypeWildRenewalHub.cs",
+    UNITY / "Assets" / "LifePlayed" / "Editor" / "LifePlayedProjectConfigurator.cs",
+    UNITY / "Assets" / "LifePlayed" / "Editor" / "LifePlayedAndroidBuild.cs",
 ]
 
 missing = [str(path.relative_to(ROOT)) for path in required if not path.is_file()]

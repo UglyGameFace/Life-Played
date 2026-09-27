@@ -20,7 +20,7 @@ namespace LifePlayed.Client.DomainBridge
         public string accountId = string.Empty;
         public string deviceId = string.Empty;
         public long sinceCursor;
-        public List<ClientSyncMutation> mutations = new();
+        public List<ClientSyncMutation> mutations = new List<ClientSyncMutation>();
     }
 
     [Serializable]

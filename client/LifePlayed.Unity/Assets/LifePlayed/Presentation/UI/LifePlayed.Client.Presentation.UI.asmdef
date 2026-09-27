@@ -4,6 +4,7 @@
   "references": [
     "LifePlayed.Client.Application",
     "LifePlayed.Client.DomainBridge",
+    "Unity.InputSystem",
     "Unity.ugui"
   ],
   "includePlatforms": [],

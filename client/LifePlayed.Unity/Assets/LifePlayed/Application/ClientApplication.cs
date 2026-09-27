@@ -24,13 +24,13 @@ namespace LifePlayed.Client.Application
 
     public interface IClientContentGateway
     {
-        Task<ClientContentManifest?> GetActiveManifestAsync(
+        Task<ClientContentManifest> GetActiveManifestAsync(
             CancellationToken cancellationToken);
     }
 
     public interface ILocalStateStore
     {
-        string? Read(string key);
+        string Read(string key);
 
         void Write(string key, string value);
 
@@ -46,14 +46,14 @@ namespace LifePlayed.Client.Application
     {
         bool IsPaused { get; }
 
-        event Action<bool>? PauseChanged;
+        event Action<bool> PauseChanged;
     }
 
     public interface IAppNavigator
     {
         AppRoute CurrentRoute { get; }
 
-        event Action<AppRoute>? RouteChanged;
+        event Action<AppRoute> RouteChanged;
 
         void Navigate(AppRoute route);
     }
@@ -74,6 +74,12 @@ namespace LifePlayed.Client.Application
         public AppRoute CurrentRoute => _navigator.CurrentRoute;
 
         public bool IsPaused => _lifecycle.IsPaused;
+
+        public event Action<AppRoute> RouteChanged
+        {
+            add => _navigator.RouteChanged += value;
+            remove => _navigator.RouteChanged -= value;
+        }
 
         public void Open(AppRoute route) => _navigator.Navigate(route);
     }
