@@ -22,6 +22,7 @@ required = [
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "SafeAreaFitter.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "GraphicsQualityController.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "PrototypeWildRenewalHub.cs",
+    UNITY / "Assets" / "LifePlayed" / "Presentation" / "World" / "PrototypeAmbientWisp.cs",
     UNITY / "Assets" / "LifePlayed" / "Editor" / "LifePlayedProjectConfigurator.cs",
     UNITY / "Assets" / "LifePlayed" / "Editor" / "LifePlayedAndroidBuild.cs",
 ]

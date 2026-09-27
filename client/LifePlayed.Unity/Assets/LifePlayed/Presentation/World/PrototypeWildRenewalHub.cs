@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace LifePlayed.Client.Presentation.World
 {
@@ -6,10 +7,14 @@ namespace LifePlayed.Client.Presentation.World
     public sealed class PrototypeWildRenewalHub : MonoBehaviour
     {
         private Material _grass;
+        private Material _grassLight;
         private Material _wood;
         private Material _stone;
+        private Material _stoneDark;
         private Material _glow;
         private Material _hero;
+        private Material _soil;
+        private Material _water;
 
         private void Awake()
         {
@@ -19,23 +24,33 @@ namespace LifePlayed.Client.Presentation.World
         private void Build()
         {
             CreateMaterials();
+            ConfigureAtmosphere();
             CreateLight();
-            CreateGround();
+            CreateIslandLayers();
+            CreateMossPath();
             CreateHearth();
             CreateTrees();
             CreateWaystones();
+            CreateDormantLandmarks();
+            CreateAmbientWisps();
 
             var heroRoot = new GameObject("Waykeeper");
             heroRoot.transform.SetParent(transform, false);
-            heroRoot.transform.position = new Vector3(0f, 0.3f, 0f);
-            var character = heroRoot.AddComponent<PrototypeCharacterPresenter>();
-            character.Build(_hero, _wood);
+            heroRoot.transform.position = new Vector3(0f, 0.34f, -1.45f);
 
-            var companionRoot = new GameObject("StarterCompanion");
+            var character = heroRoot.AddComponent<PrototypeCharacterPresenter>();
+            character.Build(_hero, _wood, _glow);
+
+            var companionRoot = new GameObject("LeafglowFox");
             companionRoot.transform.SetParent(transform, false);
-            companionRoot.transform.position = new Vector3(1.6f, 1.15f, 0.75f);
+            companionRoot.transform.position = new Vector3(1.55f, 0.42f, -0.72f);
+
             var companion = companionRoot.AddComponent<PrototypeCompanionPresenter>();
-            companion.Build(_grass, _glow);
+            companion.Build(_grassLight, _glow);
+
+            var cameraFocus = new GameObject("WorldCameraFocus");
+            cameraFocus.transform.SetParent(transform, false);
+            cameraFocus.transform.position = new Vector3(0f, 0.45f, 0.62f);
 
             var camera = EnsureCamera();
             var orbit = camera.GetComponent<TouchOrbitCamera>();
@@ -44,91 +59,431 @@ namespace LifePlayed.Client.Presentation.World
                 orbit = camera.gameObject.AddComponent<TouchOrbitCamera>();
             }
 
-            orbit.SetTarget(heroRoot.transform);
+            orbit.SetTarget(cameraFocus.transform);
         }
 
         private void CreateMaterials()
         {
-            _grass = CreateMaterial(new Color32(59, 118, 76, 255), 0.15f, 0.18f);
-            _wood = CreateMaterial(new Color32(130, 84, 53, 255), 0.05f, 0.28f);
-            _stone = CreateMaterial(new Color32(93, 108, 101, 255), 0.0f, 0.20f);
-            _glow = CreateMaterial(new Color32(109, 245, 174, 255), 0.0f, 0.08f);
-            _hero = CreateMaterial(new Color32(63, 73, 68, 255), 0.0f, 0.35f);
+            _grass = CreateMaterial(
+                new Color32(52, 116, 73, 255),
+                0.05f,
+                0.18f);
+
+            _grassLight = CreateMaterial(
+                new Color32(105, 166, 93, 255),
+                0.02f,
+                0.22f);
+
+            _wood = CreateMaterial(
+                new Color32(124, 81, 52, 255),
+                0.03f,
+                0.24f);
+
+            _stone = CreateMaterial(
+                new Color32(100, 114, 105, 255),
+                0.0f,
+                0.20f);
+
+            _stoneDark = CreateMaterial(
+                new Color32(59, 74, 68, 255),
+                0.0f,
+                0.14f);
+
+            _glow = CreateMaterial(
+                new Color32(104, 238, 167, 255),
+                0.0f,
+                0.18f,
+                new Color32(86, 255, 166, 255));
+
+            _hero = CreateMaterial(
+                new Color32(59, 69, 65, 255),
+                0.04f,
+                0.34f);
+
+            _soil = CreateMaterial(
+                new Color32(74, 61, 47, 255),
+                0.0f,
+                0.12f);
+
+            _water = CreateMaterial(
+                new Color32(48, 106, 105, 255),
+                0.08f,
+                0.72f);
         }
 
-        private void CreateGround()
+        private void ConfigureAtmosphere()
         {
-            var ground = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            ground.name = "HearthwildIsland";
-            ground.transform.SetParent(transform, false);
-            ground.transform.localPosition = new Vector3(0f, -0.30f, 0f);
-            ground.transform.localScale = new Vector3(7.6f, 0.28f, 7.6f);
-            ground.GetComponent<Renderer>().sharedMaterial = _grass;
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color32(91, 123, 105, 255);
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.ExponentialSquared;
+            RenderSettings.fogColor = new Color32(29, 54, 47, 255);
+            RenderSettings.fogDensity = 0.010f;
+        }
+
+        private void CreateIslandLayers()
+        {
+            CreatePrimitive(
+                "HearthwildSoil",
+                PrimitiveType.Cylinder,
+                new Vector3(0f, -0.52f, 0f),
+                new Vector3(8.0f, 0.46f, 8.0f),
+                Vector3.zero,
+                _soil);
+
+            CreatePrimitive(
+                "HearthwildIsland",
+                PrimitiveType.Cylinder,
+                new Vector3(0f, -0.24f, 0f),
+                new Vector3(7.65f, 0.22f, 7.65f),
+                Vector3.zero,
+                _grass);
+
+            CreatePrimitive(
+                "RainPool",
+                PrimitiveType.Cylinder,
+                new Vector3(3.85f, -0.06f, 0.55f),
+                new Vector3(1.15f, 0.035f, 1.15f),
+                Vector3.zero,
+                _water);
+
+            for (var index = 0; index < 12; index++)
+            {
+                var angle = index * Mathf.PI * 2f / 12f;
+                var radius = 6.9f + (index % 3) * 0.18f;
+
+                CreatePrimitive(
+                    "IslandEdgeStone_" + index,
+                    PrimitiveType.Sphere,
+                    new Vector3(
+                        Mathf.Cos(angle) * radius,
+                        -0.10f,
+                        Mathf.Sin(angle) * radius),
+                    new Vector3(
+                        0.72f + (index % 2) * 0.16f,
+                        0.36f,
+                        0.58f),
+                    new Vector3(
+                        index * 3f,
+                        -angle * Mathf.Rad2Deg,
+                        index % 2 == 0 ? 7f : -5f),
+                    _stoneDark);
+            }
+        }
+
+        private void CreateMossPath()
+        {
+            var pathRoot = new GameObject("MossPath");
+            pathRoot.transform.SetParent(transform, false);
+
+            for (var index = 0; index < 9; index++)
+            {
+                var t = index / 8f;
+                var x = Mathf.Sin(index * 1.27f) * 0.20f;
+                var z = Mathf.Lerp(-3.65f, 1.40f, t);
+                var scale = 0.72f + (index % 3) * 0.08f;
+
+                CreatePrimitive(
+                    "PathStone_" + index,
+                    PrimitiveType.Cylinder,
+                    new Vector3(x, 0.02f, z),
+                    new Vector3(scale, 0.07f, scale * 0.82f),
+                    new Vector3(0f, index * 13f, 0f),
+                    index % 3 == 0 ? _grassLight : _stone,
+                    pathRoot.transform);
+            }
         }
 
         private void CreateHearth()
         {
-            var ring = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            ring.name = "CentralHearth";
-            ring.transform.SetParent(transform, false);
-            ring.transform.localPosition = new Vector3(0f, 0.05f, 2.25f);
-            ring.transform.localScale = new Vector3(1.1f, 0.18f, 1.1f);
-            ring.GetComponent<Renderer>().sharedMaterial = _stone;
+            var hearthRoot = new GameObject("CentralHearth");
+            hearthRoot.transform.SetParent(transform, false);
+            hearthRoot.transform.localPosition = new Vector3(0f, 0f, 2.28f);
 
-            var bloom = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            bloom.name = "QuietBloom";
-            bloom.transform.SetParent(transform, false);
-            bloom.transform.localPosition = new Vector3(0f, 0.62f, 2.25f);
-            bloom.transform.localScale = Vector3.one * 0.48f;
-            bloom.GetComponent<Renderer>().sharedMaterial = _glow;
+            for (var index = 0; index < 10; index++)
+            {
+                var angle = index * Mathf.PI * 2f / 10f;
+
+                CreatePrimitive(
+                    "HearthStone_" + index,
+                    PrimitiveType.Sphere,
+                    new Vector3(
+                        Mathf.Cos(angle) * 1.12f,
+                        0.16f,
+                        Mathf.Sin(angle) * 1.12f),
+                    new Vector3(0.54f, 0.26f, 0.40f),
+                    new Vector3(0f, -angle * Mathf.Rad2Deg, 0f),
+                    _stone,
+                    hearthRoot.transform);
+            }
+
+            CreatePrimitive(
+                "HearthBasin",
+                PrimitiveType.Cylinder,
+                new Vector3(0f, 0.10f, 0f),
+                new Vector3(0.90f, 0.12f, 0.90f),
+                Vector3.zero,
+                _stoneDark,
+                hearthRoot.transform);
+
+            var bloomRoot = new GameObject("QuietBloom");
+            bloomRoot.transform.SetParent(hearthRoot.transform, false);
+            bloomRoot.transform.localPosition = new Vector3(0f, 0.62f, 0f);
+
+            for (var index = 0; index < 5; index++)
+            {
+                var angle = index * 360f / 5f;
+
+                CreatePrimitive(
+                    "BloomPetal_" + index,
+                    PrimitiveType.Sphere,
+                    Quaternion.Euler(0f, angle, 0f) *
+                        new Vector3(0f, 0f, 0.34f),
+                    new Vector3(0.22f, 0.10f, 0.45f),
+                    new Vector3(20f, angle, 0f),
+                    _glow,
+                    bloomRoot.transform);
+            }
+
+            CreatePrimitive(
+                "BloomCore",
+                PrimitiveType.Sphere,
+                Vector3.zero,
+                Vector3.one * 0.34f,
+                Vector3.zero,
+                _glow,
+                bloomRoot.transform);
+
+            var hearthLightObject = new GameObject("HearthLight");
+            hearthLightObject.transform.SetParent(hearthRoot.transform, false);
+            hearthLightObject.transform.localPosition = new Vector3(0f, 1.05f, 0f);
+
+            var hearthLight = hearthLightObject.AddComponent<Light>();
+            hearthLight.type = LightType.Point;
+            hearthLight.color = new Color32(112, 255, 181, 255);
+            hearthLight.intensity = 2.2f;
+            hearthLight.range = 5.5f;
+            hearthLight.shadows = LightShadows.None;
         }
 
         private void CreateTrees()
         {
-            for (var index = 0; index < 9; index++)
+            var treeRoot = new GameObject("HearthwildGrove");
+            treeRoot.transform.SetParent(transform, false);
+
+            for (var index = 0; index < 12; index++)
             {
-                var angle = index * Mathf.PI * 2f / 9f;
-                var radius = 5.2f + (index % 2) * 0.7f;
+                var angle = index * Mathf.PI * 2f / 12f + 0.18f;
+                var radius = 5.25f + (index % 2) * 0.82f;
+                var height = 1.95f + (index % 4) * 0.22f;
                 var position = new Vector3(
                     Mathf.Cos(angle) * radius,
                     0f,
                     Mathf.Sin(angle) * radius);
 
-                var trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                trunk.name = "RenewalTree_" + index;
-                trunk.transform.SetParent(transform, false);
-                trunk.transform.localPosition = position + Vector3.up * 1.0f;
-                trunk.transform.localScale = new Vector3(0.32f, 1.0f + index % 3 * 0.12f, 0.32f);
-                trunk.GetComponent<Renderer>().sharedMaterial = _wood;
+                var trunk = CreatePrimitive(
+                    "RenewalTree_" + index,
+                    PrimitiveType.Cylinder,
+                    position + Vector3.up * height * 0.50f,
+                    new Vector3(0.28f, height * 0.50f, 0.28f),
+                    new Vector3(
+                        index % 3 == 0 ? 3f : -2f,
+                        index * 7f,
+                        index % 2 == 0 ? 2f : -3f),
+                    _wood,
+                    treeRoot.transform);
 
-                var crown = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                crown.name = "Crown";
-                crown.transform.SetParent(trunk.transform, false);
-                crown.transform.localPosition = new Vector3(0f, 1.45f, 0f);
-                crown.transform.localScale = new Vector3(2.6f, 1.8f, 2.6f);
-                crown.GetComponent<Renderer>().sharedMaterial = _grass;
+                CreatePrimitive(
+                    "CrownA",
+                    PrimitiveType.Sphere,
+                    new Vector3(-0.26f, 1.28f, 0f),
+                    new Vector3(1.55f, 0.95f, 1.45f),
+                    Vector3.zero,
+                    index % 3 == 0 ? _grassLight : _grass,
+                    trunk.transform);
+
+                CreatePrimitive(
+                    "CrownB",
+                    PrimitiveType.Sphere,
+                    new Vector3(0.30f, 1.52f, 0.18f),
+                    new Vector3(1.35f, 0.88f, 1.30f),
+                    Vector3.zero,
+                    _grass,
+                    trunk.transform);
+
+                CreatePrimitive(
+                    "CrownC",
+                    PrimitiveType.Sphere,
+                    new Vector3(0f, 1.78f, -0.12f),
+                    new Vector3(1.12f, 0.72f, 1.10f),
+                    Vector3.zero,
+                    _grassLight,
+                    trunk.transform);
             }
         }
 
         private void CreateWaystones()
         {
+            var waystoneRoot = new GameObject("Waystones");
+            waystoneRoot.transform.SetParent(transform, false);
+
             for (var index = 0; index < 6; index++)
             {
-                var angle = index * Mathf.PI * 2f / 6f + 0.4f;
-                var stone = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                stone.name = "Waystone_" + index;
-                stone.transform.SetParent(transform, false);
-                stone.transform.localPosition = new Vector3(
-                    Mathf.Cos(angle) * 3.8f,
-                    0.55f,
-                    Mathf.Sin(angle) * 3.8f);
-                stone.transform.localScale = new Vector3(0.45f, 1.1f, 0.32f);
-                stone.transform.localRotation = Quaternion.Euler(
-                    4f * index,
-                    -angle * Mathf.Rad2Deg,
-                    index % 2 == 0 ? 5f : -6f);
-                stone.GetComponent<Renderer>().sharedMaterial =
-                    index == 0 ? _glow : _stone;
+                var angle = index * Mathf.PI * 2f / 6f + 0.40f;
+
+                var stone = CreatePrimitive(
+                    "Waystone_" + index,
+                    PrimitiveType.Cube,
+                    new Vector3(
+                        Mathf.Cos(angle) * 3.95f,
+                        0.55f,
+                        Mathf.Sin(angle) * 3.95f),
+                    new Vector3(0.46f, 1.14f, 0.32f),
+                    new Vector3(
+                        4f * index,
+                        -angle * Mathf.Rad2Deg,
+                        index % 2 == 0 ? 5f : -6f),
+                    index == 0 ? _glow : _stoneDark,
+                    waystoneRoot.transform);
+
+                if (index > 0)
+                {
+                    CreatePrimitive(
+                        "WaystoneRune_" + index,
+                        PrimitiveType.Sphere,
+                        new Vector3(0f, 0.12f, 0.55f),
+                        new Vector3(0.10f, 0.16f, 0.06f),
+                        Vector3.zero,
+                        _glow,
+                        stone.transform);
+                }
+            }
+        }
+
+        private void CreateDormantLandmarks()
+        {
+            var landmarks = new GameObject("DormantLandmarks");
+            landmarks.transform.SetParent(transform, false);
+
+            var workshop = new GameObject("DormantWorkshop");
+            workshop.transform.SetParent(landmarks.transform, false);
+            workshop.transform.localPosition = new Vector3(-4.15f, 0f, 1.25f);
+
+            CreatePrimitive(
+                "WorkshopFloor",
+                PrimitiveType.Cylinder,
+                new Vector3(0f, 0.04f, 0f),
+                new Vector3(1.25f, 0.08f, 1.25f),
+                Vector3.zero,
+                _stoneDark,
+                workshop.transform);
+
+            CreatePrimitive(
+                "WorkshopPostLeft",
+                PrimitiveType.Cube,
+                new Vector3(-0.72f, 0.86f, 0f),
+                new Vector3(0.18f, 1.72f, 0.18f),
+                new Vector3(0f, 0f, -4f),
+                _wood,
+                workshop.transform);
+
+            CreatePrimitive(
+                "WorkshopPostRight",
+                PrimitiveType.Cube,
+                new Vector3(0.72f, 0.86f, 0f),
+                new Vector3(0.18f, 1.72f, 0.18f),
+                new Vector3(0f, 0f, 4f),
+                _wood,
+                workshop.transform);
+
+            CreatePrimitive(
+                "WorkshopBeam",
+                PrimitiveType.Cube,
+                new Vector3(0f, 1.62f, 0f),
+                new Vector3(1.70f, 0.18f, 0.22f),
+                Vector3.zero,
+                _wood,
+                workshop.transform);
+
+            var gatheringPlace = new GameObject("GatheringPlace");
+            gatheringPlace.transform.SetParent(landmarks.transform, false);
+            gatheringPlace.transform.localPosition = new Vector3(4.10f, 0f, 2.15f);
+
+            for (var index = 0; index < 7; index++)
+            {
+                var angle = index * Mathf.PI * 2f / 7f;
+
+                CreatePrimitive(
+                    "GatheringStone_" + index,
+                    PrimitiveType.Sphere,
+                    new Vector3(
+                        Mathf.Cos(angle) * 1.18f,
+                        0.14f,
+                        Mathf.Sin(angle) * 1.18f),
+                    new Vector3(0.60f, 0.26f, 0.46f),
+                    Vector3.zero,
+                    _stoneDark,
+                    gatheringPlace.transform);
+            }
+
+            var arch = new GameObject("GroveArch");
+            arch.transform.SetParent(landmarks.transform, false);
+            arch.transform.localPosition = new Vector3(0f, 0f, 5.25f);
+
+            CreatePrimitive(
+                "ArchLeft",
+                PrimitiveType.Cube,
+                new Vector3(-0.92f, 1.10f, 0f),
+                new Vector3(0.32f, 2.20f, 0.42f),
+                new Vector3(0f, 0f, -7f),
+                _stoneDark,
+                arch.transform);
+
+            CreatePrimitive(
+                "ArchRight",
+                PrimitiveType.Cube,
+                new Vector3(0.92f, 1.10f, 0f),
+                new Vector3(0.32f, 2.20f, 0.42f),
+                new Vector3(0f, 0f, 7f),
+                _stoneDark,
+                arch.transform);
+
+            CreatePrimitive(
+                "ArchCrown",
+                PrimitiveType.Cube,
+                new Vector3(0f, 2.15f, 0f),
+                new Vector3(2.14f, 0.30f, 0.46f),
+                Vector3.zero,
+                _grass,
+                arch.transform);
+        }
+
+        private void CreateAmbientWisps()
+        {
+            var wispRoot = new GameObject("BloomWisps");
+            wispRoot.transform.SetParent(transform, false);
+
+            for (var index = 0; index < 8; index++)
+            {
+                var wisp = CreatePrimitive(
+                    "BloomWisp_" + index,
+                    PrimitiveType.Sphere,
+                    Vector3.zero,
+                    Vector3.one * (0.09f + (index % 3) * 0.025f),
+                    Vector3.zero,
+                    _glow,
+                    wispRoot.transform);
+
+                var motion = wisp.AddComponent<PrototypeAmbientWisp>();
+                motion.Configure(
+                    new Vector3(
+                        (index % 2 == 0 ? -1f : 1f) * (1.1f + index * 0.20f),
+                        0.80f + (index % 4) * 0.32f,
+                        1.2f + (index % 3) * 0.75f),
+                    0.22f + (index % 3) * 0.08f,
+                    22f + index * 4f,
+                    index * 41f,
+                    0.16f + (index % 2) * 0.08f);
             }
         }
 
@@ -141,12 +496,12 @@ namespace LifePlayed.Client.Presentation.World
 
             var lightObject = new GameObject("Sunlight");
             lightObject.transform.SetParent(transform, false);
-            lightObject.transform.rotation = Quaternion.Euler(42f, -28f, 0f);
+            lightObject.transform.rotation = Quaternion.Euler(46f, -32f, 0f);
 
             var light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.25f;
-            light.color = new Color32(255, 238, 207, 255);
+            light.intensity = 1.30f;
+            light.color = new Color32(255, 232, 199, 255);
             light.shadows = LightShadows.Soft;
         }
 
@@ -159,18 +514,50 @@ namespace LifePlayed.Client.Presentation.World
 
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
+
             var camera = cameraObject.AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color32(25, 45, 39, 255);
+            camera.backgroundColor = new Color32(24, 45, 39, 255);
             camera.nearClipPlane = 0.1f;
             camera.farClipPlane = 120f;
+            camera.fieldOfView = 43f;
+
             return camera;
+        }
+
+        private GameObject CreatePrimitive(
+            string name,
+            PrimitiveType primitiveType,
+            Vector3 localPosition,
+            Vector3 localScale,
+            Vector3 localEuler,
+            Material material,
+            Transform parentOverride = null)
+        {
+            var primitive = GameObject.CreatePrimitive(primitiveType);
+            primitive.name = name;
+            primitive.transform.SetParent(
+                parentOverride != null ? parentOverride : transform,
+                false);
+            primitive.transform.localPosition = localPosition;
+            primitive.transform.localScale = localScale;
+            primitive.transform.localRotation = Quaternion.Euler(localEuler);
+            primitive.GetComponent<Renderer>().sharedMaterial = material;
+
+            var collider = primitive.GetComponent<Collider>();
+            if (collider != null)
+            {
+                Destroy(collider);
+            }
+
+            return primitive;
         }
 
         private static Material CreateMaterial(
             Color color,
             float metallic,
-            float smoothness)
+            float smoothness,
+            Color? emission = null)
         {
             var shader = Shader.Find("Universal Render Pipeline/Lit");
             if (shader == null)
@@ -189,6 +576,12 @@ namespace LifePlayed.Client.Presentation.World
             if (material.HasProperty("_Smoothness"))
             {
                 material.SetFloat("_Smoothness", smoothness);
+            }
+
+            if (emission.HasValue && material.HasProperty("_EmissionColor"))
+            {
+                material.EnableKeyword("_EMISSION");
+                material.SetColor("_EmissionColor", emission.Value * 1.8f);
             }
 
             return material;

@@ -15,6 +15,13 @@ namespace LifePlayed.Client.Application
         More = 4,
     }
 
+    public enum GraphicsTier
+    {
+        Reduced = 0,
+        Standard = 1,
+        High = 2,
+    }
+
     public interface IClientSyncGateway
     {
         Task<IReadOnlyList<ClientSyncResult>> SyncAsync(
@@ -47,6 +54,15 @@ namespace LifePlayed.Client.Application
         bool IsPaused { get; }
 
         event Action<bool> PauseChanged;
+    }
+
+    public interface IGraphicsQualityController
+    {
+        GraphicsTier CurrentTier { get; }
+
+        event Action<GraphicsTier> TierChanged;
+
+        void Apply(GraphicsTier tier);
     }
 
     public interface IAppNavigator

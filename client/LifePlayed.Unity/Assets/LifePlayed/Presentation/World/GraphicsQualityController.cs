@@ -1,53 +1,63 @@
+using System;
+using LifePlayed.Client.Application;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace LifePlayed.Client.Presentation.World
 {
-    public enum LifePlayedGraphicsTier
-    {
-        Reduced = 0,
-        Standard = 1,
-        High = 2,
-    }
-
     [DisallowMultipleComponent]
-    public sealed class GraphicsQualityController : MonoBehaviour
+    public sealed class GraphicsQualityController :
+        MonoBehaviour,
+        IGraphicsQualityController
     {
         [SerializeField]
-        private LifePlayedGraphicsTier initialTier = LifePlayedGraphicsTier.Standard;
+        private GraphicsTier initialTier = GraphicsTier.Standard;
 
-        public LifePlayedGraphicsTier CurrentTier { get; private set; }
+        public GraphicsTier CurrentTier { get; private set; }
+
+        public event Action<GraphicsTier> TierChanged = delegate { };
 
         private void Awake()
         {
             Apply(initialTier);
         }
 
-        public void Apply(LifePlayedGraphicsTier tier)
+        public void Apply(GraphicsTier tier)
         {
             CurrentTier = tier;
 
             switch (tier)
             {
-                case LifePlayedGraphicsTier.Reduced:
+                case GraphicsTier.Reduced:
                     Application.targetFrameRate = 30;
                     QualitySettings.shadows = ShadowQuality.Disable;
+                    QualitySettings.shadowDistance = 0f;
                     SetRenderScale(0.72f);
                     break;
 
-                case LifePlayedGraphicsTier.Standard:
+                case GraphicsTier.Standard:
                     Application.targetFrameRate = 30;
                     QualitySettings.shadows = ShadowQuality.HardOnly;
+                    QualitySettings.shadowDistance = 28f;
                     SetRenderScale(0.90f);
                     break;
 
-                case LifePlayedGraphicsTier.High:
+                case GraphicsTier.High:
                     Application.targetFrameRate = 60;
                     QualitySettings.shadows = ShadowQuality.All;
+                    QualitySettings.shadowDistance = 45f;
                     SetRenderScale(1.0f);
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(tier),
+                        tier,
+                        "Unknown graphics tier.");
             }
+
+            TierChanged(tier);
         }
 
         private static void SetRenderScale(float value)

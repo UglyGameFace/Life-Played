@@ -18,7 +18,8 @@ namespace LifePlayed.Client.Bootstrap
 
         public static LifePlayedBootstrap Instance => _instance;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(
+            RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void EnsureBootstrap()
         {
             if (_instance != null)
@@ -48,18 +49,23 @@ namespace LifePlayed.Client.Bootstrap
                 lifecycle = gameObject.AddComponent<PlatformLifecycleBridge>();
             }
 
-            if (GetComponent<GraphicsQualityController>() == null)
+            var quality = GetComponent<GraphicsQualityController>();
+            if (quality == null)
             {
-                gameObject.AddComponent<GraphicsQualityController>();
+                quality = gameObject.AddComponent<GraphicsQualityController>();
             }
 
             var navigator = new RuntimeNavigator();
-            _coordinator = new AppCoordinator(navigator, lifecycle);
+            _coordinator = new AppCoordinator(
+                navigator,
+                lifecycle);
 
-            StartCoroutine(EnsurePresentation());
+            StartCoroutine(
+                EnsurePresentation(quality));
         }
 
-        private IEnumerator EnsurePresentation()
+        private IEnumerator EnsurePresentation(
+            IGraphicsQualityController graphicsQuality)
         {
             yield return EnsureSceneOrFallback(
                 "AppShell",
@@ -80,7 +86,9 @@ namespace LifePlayed.Client.Bootstrap
             var shell = FindFirstObjectByType<AppShellPresenter>();
             if (shell != null)
             {
-                shell.Bind(_coordinator);
+                shell.Bind(
+                    _coordinator,
+                    graphicsQuality);
             }
 
             _coordinator.Open(AppRoute.World);
