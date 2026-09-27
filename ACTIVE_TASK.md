@@ -27,7 +27,7 @@ Life Played is not a task manager with decorative RPG mechanics. Real-world goal
 
 ## Status
 
-**State:** ACTIVE — product foundation / Step 7: backend architecture
+**State:** ACTIVE — product foundation / Step 8: commerce & rewards architecture
 
 **Code implementation:** Not started intentionally.
 
@@ -465,7 +465,7 @@ This active task is complete only when:
 - [ ] Privacy/consent principles are documented.
 - [ ] Offline/sync and server-authority rules are documented.
 - [x] Unity/mobile architecture is documented.
-- [ ] Backend/service/domain architecture is documented.
+- [x] Backend/service/domain architecture is documented.
 - [x] Initial database/domain model is documented.
 - [ ] Validation/test strategy is documented.
 - [ ] Initial implementation milestones and first vertical slice are defined.
@@ -487,6 +487,7 @@ Only after this Definition of Done is satisfied should production implementation
 - `docs/GAME_ECONOMY.md` created and verified with versioned XP curves, task valuation, anti-farming, Momentum, currency, world progression, companion Bond, and pay-to-win guardrails.
 - `docs/STORY_CONTENT_ARCHITECTURE.md` created and verified with complete V1 Saga spines for Wild Renewal and Gridfall plus reusable NPC, companion, seasonal, Archive, and player-Campaign content rules.
 - `docs/UNITY_MOBILE_ARCHITECTURE.md` created and verified with URP/mobile layering, offline local persistence, sync boundaries, Addressables direction, graphics tiers, Android/iOS platform isolation, and free-tier milestone build policy.
+- `docs/BACKEND_ARCHITECTURE.md` created and verified with modular-monolith boundaries, PostgreSQL, BFF/API isolation, idempotency/outbox, workers, provider adapters, observability, recovery, and growth scaling.
 - No production code has been added yet.
 
 ---
@@ -504,8 +505,9 @@ Current repository baseline contains:
 - `docs/GAME_ECONOMY.md`
 - `docs/STORY_CONTENT_ARCHITECTURE.md`
 - `docs/UNITY_MOBILE_ARCHITECTURE.md`
+- `docs/BACKEND_ARCHITECTURE.md`
 
-README aligns with the high-level product direction. Product, V1, domain, economy, story/content, and Unity/mobile specifications are verified readable on `main`; Unity is explicitly reserved for presentation/runtime work and cloud builds are milestone-gated to protect free-tier quota.
+README aligns with the high-level product direction. Product, V1, domain, economy, story/content, Unity/mobile, and backend specifications are verified readable on `main`; authoritative state, async work, provider portability, recovery, and scale-up boundaries are explicit.
 
 No build/test validation applies yet because the Unity project has not been scaffolded.
 
@@ -563,4 +565,4 @@ Do not begin these as separate tasks while the product-foundation task remains a
 
 ## Next step
 
-Define the **backend architecture** in-repo: lock API/service boundaries, database strategy, authoritative game state, event/ledger design, queues/workers, content delivery, provider adapters, observability, backups/recovery, scaling principles, and the deployment shape that can start cheaply without requiring a rewrite if Life Played grows quickly.
+Define the **commerce & rewards architecture** in-repo: lock the Need Graph, Deal Scout ranking, offer/coupon ingestion, affiliate attribution, future location/purchase evidence, Sponsored Quest lifecycle, cashback/settlement/reversal model, provider reconciliation, and the separation between player savings, developer revenue, and game progression.
