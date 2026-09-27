@@ -20,6 +20,7 @@ required = [
     UNITY / "Assets" / "LifePlayed" / "Tests" / "PlayMode" / "LifePlayed.Client.Tests.PlayMode.asmdef",
     UNITY / "Assets" / "LifePlayed" / "Bootstrap" / "LifePlayedBootstrap.cs",
     UNITY / "Assets" / "LifePlayed" / "Infrastructure" / "RuntimeServices.cs",
+    UNITY / "Assets" / "LifePlayed" / "Infrastructure" / "DevelopmentLogRecorder.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "AppShellPresenter.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "SafeAreaFitter.cs",
     UNITY / "Assets" / "LifePlayed" / "Presentation" / "UI" / "RuntimeDiagnosticsPresenter.cs",
@@ -413,3 +414,22 @@ if 'PlayerSettings.bundleVersion = "0.1.0";' not in configurator:
     raise SystemExit(
         "Playable Build #1 client version must be pinned for content compatibility checks."
     )
+
+
+log_recorder_code = (
+    UNITY
+    / "Assets"
+    / "LifePlayed"
+    / "Infrastructure"
+    / "DevelopmentLogRecorder.cs"
+).read_text(encoding="utf-8")
+
+for fragment in (
+    "Application.logMessageReceivedThreaded +=",
+    "lock (_gate)",
+    "Never recurse into Unity logging from the log callback.",
+):
+    if fragment not in log_recorder_code:
+        raise SystemExit(
+            f"Development log recorder is missing safety behavior: {fragment}"
+        )

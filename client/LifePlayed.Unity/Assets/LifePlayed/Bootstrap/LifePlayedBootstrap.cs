@@ -25,6 +25,7 @@ namespace LifePlayed.Client.Bootstrap
         private IMobilePlatformProfile _platformProfile;
         private AppShellPresenter _shell;
         private IPlatformLifecycle _lifecycle;
+        private DevelopmentLogRecorder _logRecorder;
 
         public static LifePlayedBootstrap Instance => _instance;
 
@@ -52,6 +53,8 @@ namespace LifePlayed.Client.Bootstrap
 
             _instance = this;
             DontDestroyOnLoad(gameObject);
+
+            StartDevelopmentLogging();
 
             var lifecycle = GetComponent<PlatformLifecycleBridge>();
             if (lifecycle == null)
@@ -111,6 +114,32 @@ namespace LifePlayed.Client.Bootstrap
                 _lifecycle.LowMemory -=
                     OnLowMemory;
             }
+
+            if (_logRecorder != null)
+            {
+                _logRecorder.Dispose();
+                _logRecorder = null;
+            }
+        }
+
+        private void StartDevelopmentLogging()
+        {
+            if (!Debug.isDebugBuild)
+            {
+                return;
+            }
+
+            _logRecorder =
+                new DevelopmentLogRecorder(
+                    Application.persistentDataPath);
+
+            _logRecorder.Start(
+                "Version=" +
+                Application.version +
+                " | Unity=" +
+                Application.unityVersion +
+                " | Platform=" +
+                Application.platform);
         }
 
         private void RestoreGraphicsTier(
