@@ -123,17 +123,9 @@ public sealed class ContentValidator
         foreach (var saga in release.Sagas)
         {
             Add(saga.Id, "saga");
-            foreach (var chapter in saga.ChapterIds)
-            {
-                _ = chapter;
-            }
         }
 
-        foreach (var chapter in release.Sagas
-                     .SelectMany(saga => saga.ChapterIds)
-                     .Select(id => FindChapter(release, id))
-                     .Where(static chapter => chapter is not null)
-                     .Cast<ChapterDefinition>())
+        foreach (var chapter in release.Chapters)
         {
             Add(chapter.Id, "chapter");
             foreach (var node in chapter.Nodes)
@@ -484,28 +476,13 @@ public sealed class ContentValidator
 
     private static IEnumerable<ChapterDefinition> AllChapters(
         ContentReleaseDefinition release) =>
-        release.Sagas
-            .SelectMany(static saga => saga.ChapterIds)
-            .Distinct(StringComparer.Ordinal)
-            .Select(id => FindChapter(release, id))
-            .Where(static chapter => chapter is not null)
-            .Cast<ChapterDefinition>();
+        release.Chapters;
 
     private static ChapterDefinition? FindChapter(
         ContentReleaseDefinition release,
-        string chapterId)
-    {
-        foreach (var saga in release.Sagas)
-        {
-            var chapter = ChapterRegistry.Get(release, saga.Id, chapterId);
-            if (chapter is not null)
-            {
-                return chapter;
-            }
-        }
-
-        return null;
-    }
+        string chapterId) =>
+        release.Chapters.FirstOrDefault(
+            chapter => chapter.Id.Equals(chapterId, StringComparison.Ordinal));
 
     private static void RequireKey(
         string contentId,
@@ -563,43 +540,5 @@ public sealed class ContentValidator
             $"Story node '{nodeId}' must exist inside chapter '{chapter.Id}'."));
     }
 
-    private static class ChapterRegistry
-    {
-        private static readonly Dictionary<ContentReleaseDefinition, IReadOnlyDictionary<string, ChapterDefinition>>
-            Cache = new(ReferenceEqualityComparer.Instance);
 
-        public static ChapterDefinition? Get(
-            ContentReleaseDefinition release,
-            string sagaId,
-            string chapterId)
-        {
-            _ = sagaId;
-            if (!Cache.TryGetValue(release, out var chapters))
-            {
-                chapters = Build(release);
-                Cache[release] = chapters;
-            }
-
-            return chapters.TryGetValue(chapterId, out var chapter)
-                ? chapter
-                : null;
-        }
-
-        public static void Register(
-            ContentReleaseDefinition release,
-            IReadOnlyList<ChapterDefinition> chapters) =>
-            Cache[release] = chapters.ToDictionary(static chapter => chapter.Id, StringComparer.Ordinal);
-
-        private static IReadOnlyDictionary<string, ChapterDefinition> Build(
-            ContentReleaseDefinition release) =>
-            new Dictionary<string, ChapterDefinition>(StringComparer.Ordinal);
-    }
-
-    public static ContentReleaseDefinition WithChapters(
-        ContentReleaseDefinition release,
-        IReadOnlyList<ChapterDefinition> chapters)
-    {
-        ChapterRegistry.Register(release, chapters);
-        return release;
-    }
 }

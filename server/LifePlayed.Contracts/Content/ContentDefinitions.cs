@@ -6,6 +6,7 @@ public sealed record ContentReleaseDefinition(
     string ReleaseVersion,
     IReadOnlyList<IdentityWorldDefinition> Worlds,
     IReadOnlyList<SagaDefinition> Sagas,
+    IReadOnlyList<ChapterDefinition> Chapters,
     IReadOnlyList<NpcDefinition> Npcs,
     IReadOnlyList<CompanionDefinition> Companions,
     IReadOnlyList<WorldStructureDefinition> WorldStructures,
