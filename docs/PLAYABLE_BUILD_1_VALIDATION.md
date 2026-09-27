@@ -42,7 +42,7 @@ Pass only if:
 
 - app reaches the Life Played shell without crash
 - portrait layout is used
-- content diagnostics show **1.0.0 • schema 1**
+- content diagnostics show **1.0.0 • schema 1 • bundle** on a clean install
 - diagnostics report Android
 - no **CONTENT ERROR** state appears
 - Wild Renewal / Hearthwild renders on World
@@ -152,6 +152,8 @@ Pass only if:
 
 The durable mutation queue/sync-cursor store is primarily verified by EditMode tests in this milestone because the Action UI belongs to Milestone 5.
 
+The bundled Wild Renewal release must also pass SHA-256 verification before it is cached as the last-known-good release. The diagnostics source should remain `bundle` during normal first-launch validation.
+
 ## 9. Suspend / resume
 
 While on World:
@@ -182,7 +184,17 @@ Record:
 
 A first prototype is not required to hold 60 FPS in High on every phone. It is required to avoid catastrophic stalls, runaway rendering on utility screens, or broken quality switching.
 
-## 11. Failure capture
+## 11. Persistent development diagnostics
+
+The Development APK records Unity logs under the app's persistent-data directory:
+
+`lifeplayed/diagnostics/development.log`
+
+The recorder captures both main-thread and worker-thread Unity logs through the thread-safe log callback. It rotates an oversized prior log before starting a new session.
+
+If runtime behavior fails but the app remains installable, preserve this log before reinstalling or clearing app data.
+
+## 12. Failure capture
 
 If the cloud build fails, capture the **first root cause**, not 200 lines of consequences:
 

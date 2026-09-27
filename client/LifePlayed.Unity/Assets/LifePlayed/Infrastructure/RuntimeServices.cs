@@ -425,7 +425,7 @@ namespace LifePlayed.Client.Infrastructure
                     "Client/content version metadata is invalid.");
             }
 
-            if (current < minimum)
+            if (current.CompareTo(minimum) < 0)
             {
                 throw new InvalidOperationException(
                     "Content release requires client " +

@@ -80,6 +80,8 @@ The build only counts as the Milestone 4 validation build if it successfully pro
 - PlayMode tests
 - Android player export
 - installable APK artifact
+- staged Wild Renewal `content.json` SHA-256 verification
+- last-known-good content cache initialization
 
 Runtime device validation must then record:
 
@@ -87,6 +89,7 @@ Runtime device validation must then record:
 - portrait/safe-area UI behaves correctly
 - Home / Quests / World / Hero / More controls respond
 - Wild Renewal prototype renders
+- content diagnostics report `1.0.0 • schema 1 • bundle` on a clean install
 - Waykeeper placeholder renders
 - starter companion placeholder renders/animates
 - touch orbit camera responds

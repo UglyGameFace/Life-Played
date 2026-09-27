@@ -314,7 +314,14 @@ Implemented on `feat/unity-client-foundation` / PR #6:
 - authoritative Wild Renewal release remains single-source under `content/releases/wild-renewal-v1`
 - pre-export stages the validated release into StreamingAssets
 - Android-safe `UnityWebRequest` manifest loader
-- runtime diagnostics expose loaded content release/schema
+- runtime diagnostics expose loaded content release/schema and whether it came from the bundled release or last-known-good cache
+- staged `content.json` is SHA-256 checked against the authoritative manifest during pre-export
+- runtime content is SHA-256 verified again before activation
+- verified bundled content seeds a persistent last-known-good cache under `persistentDataPath`
+- bundled-content failure can fall back to the verified last-known-good cache
+- minimum client version is enforced against the content manifest
+- Playable Build #1 client version pinned to `0.1.0`
+- Development APK writes a persistent thread-safe Unity runtime log under `lifeplayed/diagnostics/development.log`
 
 ### Build Automation / quota protection
 
@@ -340,6 +347,9 @@ Latest candidate before this task-record update:
 
 - PR #6 head: `7bbca4c111502b265cf2a7666488d52dc05282b9`
 - Unity Scaffold CI run #22: **success**
+- Unity Scaffold CI run #25 after content integrity/LKG cache: **success**
+- Unity Scaffold CI run #26 validates client-version compatibility additions
+- Unity Scaffold CI run #27 validates persistent development logging
 - PR state: clean / mergeable / intentionally draft
 - generated-junk scan: clean
 - APK/AAB/keystore scan: clean
@@ -375,7 +385,7 @@ The first Unity build is now expected to prove all remaining Editor/device-only 
 2. C# compilation under Unity 6000.3.25f1
 3. Active Input Handling really defines `ENABLE_INPUT_SYSTEM`
 4. URP/global-settings/scenes generate correctly
-5. authoritative Wild Renewal content stages and loads
+5. authoritative Wild Renewal content stages, SHA-256 verifies, loads, and seeds last-known-good cache
 6. EditMode tests pass
 7. PlayMode tests pass
 8. ARM64 IL2CPP Development APK exports
@@ -388,6 +398,7 @@ The first Unity build is now expected to prove all remaining Editor/device-only 
 15. Reduced / Standard / High switch correctly
 16. selected route and graphics tier survive restart
 17. background/resume safely suspends/restores world presentation
+18. development log persists enough evidence to diagnose runtime exceptions without another cloud build
 
 Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sheet.
 
