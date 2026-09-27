@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LifePlayed.Application</RootNamespace>
+    <AssemblyName>LifePlayed.Application</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../LifePlayed.Domain/LifePlayed.Domain.csproj" />
+    <ProjectReference Include="../LifePlayed.Contracts/LifePlayed.Contracts.csproj" />
+  </ItemGroup>
+</Project>

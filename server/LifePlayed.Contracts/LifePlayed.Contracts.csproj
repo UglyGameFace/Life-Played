@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LifePlayed.Contracts</RootNamespace>
+    <AssemblyName>LifePlayed.Contracts</AssemblyName>
+  </PropertyGroup>
+</Project>

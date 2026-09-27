@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>LifePlayed.Api</RootNamespace>
+    <AssemblyName>LifePlayed.Api</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../LifePlayed.Application/LifePlayed.Application.csproj" />
+    <ProjectReference Include="../LifePlayed.Contracts/LifePlayed.Contracts.csproj" />
+  </ItemGroup>
+</Project>

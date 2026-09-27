@@ -56,10 +56,10 @@ Approximate pacing:
 |---:|---:|
 | 1 | 100 |
 | 5 | ~327 |
-| 10 | ~779 |
-| 25 | ~2,645 |
-| 50 | ~6,775 |
-| 100 | ~16,700 |
+| 10 | ~780 |
+| 25 | ~2,655 |
+| 50 | ~6,796 |
+| 100 | ~17,405 |
 
 These values are initial balance targets, not hard-coded constants.
 
