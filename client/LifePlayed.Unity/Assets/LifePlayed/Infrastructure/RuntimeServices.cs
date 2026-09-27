@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LifePlayed.Client.Application;
 using LifePlayed.Client.DomainBridge;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LifePlayed.Client.Infrastructure
 {
@@ -320,6 +321,65 @@ namespace LifePlayed.Client.Infrastructure
                 Array.Empty<ClientSyncResult>();
 
             return Task.FromResult(empty);
+        }
+    }
+
+    public sealed class StreamingAssetsContentGateway : IClientContentGateway
+    {
+        private const string ManifestRelativePath =
+            "LifePlayed/Content/wild-renewal-v1/manifest.json";
+
+        public async Task<ClientContentManifest> GetActiveManifestAsync(
+            CancellationToken cancellationToken)
+        {
+            var uri =
+                UnityEngine.Application.streamingAssetsPath.TrimEnd('/') +
+                "/" +
+                ManifestRelativePath;
+
+            var request = UnityWebRequest.Get(uri);
+            var completion =
+                new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var registration = cancellationToken.Register(
+                request.Abort);
+
+            try
+            {
+                var operation = request.SendWebRequest();
+                operation.completed += _ =>
+                    completion.TrySetResult(true);
+
+                await completion.Task;
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    throw new InvalidOperationException(
+                        "Content manifest load failed: " +
+                        request.error);
+                }
+
+                var manifest =
+                    JsonUtility.FromJson<ClientContentManifest>(
+                        request.downloadHandler.text);
+
+                if (manifest == null ||
+                    manifest.schemaVersion <= 0 ||
+                    string.IsNullOrWhiteSpace(manifest.releaseId))
+                {
+                    throw new InvalidOperationException(
+                        "Content manifest is missing required fields.");
+                }
+
+                return manifest;
+            }
+            finally
+            {
+                registration.Dispose();
+                request.Dispose();
+            }
         }
     }
 

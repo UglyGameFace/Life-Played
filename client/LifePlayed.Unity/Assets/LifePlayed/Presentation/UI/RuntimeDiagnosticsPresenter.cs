@@ -16,6 +16,7 @@ namespace LifePlayed.Client.Presentation.UI
         private float _elapsed;
         private float _smoothedFps;
         private bool _worldRenderingActive;
+        private string _contentStatus = "CONTENT …";
 
         public void Bind(
             AppCoordinator coordinator,
@@ -36,6 +37,22 @@ namespace LifePlayed.Client.Presentation.UI
         public void SetWorldRenderingActive(bool active)
         {
             _worldRenderingActive = active;
+            Refresh();
+        }
+
+        public void SetContentManifest(
+            LifePlayed.Client.DomainBridge.ClientContentManifest manifest)
+        {
+            _contentStatus =
+                manifest.releaseVersion +
+                " • schema " +
+                manifest.schemaVersion;
+            Refresh();
+        }
+
+        public void SetContentStatus(string status)
+        {
+            _contentStatus = status;
             Refresh();
         }
 
@@ -81,7 +98,7 @@ namespace LifePlayed.Client.Presentation.UI
                 false);
 
             var rect = (RectTransform)panelObject.transform;
-            rect.anchorMin = new Vector2(0.56f, 0.80f);
+            rect.anchorMin = new Vector2(0.54f, 0.77f);
             rect.anchorMax = new Vector2(0.97f, 0.89f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
@@ -147,6 +164,8 @@ namespace LifePlayed.Client.Presentation.UI
                 Application.targetFrameRate +
                 "  World " +
                 (_worldRenderingActive ? "ON" : "OFF") +
+                "\nContent " +
+                _contentStatus +
                 "\nSafe " +
                 Mathf.RoundToInt(safeArea.width) +
                 "x" +

@@ -161,7 +161,37 @@ namespace LifePlayed.Client.Bootstrap
 
             _coordinator.RouteChanged += OnRouteChanged;
             OnRouteChanged(_coordinator.CurrentRoute);
+
+            yield return LoadContentManifest();
+
             _coordinator.Open(AppRoute.World);
+        }
+
+        private IEnumerator LoadContentManifest()
+        {
+            var gateway = new StreamingAssetsContentGateway();
+            var task = gateway.GetActiveManifestAsync(
+                System.Threading.CancellationToken.None);
+
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            if (_diagnostics == null)
+            {
+                yield break;
+            }
+
+            if (task.IsFaulted)
+            {
+                _diagnostics.SetContentStatus(
+                    "CONTENT ERROR");
+                yield break;
+            }
+
+            _diagnostics.SetContentManifest(
+                task.Result);
         }
 
         private void OnRouteChanged(AppRoute route)
