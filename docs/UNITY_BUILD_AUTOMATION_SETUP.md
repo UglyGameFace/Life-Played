@@ -17,6 +17,9 @@ Configure one temporary validation target in Unity Dashboard:
 - **Machine:** Micro where available
 - **Auto-build:** OFF
 - **Scheduled builds:** OFF
+- **Development Build:** ON
+- **Autoconnect Profiler:** OFF
+- **Deep Profiling:** OFF
 
 Android is supported on the current Windows 11 24H2 Build Automation image. The project subfolder is required because the Unity project's `Assets` and `ProjectSettings` directories are nested below the repository root.
 
@@ -55,6 +58,8 @@ For the **first prototype validation build**, leave automatic Addressables conte
 ### Android format
 
 Use **APK** for the first prototype validation build so it can be installed directly on Android test hardware.
+
+The pre-export hook also forces `EditorUserBuildSettings.development = true` and `buildAppBundle = false`. This guarantees the development-only runtime diagnostics HUD is present even if the dashboard configuration drifts. Profiler auto-connect and deep profiling remain disabled to avoid unnecessary runtime/build overhead.
 
 Do not use the Play Store AAB path for this milestone.
 

@@ -329,3 +329,26 @@ for fragment in (
         raise SystemExit(
             f"Mobile lifecycle handling is missing: {fragment}"
         )
+
+
+for generated_pattern in (
+    "/client/LifePlayed.Unity/Assets/LifePlayed/Generated/",
+    "/client/LifePlayed.Unity/Assets/LifePlayed/Generated.meta",
+    "/client/LifePlayed.Unity/Assets/LifePlayed/Scenes/",
+    "/client/LifePlayed.Unity/Assets/LifePlayed/Scenes.meta",
+):
+    if generated_pattern not in gitignore:
+        raise SystemExit(
+            f"Missing generated Unity asset ignore rule: {generated_pattern}"
+        )
+
+for fragment in (
+    "EditorUserBuildSettings.development = true;",
+    "EditorUserBuildSettings.connectProfiler = false;",
+    "EditorUserBuildSettings.buildWithDeepProfilingSupport = false;",
+    "EditorUserBuildSettings.buildAppBundle = false;",
+):
+    if fragment not in configurator:
+        raise SystemExit(
+            f"Playable Build #1 diagnostic build setting is missing: {fragment}"
+        )

@@ -70,3 +70,4 @@ crashlytics-build.properties
 
 # Generated authoritative content staged by Unity pre-export
 /client/LifePlayed.Unity/Assets/StreamingAssets/LifePlayed/Content/
+/client/LifePlayed.Unity/Assets/LifePlayed/Generated/\n/client/LifePlayed.Unity/Assets/LifePlayed/Generated.meta\n/client/LifePlayed.Unity/Assets/LifePlayed/Scenes/\n/client/LifePlayed.Unity/Assets/LifePlayed/Scenes.meta\n/client/LifePlayed.Unity/Assets/StreamingAssets/LifePlayed/Content.meta\n

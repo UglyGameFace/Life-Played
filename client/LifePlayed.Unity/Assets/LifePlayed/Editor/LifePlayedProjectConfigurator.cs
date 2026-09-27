@@ -289,6 +289,16 @@ namespace LifePlayed.Client.Editor
                     "Required Android display/frame-pacing settings are missing.");
             }
 
+            if (!EditorUserBuildSettings.development ||
+                EditorUserBuildSettings.connectProfiler ||
+                EditorUserBuildSettings.buildWithDeepProfilingSupport ||
+                EditorUserBuildSettings.buildAppBundle)
+            {
+                throw new System.InvalidOperationException(
+                    "Playable Build #1 must be a diagnostic Development APK " +
+                    "without profiler auto-connect or deep profiling.");
+            }
+
             var generatedManifest = Path.Combine(
                 GeneratedContentDirectory,
                 "manifest.json");
@@ -346,6 +356,12 @@ namespace LifePlayed.Client.Editor
             PlayerSettings.Android.renderOutsideSafeArea = true;
             PlayerSettings.Android.optimizedFramePacing = true;
             PlayerSettings.Android.startInFullscreen = true;
+
+            EditorUserBuildSettings.development = true;
+            EditorUserBuildSettings.connectProfiler = false;
+            EditorUserBuildSettings.buildWithDeepProfilingSupport = false;
+            EditorUserBuildSettings.allowDebugging = false;
+            EditorUserBuildSettings.buildAppBundle = false;
 
             EditorSettings.serializationMode = SerializationMode.ForceText;
             EditorSettings.externalVersionControl = "Visible Meta Files";
