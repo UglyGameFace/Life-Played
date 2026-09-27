@@ -7,7 +7,7 @@ namespace LifePlayed.Domain.Tests;
 public sealed class StatePrimitiveTests
 {
     [Fact]
-    public void EntityIds_AreNonEmptyAndUnique()
+    public void EntityIdsAreNonEmptyAndUnique()
     {
         var first = EntityId.New();
         var second = EntityId.New();
@@ -18,7 +18,7 @@ public sealed class StatePrimitiveTests
     }
 
     [Fact]
-    public void EntityVersion_IncrementsMonotonically()
+    public void EntityVersionIncrementsMonotonically()
     {
         var initial = EntityVersion.Initial;
         var next = initial.Next();
@@ -28,34 +28,34 @@ public sealed class StatePrimitiveTests
     }
 
     [Fact]
-    public void EntityVersion_RejectsNegativeValues()
+    public void EntityVersionRejectsNegativeValues()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new EntityVersion(-1));
     }
 
     [Fact]
-    public void DraftWork_MustBecomeActiveBeforeCompletion()
+    public void DraftWorkMustBecomeActiveBeforeCompletion()
     {
         Assert.False(WorkStateTransitions.CanTransition(ActionStatus.Draft, ActionStatus.Completed));
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Draft, ActionStatus.Active));
     }
 
     [Fact]
-    public void PausedWork_CanResumeWithoutPunishment()
+    public void PausedWorkCanResumeWithoutPunishment()
     {
         Assert.True(WorkStateTransitions.CanTransition(QuestStatus.Paused, QuestStatus.Active));
         Assert.True(WorkStateTransitions.CanTransition(CampaignStatus.Paused, CampaignStatus.Active));
     }
 
     [Fact]
-    public void CompletedWork_CanBeReopenedOrArchived()
+    public void CompletedWorkCanBeReopenedOrArchived()
     {
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Completed, ActionStatus.Active));
         Assert.True(WorkStateTransitions.CanTransition(ActionStatus.Completed, ActionStatus.Archived));
     }
 
     [Fact]
-    public void ClientMutation_HasOfflineSafeIdentityAndBaseVersion()
+    public void ClientMutationHasOfflineSafeIdentityAndBaseVersion()
     {
         var mutation = new ClientMutation(
             MutationId.New(),
