@@ -281,44 +281,49 @@ namespace LifePlayed.Client.Presentation.World
                     0f,
                     Mathf.Sin(angle) * radius);
 
-                var trunk = CreatePrimitive(
-                    "RenewalTree_" + index,
+                var tree = new GameObject("RenewalTree_" + index);
+                tree.transform.SetParent(treeRoot.transform, false);
+                tree.transform.localPosition = position;
+                tree.transform.localRotation = Quaternion.Euler(
+                    index % 3 == 0 ? 3f : -2f,
+                    index * 7f,
+                    index % 2 == 0 ? 2f : -3f);
+
+                CreatePrimitive(
+                    "Trunk",
                     PrimitiveType.Cylinder,
-                    position + Vector3.up * height * 0.50f,
+                    Vector3.up * height * 0.50f,
                     new Vector3(0.28f, height * 0.50f, 0.28f),
-                    new Vector3(
-                        index % 3 == 0 ? 3f : -2f,
-                        index * 7f,
-                        index % 2 == 0 ? 2f : -3f),
+                    Vector3.zero,
                     _wood,
-                    treeRoot.transform);
+                    tree.transform);
 
                 CreatePrimitive(
                     "CrownA",
                     PrimitiveType.Sphere,
-                    new Vector3(-0.26f, 1.28f, 0f),
+                    new Vector3(-0.26f, height + 0.26f, 0f),
                     new Vector3(1.55f, 0.95f, 1.45f),
                     Vector3.zero,
                     index % 3 == 0 ? _grassLight : _grass,
-                    trunk.transform);
+                    tree.transform);
 
                 CreatePrimitive(
                     "CrownB",
                     PrimitiveType.Sphere,
-                    new Vector3(0.30f, 1.52f, 0.18f),
+                    new Vector3(0.30f, height + 0.54f, 0.18f),
                     new Vector3(1.35f, 0.88f, 1.30f),
                     Vector3.zero,
                     _grass,
-                    trunk.transform);
+                    tree.transform);
 
                 CreatePrimitive(
                     "CrownC",
                     PrimitiveType.Sphere,
-                    new Vector3(0f, 1.78f, -0.12f),
+                    new Vector3(0f, height + 0.82f, -0.12f),
                     new Vector3(1.12f, 0.72f, 1.10f),
                     Vector3.zero,
                     _grassLight,
-                    trunk.transform);
+                    tree.transform);
             }
         }
 
