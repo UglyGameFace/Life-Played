@@ -40,7 +40,7 @@ public sealed class PostgreSqlInfrastructureTests
 
         foreach (var table in expectedTables)
         {
-            await using var tableCommand = new NpgsqlCommand("SELECT to_regclass(@table)", connection);
+            await using var tableCommand = new NpgsqlCommand("SELECT to_regclass(@table)::text", connection);
             tableCommand.Parameters.AddWithValue("table", table);
             var result = await tableCommand.ExecuteScalarAsync(cancellationToken);
             Assert.NotNull(result);
