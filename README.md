@@ -97,3 +97,18 @@ Development Principle
 Life Played is not a task manager with RPG decorations.
 
 It is a living game world powered by what the player actually does.
+
+
+## Foundation Documentation
+
+Authoritative pre-implementation specifications live under `docs/`.
+
+Start with:
+
+- [Foundation Index](docs/FOUNDATION_INDEX.md)
+- [Master Product Bible](docs/MASTER_PRODUCT_BIBLE.md)
+- [V1 Scope](docs/V1_SCOPE.md)
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md)
+- [Active Task](ACTIVE_TASK.md)
+
+Implementation must follow the active-task lock and the validation requirements in the foundation documents.
