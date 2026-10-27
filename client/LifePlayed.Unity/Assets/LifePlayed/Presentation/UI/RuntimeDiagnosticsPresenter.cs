@@ -28,7 +28,7 @@ namespace LifePlayed.Client.Presentation.UI
             _graphicsQuality = graphicsQuality;
             _platformProfile = platformProfile;
 
-            if (Debug.isDebugBuild || Application.isEditor)
+            if (Debug.isDebugBuild || UnityEngine.Application.isEditor)
             {
                 EnsureUi();
                 Refresh();
@@ -171,7 +171,7 @@ namespace LifePlayed.Client.Presentation.UI
                 "\nFPS " +
                 fps +
                 "  Target " +
-                Application.targetFrameRate +
+                UnityEngine.Application.targetFrameRate +
                 "  World " +
                 (_worldRenderingActive ? "ON" : "OFF") +
                 "\nContent " +

@@ -1,4 +1,5 @@
 using LifePlayed.Client.Application;
+using GraphicsTier = LifePlayed.Client.Application.GraphicsTier;
 using UnityEngine;
 using UnityEngine.Rendering;
 

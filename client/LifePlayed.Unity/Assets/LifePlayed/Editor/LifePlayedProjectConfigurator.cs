@@ -75,7 +75,7 @@ namespace LifePlayed.Client.Editor
         {
             var repositoryRoot = Path.GetFullPath(
                 Path.Combine(
-                    Application.dataPath,
+                    UnityEngine.Application.dataPath,
                     "..",
                     "..",
                     ".."));
@@ -347,11 +347,11 @@ namespace LifePlayed.Client.Editor
                     "Playable Build #1 must run with Android as the active build target.");
             }
 
-            if (!Application.unityVersion.StartsWith("6000.3.25f1"))
+            if (!UnityEngine.Application.unityVersion.StartsWith("6000.3.25f1"))
             {
                 throw new System.InvalidOperationException(
                     "Unexpected Unity editor version: " +
-                    Application.unityVersion);
+                    UnityEngine.Application.unityVersion);
             }
 
             var pipeline =
@@ -448,7 +448,7 @@ namespace LifePlayed.Client.Editor
 
             Debug.Log(
                 "[Life Played Build Preflight] PASS | Editor=" +
-                Application.unityVersion +
+                UnityEngine.Application.unityVersion +
                 " | Target=" +
                 EditorUserBuildSettings.activeBuildTarget +
                 " | Scenes=" +

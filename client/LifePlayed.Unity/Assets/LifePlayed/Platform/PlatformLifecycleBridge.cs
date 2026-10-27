@@ -18,13 +18,13 @@ namespace LifePlayed.Client.Platform
 
         private void OnEnable()
         {
-            Application.lowMemory +=
+            UnityEngine.Application.lowMemory +=
                 OnLowMemory;
         }
 
         private void OnDisable()
         {
-            Application.lowMemory -=
+            UnityEngine.Application.lowMemory -=
                 OnLowMemory;
         }
 

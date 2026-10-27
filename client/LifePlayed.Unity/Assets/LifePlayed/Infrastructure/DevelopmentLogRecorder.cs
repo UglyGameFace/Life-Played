@@ -61,7 +61,7 @@ namespace LifePlayed.Client.Infrastructure
                     Environment.NewLine);
             }
 
-            Application.logMessageReceivedThreaded +=
+            UnityEngine.Application.logMessageReceivedThreaded +=
                 OnLogMessage;
 
             _started = true;
@@ -74,7 +74,7 @@ namespace LifePlayed.Client.Infrastructure
                 return;
             }
 
-            Application.logMessageReceivedThreaded -=
+            UnityEngine.Application.logMessageReceivedThreaded -=
                 OnLogMessage;
 
             _started = false;

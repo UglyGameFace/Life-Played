@@ -1,5 +1,6 @@
 using System;
 using LifePlayed.Client.Application;
+using GraphicsTier = LifePlayed.Client.Application.GraphicsTier;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -30,7 +31,7 @@ namespace LifePlayed.Client.Presentation.World
             switch (tier)
             {
                 case GraphicsTier.Reduced:
-                    Application.targetFrameRate = 30;
+                    UnityEngine.Application.targetFrameRate = 30;
                     QualitySettings.shadows = ShadowQuality.Disable;
                     ConfigureUrp(
                         0.72f,
@@ -40,7 +41,7 @@ namespace LifePlayed.Client.Presentation.World
                     break;
 
                 case GraphicsTier.Standard:
-                    Application.targetFrameRate = 30;
+                    UnityEngine.Application.targetFrameRate = 30;
                     QualitySettings.shadows = ShadowQuality.HardOnly;
                     ConfigureUrp(
                         0.90f,
@@ -50,7 +51,7 @@ namespace LifePlayed.Client.Presentation.World
                     break;
 
                 case GraphicsTier.High:
-                    Application.targetFrameRate = 60;
+                    UnityEngine.Application.targetFrameRate = 60;
                     QualitySettings.shadows = ShadowQuality.All;
                     ConfigureUrp(
                         1.0f,

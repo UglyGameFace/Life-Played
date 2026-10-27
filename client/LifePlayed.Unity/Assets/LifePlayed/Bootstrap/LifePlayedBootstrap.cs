@@ -131,15 +131,15 @@ namespace LifePlayed.Client.Bootstrap
 
             _logRecorder =
                 new DevelopmentLogRecorder(
-                    Application.persistentDataPath);
+                    UnityEngine.Application.persistentDataPath);
 
             _logRecorder.Start(
                 "Version=" +
-                Application.version +
+                UnityEngine.Application.version +
                 " | Unity=" +
-                Application.unityVersion +
+                UnityEngine.Application.unityVersion +
                 " | Platform=" +
-                Application.platform);
+                UnityEngine.Application.platform);
         }
 
         private void RestoreGraphicsTier(
@@ -339,7 +339,7 @@ namespace LifePlayed.Client.Bootstrap
             System.Func<T> fallback)
             where T : Component
         {
-            if (Application.CanStreamedLevelBeLoaded(sceneName))
+            if (UnityEngine.Application.CanStreamedLevelBeLoaded(sceneName))
             {
                 var scene = SceneManager.GetSceneByName(sceneName);
                 if (!scene.isLoaded)
