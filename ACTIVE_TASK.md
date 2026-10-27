@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / corrected-revision Unity build #4 exposed a remaining ShadowQuality compiler ambiguity; targeted correction prepared, Editor/device validation pending
+**State:** ACTIVE — Milestone 4 / build #5 compiled and both test runs exited successfully; pre-export stopped on content hash mismatch reproduced by Windows Git line-ending conversion; checkout correction prepared, APK/device validation pending
 
 **Unity cloud usage:** At least one manual Unity Build Automation attempt ran on 2026-10-27. Actual billed minutes have not been independently verified.
 
@@ -430,7 +430,7 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 
 ## Current blocker
 
-Unity Build Automation build #4 checked out corrected commit `c2b403684da3af776a67858240d90e960a0683f9` in Unity `6000.3.25f1`. Compilation advanced beyond the previous Application/GraphicsTier errors and exposed CS0104 for ShadowQuality in GraphicsQualityController. Tests and APK export remain blocked by compilation. Authenticated dashboard access is now available for build configuration, launch, logs, and artifact retrieval.
+Unity Build Automation build #5 checked out `2af2f3a82dfbba5b4742e3ace745e5179c507eb0` in Unity `6000.3.25f1`. C# compilation passed and both test invocations exited with code 0. Pre-export then rejected content.json because its SHA-256 differed from the authored manifest. Repository bytes verify correctly; a Git checkout with core.autocrlf=true reproduces the mismatch. The pending checkout correction preserves hashed release bytes across platforms. Authenticated dashboard access remains available.
 
 ---
 
@@ -444,7 +444,7 @@ Do not add speculative code-only features before Playable Build #1 unless a newl
 
 ## Next step
 
-PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026-10-27; the milestone remains active because the build/device gate was not passed. Validate the ShadowQuality correction on `fix/unity-shadow-quality-compile` with the existing static check and one purposeful Unity build at its exact corrected commit. Keep automatic/scheduled builds off. Record actual compilation, EditMode/PlayMode, pre-export, IL2CPP, APK, and Android runtime results before closing Milestone 4.
+PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026-10-27; the milestone remains active because the APK/device gate was not passed. Validate the enum and release-checkout corrections in PR #7 (`fix/unity-shadow-quality-compile`) with its static check and one purposeful Unity build at the exact updated commit. Keep automatic/scheduled builds off. Record actual test counts, pre-export, IL2CPP, APK, and Android runtime results before closing Milestone 4.
 
 ---
 
@@ -488,3 +488,17 @@ PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026
 **Blockers / next step:** Exact corrected-commit Unity compilation, EditMode/PlayMode, pre-export, IL2CPP/Gradle APK, and Android device evidence remain pending. Push `fix/unity-shadow-quality-compile`, confirm its static CI, then run one purposeful build at that exact corrected head after build #4 finishes. Record and address any further build blocker within this task. No unchanged retries.
 
 **Backlog:** Unchanged; Milestone 5 and unrelated work stay deferred.
+
+## 2026-10-27 Build #5 — compilation/tests passed; release checkout blocker
+
+**Scope:** Same Milestone 4 Android build task; this correction is required to pass the existing content-integrity preflight.
+
+**Evidence:** Build #5 checked out `2af2f3a82dfbba5b4742e3ace745e5179c507eb0` at 15:39:31 UTC. EditMode exited 0 at 15:42:13 UTC; PlayMode exited 0 at 15:43:08 UTC. The published Tests tab confirms **7 EditMode passed** (six project tests plus the builder's RequiredTest) and **3 PlayMode passed**, including GraphicsTiersCanSwitchAtRuntime. At 15:43:56 UTC the documented pre-export hook aborted in CopyAuthoritativeContent because content.json did not match its manifest SHA-256. No APK was exported. Final result: Failed; billable build time 7:39.
+
+**Reproduction / mechanism:** The committed Wild Renewal content has LF bytes and verifies against manifest hash `B0C4397495163E31328BA7CC799A9656D6A209707F6B9F08FD0B1A06239FC4F3`. There was no Git attributes policy for releases. A real temporary checkout using `git -c core.autocrlf=true checkout-index` converted all 870 content lines to CRLF and produced `2FCEED15240A30DCBF1FA18C90ED0BB751A45C9A4A99446646596742B6FBCA98`, reproducing the preflight mismatch. The cloud's actual checkout bytes were not separately downloaded; the Windows conversion mechanism is reproduced locally and the next cloud build must validate the correction.
+
+**Correction:** `.gitattributes` marks `content/releases/** -text` so Git preserves the exact committed bytes. The manifest, authored content, SHA-256 verification, runtime cache verification, packages, and platform settings are unchanged. Unity Scaffold CI now exercises a Windows-style Git checkout and verifies every release-manifest hash, and it also runs for release/attributes changes.
+
+**Regression evidence:** The new checkout validation failed before the attributes rule and passed after it. Existing Unity scaffold validation and `git diff --check` pass. The test uses a temporary output directory and leaves the working tree and index unchanged. No normalization, hash rewrite, integrity bypass, temporary logging, or generated asset is introduced.
+
+**Next:** Update the same PR #7, inspect exact-head CI and final diff, then run a single updated-commit build after #5 is terminal. Pre-export/URP/scenes, ARM64 IL2CPP APK, and Android device validation remain pending. Milestone 5 remains deferred.

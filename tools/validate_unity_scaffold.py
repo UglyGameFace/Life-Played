@@ -1,9 +1,41 @@
 #!/usr/bin/env python3
+import hashlib
 import json
+import subprocess
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 UNITY = ROOT / "client" / "LifePlayed.Unity"
+
+# A Windows Git checkout must preserve bytes covered by release manifests.
+# Exercise checkout conversion even when this validation runs on Linux.
+with tempfile.TemporaryDirectory() as checkout_directory:
+    checkout_root = Path(checkout_directory)
+    for release_manifest in (ROOT / "content" / "releases").rglob("manifest.json"):
+        release = json.loads(release_manifest.read_text(encoding="utf-8"))
+        for filename, expected_hash in release["fileHashes"].items():
+            source_path = (release_manifest.parent / filename).resolve()
+            source_path.relative_to(release_manifest.parent.resolve())
+            relative_path = source_path.relative_to(ROOT).as_posix()
+            subprocess.run(
+                [
+                    "git", "-c", "core.autocrlf=true", "checkout-index",
+                    "--prefix=" + checkout_root.as_posix() + "/",
+                    "--", relative_path,
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+            )
+            actual_hash = hashlib.sha256(
+                (checkout_root / relative_path).read_bytes()
+            ).hexdigest()
+            if actual_hash.casefold() != expected_hash.casefold():
+                raise SystemExit(
+                    "Windows-style Git checkout changed hashed release bytes: "
+                    + relative_path
+                )
 
 required = [
     UNITY / "ProjectSettings" / "ProjectVersion.txt",
