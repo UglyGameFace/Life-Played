@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / first Unity cloud build failed at C# compilation; targeted correction committed, Editor/device validation pending
+**State:** ACTIVE — Milestone 4 / corrected-revision Unity build #4 exposed a remaining ShadowQuality compiler ambiguity; targeted correction prepared, Editor/device validation pending
 
 **Unity cloud usage:** At least one manual Unity Build Automation attempt ran on 2026-10-27. Actual billed minutes have not been independently verified.
 
@@ -430,11 +430,11 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 
 ## Current blocker
 
-A manual Unity Build Automation run checked out PR #6 at `406e1e22f2c6c82d47ee33a3780737ac7197ce68`, resolved Unity packages and signing, then failed in Unity C# compilation. There is no connected Unity Build Automation action available in this workspace; Editor revalidation must be performed through the user's Unity Dashboard.
+Unity Build Automation build #4 checked out corrected commit `c2b403684da3af776a67858240d90e960a0683f9` in Unity `6000.3.25f1`. Compilation advanced beyond the previous Application/GraphicsTier errors and exposed CS0104 for ShadowQuality in GraphicsQualityController. Tests and APK export remain blocked by compilation. Authenticated dashboard access is now available for build configuration, launch, logs, and artifact retrieval.
 
 ---
 
-## Repository freeze point
+## Initial repository freeze point (before compiler repairs)
 
 Repository-side Milestone 4 preparation is now frozen at:
 
@@ -444,9 +444,7 @@ Do not add speculative code-only features before Playable Build #1 unless a newl
 
 ## Next step
 
-Do **not** merge PR #6 yet.
-
-Do not retry the unchanged failing commit `406e1e22…`. Verify PR #6 static CI for corrective commit `6af71571…`. The user mentioned another Unity build already running; confirm its exact SHA before making any further cloud attempt. When no build is running, manually build from the corrected PR head, record exact Unity compilation/IL2CPP/test/APK results, and complete Android device validation according to `docs/PLAYABLE_BUILD_1_VALIDATION.md` before merging.
+PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026-10-27; the milestone remains active because the build/device gate was not passed. Validate the ShadowQuality correction on `fix/unity-shadow-quality-compile` with the existing static check and one purposeful Unity build at its exact corrected commit. Keep automatic/scheduled builds off. Record actual compilation, EditMode/PlayMode, pre-export, IL2CPP, APK, and Android runtime results before closing Milestone 4.
 
 ---
 
@@ -472,3 +470,21 @@ Do not retry the unchanged failing commit `406e1e22…`. Verify PR #6 static CI 
 **Backlog:** No new items; Milestone 5 and unrelated features remain blocked by Milestone 4 DoD.
 
 **Next action:** Verify corrected PR head, static check and any in-flight cloud build's SHA/outcome; then obtain one purposeful Android validation build from the corrected source and test APK on the phone. Keep PR #6 draft until the actual merge gate is proven.
+
+## 2026-10-27 Build #4 — corrected-revision validation
+
+**Active task / scope:** Milestone 4 remains the single active task. Produce and validate the first Android client; do not start Milestone 5 or add features.
+
+**Current repository state:** PR #6 was merged at `011ed21401d84ad07292ff9e82277783efdd4867`. Its head was `c2b403684da3af776a67858240d90e960a0683f9`. Earlier draft/merge instructions above describe historical checkpoints and do not establish completed build/device validation.
+
+**Dashboard configuration:** The Life Played target had an empty pre-export hook and disabled project tests. Saved the documented `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport` hook, development builds, EditMode tests, PlayMode tests, and fail-on-test-failure. APK, Windows Micro, Unity 6000.3.25f1, the existing signing configuration, and disabled automatic/scheduled builds were preserved.
+
+**Execution evidence:** Build #4 was manually launched with an explicit corrected-commit override. Its checkout log at 15:19:55 UTC confirms `c2b403684da3af776a67858240d90e960a0683f9`. The Unity compiler at 15:22:07 UTC reports CS0104 at GraphicsQualityController.cs lines 35, 45, and 55: ShadowQuality is ambiguous between UnityEngine.ShadowQuality and UnityEngine.Rendering.Universal.ShadowQuality. The earlier Application/GraphicsTier errors are absent from this build's compiler output. Both test invocations were blocked by compilation, so there are no passing test results or APK from this attempt.
+
+**Confirmed cause / correction:** GraphicsQualityController imports both enum namespaces and uses unqualified ShadowQuality for QualitySettings.shadows. Explicitly alias the UnityEngine enum, matching the property type. Remove the now-unused UnityEngine.Rendering import. No graphics-tier values, rendering behavior, packages, signing, or fallback logic changed.
+
+**Validation / cleanup:** Existing Unity scaffold validation passes locally; `git diff --check` passes. All ShadowQuality references are in this controller. Bootstrap, UI, world presenter callers and the existing GraphicsTiersCanSwitchAtRuntime PlayMode test were inspected. That test remains enabled and must run in Unity. The source diff is limited to the enum alias/import cleanup; the other changed file is this task record. No generated assets, temporary code, or credentials are included.
+
+**Blockers / next step:** Exact corrected-commit Unity compilation, EditMode/PlayMode, pre-export, IL2CPP/Gradle APK, and Android device evidence remain pending. Push `fix/unity-shadow-quality-compile`, confirm its static CI, then run one purposeful build at that exact corrected head after build #4 finishes. Record and address any further build blocker within this task. No unchanged retries.
+
+**Backlog:** Unchanged; Milestone 5 and unrelated work stay deferred.
