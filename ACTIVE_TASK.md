@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / build #5 compiled and both test runs exited successfully; pre-export stopped on content hash mismatch reproduced by Windows Git line-ending conversion; checkout correction prepared, APK/device validation pending
+**State:** ACTIVE — Milestone 4 / build #6 compiled, both test runs passed, and content integrity staging passed; pre-export stopped on renderer asset ownership; targeted generator correction prepared, APK/device validation pending
 
 **Unity cloud usage:** At least one manual Unity Build Automation attempt ran on 2026-10-27. Actual billed minutes have not been independently verified.
 
@@ -430,7 +430,7 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 
 ## Current blocker
 
-Unity Build Automation build #5 checked out `2af2f3a82dfbba5b4742e3ace745e5179c507eb0` in Unity `6000.3.25f1`. C# compilation passed and both test invocations exited with code 0. Pre-export then rejected content.json because its SHA-256 differed from the authored manifest. Repository bytes verify correctly; a Git checkout with core.autocrlf=true reproduces the mismatch. The pending checkout correction preserves hashed release bytes across platforms. Authenticated dashboard access remains available.
+Unity Build Automation build #6 checked out `408be31c3e8aadc49dd81f1522e41c5b3469c6ad`. Compilation and both test invocations passed, and pre-export completed content integrity staging. It then failed because LoadBuiltinRendererData created Assets/UniversalRenderer.asset and the configurator attempted to add that already-persistent object into the pipeline asset. The pending correction creates a renderer in the generated directory and supplies it to Unity's public URP factory.
 
 ---
 
@@ -444,7 +444,7 @@ Do not add speculative code-only features before Playable Build #1 unless a newl
 
 ## Next step
 
-PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026-10-27; the milestone remains active because the APK/device gate was not passed. Validate the enum and release-checkout corrections in PR #7 (`fix/unity-shadow-quality-compile`) with its static check and one purposeful Unity build at the exact updated commit. Keep automatic/scheduled builds off. Record actual test counts, pre-export, IL2CPP, APK, and Android runtime results before closing Milestone 4.
+PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026-10-27; the milestone remains active because the APK/device gate was not passed. Validate the accumulated build-blocker corrections in PR #7 (`fix/unity-shadow-quality-compile`) with its static check and one purposeful Unity build at the exact updated commit. Keep automatic/scheduled builds off. Record pre-export, IL2CPP, APK, and Android runtime results before closing Milestone 4.
 
 ---
 
@@ -502,3 +502,17 @@ PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026
 **Regression evidence:** The new checkout validation failed before the attributes rule and passed after it. Existing Unity scaffold validation and `git diff --check` pass. The test uses a temporary output directory and leaves the working tree and index unchanged. No normalization, hash rewrite, integrity bypass, temporary logging, or generated asset is introduced.
 
 **Next:** Update the same PR #7, inspect exact-head CI and final diff, then run a single updated-commit build after #5 is terminal. Pre-export/URP/scenes, ARM64 IL2CPP APK, and Android device validation remain pending. Milestone 5 remains deferred.
+
+## 2026-10-27 Build #6 — content staging passed; renderer ownership blocker
+
+**Evidence:** Checkout confirmed `408be31c3e8aadc49dd81f1522e41c5b3469c6ad` at 16:06:28 UTC. EditMode exited 0 at 16:08:55 UTC and PlayMode at 16:09:46 UTC. CopyAuthoritativeContent completed, confirming that the checkout correction preserves the release hash in the real Windows builder. At 16:10:28 UTC EnsureRenderPipeline failed: LifePlayedMobileRenderer was already an asset at Assets/UniversalRenderer.asset when AddObjectToAsset attempted to attach it to LifePlayedMobileURP. APK export did not run.
+
+**Confirmed cause:** URP 17.3's LoadBuiltinRendererData creates a persistent renderer asset itself. Reparenting it with AddObjectToAsset is invalid. Unity's official source and public Create(ScriptableRendererData) API were checked before changing this path.
+
+**Correction:** Create/reuse LifePlayedMobileRenderer.asset inside Assets/LifePlayed/Generated and supply it to UniversalRenderPipelineAsset.Create. Retain existing pipeline assets and their references; remove the incompatible loader/reparent sequence. PreExport, the configure menu, and LifePlayedAndroidBuild continue to use the same authoritative EnsureConfigured implementation. No serialized assets were rewritten or deleted.
+
+**Affected generated-output cleanup:** The existing generated/scene/meta ignore rules were one literal-backslash-n line, so Git ignored none of the checked generated paths. Split the rules into real lines and ignore the default volume profile generated by the existing URP global-settings initializer. Add actual git check-ignore coverage for these outputs. The new behavioral check failed before the ignore repair and passes afterward.
+
+**Validation:** Unity scaffold and checkout/ignore checks pass locally; git diff --check passes. Generated renderer/pipeline/scene/content artifacts remain untracked/ignored. Engine packages, hashes, rendering values, settings, tests, and signing are unchanged. New renderer creation still requires a real Unity execution test.
+
+**Next:** Publish this correction to the same PR #7, verify exact-head CI and #6's terminal state, then run one corrected build. Complete preflight/scene generation, ARM64 IL2CPP APK, and device checks. No new feature work or unchanged retries.

@@ -375,6 +375,29 @@ for generated_pattern in (
             f"Missing generated Unity asset ignore rule: {generated_pattern}"
         )
 
+generated_outputs = [
+    "client/LifePlayed.Unity/Assets/LifePlayed/Generated/LifePlayedMobileURP.asset",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Generated/LifePlayedMobileRenderer.asset",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Generated.meta",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Scenes/Bootstrap.unity",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Scenes.meta",
+    "client/LifePlayed.Unity/Assets/StreamingAssets/LifePlayed/Content.meta",
+    "client/LifePlayed.Unity/Assets/DefaultVolumeProfile.asset",
+    "client/LifePlayed.Unity/Assets/DefaultVolumeProfile.asset.meta",
+]
+ignored = subprocess.run(
+    ["git", "check-ignore", "--no-index", "--stdin"],
+    input="\n".join(generated_outputs) + "\n",
+    cwd=ROOT,
+    text=True,
+    capture_output=True,
+).stdout.splitlines()
+missing_ignores = sorted(set(generated_outputs) - set(ignored))
+if missing_ignores:
+    raise SystemExit(
+        "Generated Unity assets are not ignored: " + ", ".join(missing_ignores)
+    )
+
 for fragment in (
     "EditorUserBuildSettings.development = true;",
     "EditorUserBuildSettings.connectProfiler = false;",
