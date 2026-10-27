@@ -1,0 +1,17 @@
+{
+  "name": "LifePlayed.Client.Platform",
+  "rootNamespace": "LifePlayed.Client.Platform",
+  "references": [
+    "LifePlayed.Client.Application",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

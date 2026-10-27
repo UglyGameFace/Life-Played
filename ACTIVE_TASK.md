@@ -12,9 +12,9 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / Unity version and project-foundation investigation
+**State:** ACTIVE — Milestone 4 / first Unity cloud build failed at C# compilation; targeted correction committed, Editor/device validation pending
 
-**Unity cloud usage so far:** **0 minutes**
+**Unity cloud usage:** At least one manual Unity Build Automation attempt ran on 2026-10-27. Actual billed minutes have not been independently verified.
 
 No cloud build should be triggered merely to prove that files exist. The first Unity Build Automation use must satisfy the repository's impactful-build policy.
 
@@ -247,6 +247,228 @@ That milestone proves:
 
 ---
 
+## Current implementation status
+
+Implemented on `feat/unity-client-foundation` / PR #6:
+
+### Project/toolchain
+
+- Unity Editor pinned to `6000.3.25f1`
+- URP 17.3
+- Input System 1.20.0
+- Addressables 2.10.3
+- Addressables for Android 1.1.0
+- Unity Test Framework 1.6.0
+- nested Unity-generated folders ignored
+- generated scenes, URP assets, and staged StreamingAssets content ignored
+- DomainBridge/Application assemblies remain free of UnityEngine references
+- Infrastructure / Platform / UI / World / Bootstrap assembly boundaries exist
+
+### App shell / mobile UX
+
+- portrait-first safe-area shell
+- real route bodies for Home / Quests / World / Hero / More
+- persisted last route
+- World route uses a translucent veil so the 3D scene remains visible
+- World status card for The Quiet Bloom / Hearthwild
+- Reduced / Standard / High quality controls
+- persisted graphics tier
+- development-only runtime diagnostics showing platform, route, quality tier, FPS, target FPS, world-render state, content release/schema, safe-area size, and pause state
+
+### Wild Renewal presentation
+
+- layered Hearthwild island and soil edge
+- moss stepping path
+- rebuilt Central Hearth and five-petal emissive Quiet Bloom
+- 12 multi-crown grove trees
+- six waystones/runes
+- dormant workshop frame
+- gathering circle
+- grove arch
+- rain pool
+- eight animated Bloom Wisps
+- improved Waykeeper silhouette with limbs, mantle, pack, and glow sigil
+- authored starter identity **Leafglow Fox**
+- animated Leafglow Fox body/head/legs/tail/glow charm
+- presentation-only **Call Leafglow** interaction with hop/spin/pulse reaction
+- one-finger orbit
+- two-finger Enhanced Touch pinch zoom
+- bottom UI/control zone excluded from world-camera gestures
+
+### Mobile runtime / resilience
+
+- 3D world suspends outside World
+- 3D world also suspends on app pause/focus loss
+- low-memory notification downshifts to Reduced quality and unloads unused assets
+- Android/iOS runtime platform boundary
+- Android edge-to-edge rendering with safe-area UI
+- Android optimized frame pacing
+- fullscreen start
+- `runInBackground=false`
+
+### Persistence / content
+
+- PlayerPrefs restricted to lightweight client settings
+- separate JSON-backed offline mutation queue + sync cursor
+- offline store recreation/deduplication/acknowledgement EditMode coverage
+- authoritative Wild Renewal release remains single-source under `content/releases/wild-renewal-v1`
+- pre-export stages the validated release into StreamingAssets
+- Android-safe `UnityWebRequest` manifest loader
+- runtime diagnostics expose loaded content release/schema and whether it came from the bundled release or last-known-good cache
+- staged `content.json` is SHA-256 checked against the authoritative manifest during pre-export
+- runtime content is SHA-256 verified again before activation
+- verified bundled content seeds a persistent last-known-good cache under `persistentDataPath`
+- bundled-content failure can fall back to the verified last-known-good cache
+- minimum client version is enforced against the content manifest
+- Playable Build #1 client version pinned to `0.1.0`
+- Development APK writes a persistent thread-safe Unity runtime log under `lifeplayed/diagnostics/development.log`
+
+### Build Automation / quota protection
+
+- official pre-export hook:
+  `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport`
+- hard gate for `ENABLE_INPUT_SYSTEM`
+- hard gate for Android target and Unity `6000.3.25f1`
+- mobile URP generation and validation
+- authored-content staging validation
+- Development APK forced on
+- profiler auto-connect and deep profiling forced off
+- ARM64-only target
+- IL2CPP backend
+- IL2CPP Debug C++ configuration for faster prototype compilation
+- EditMode and PlayMode tests configured for the cloud build
+- Addressables production content build intentionally deferred until it has real groups/catalog content
+
+---
+
+## Repository-side validation evidence
+
+Latest Playable Build #1 candidate:
+
+- PR #6 head: `20ad197db38d2984e20a20b8771eb9bb64526e87`
+- Unity Scaffold CI run #29: **success**
+- PR state: clean / mergeable / intentionally draft
+- changed files: 41 scoped files
+- generated-junk scan: clean
+- APK/AAB/keystore scan: clean
+- secret-pattern scan: clean
+- Unity cloud minutes consumed by repository preparation: **0**
+
+Additional candidate hardening:
+
+- pre-export SHA-256 verifies authoritative `content.json`
+- generated verification metadata is staged with the build
+- runtime SHA-256 verification happens before content activation
+- verified bundled content seeds a last-known-good cache
+- bundled content failure can fall back to cached verified content
+- content minimum-client version is enforced
+- diagnostics distinguish `bundle` vs `cache`
+- Development APK persists Unity logs from main and worker threads under `lifeplayed/diagnostics/development.log`
+- StreamingAssets loading follows Unity's Android-safe `UnityWebRequest` path
+
+The static validator currently protects:
+
+- editor/package pins
+- assembly boundaries
+- generated-folder ignores
+- public URP global-settings APIs
+- URP runtime quality controls
+- Android safe-area/frame-pacing settings
+- settings-vs-offline-database separation
+- authoritative content staging
+- Enhanced Touch pinch support
+- route-body presence
+- Input System build preflight
+- Android diagnostic-build configuration
+- ARM64/IL2CPP/Debug compiler configuration
+- mobile lifecycle / low-memory wiring
+
+---
+
+## Playable Build #1 readiness
+
+Prior Unity scaffold static validation was **GREEN**. The first real Unity build exposed compiler errors not detected by that static validator; patch validation remains pending.
+
+The first Unity build is now expected to prove all remaining Editor/device-only facts in one attempt:
+
+1. package resolution/import
+2. C# compilation under Unity 6000.3.25f1
+3. Active Input Handling really defines `ENABLE_INPUT_SYSTEM`
+4. URP/global-settings/scenes generate correctly
+5. authoritative Wild Renewal content stages, SHA-256 verifies, loads, and seeds last-known-good cache
+6. EditMode tests pass
+7. PlayMode tests pass
+8. ARM64 IL2CPP Development APK exports
+9. APK installs and launches on Android
+10. safe-area UI is correct
+11. all five routes respond
+12. world sleeps outside World
+13. one-finger orbit and two-finger pinch work without fighting UI
+14. Call Leafglow triggers the companion reaction
+15. Reduced / Standard / High switch correctly
+16. selected route and graphics tier survive restart
+17. background/resume safely suspends/restores world presentation
+18. development log persists enough evidence to diagnose runtime exceptions without another cloud build
+
+Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sheet.
+
+---
+
+## Still unvalidated
+
+- Unity package resolution: confirmed succeeded during first cloud build
+- Unity C# compilation: first cloud build failed (targeted source correction committed; revalidation pending)
+- actual Active Input Handling serialized state
+- Editor-generated URP/scenes
+- EditMode/PlayMode execution inside Unity
+- Android Gradle/IL2CPP export
+- APK installation/runtime
+- real-device touch/safe-area/frame pacing
+- real-device suspend/resume behavior
+
+---
+
+## Current blocker
+
+A manual Unity Build Automation run checked out PR #6 at `406e1e22f2c6c82d47ee33a3780737ac7197ce68`, resolved Unity packages and signing, then failed in Unity C# compilation. There is no connected Unity Build Automation action available in this workspace; Editor revalidation must be performed through the user's Unity Dashboard.
+
+---
+
+## Repository freeze point
+
+Repository-side Milestone 4 preparation is now frozen at:
+
+`20ad197db38d2984e20a20b8771eb9bb64526e87`
+
+Do not add speculative code-only features before Playable Build #1 unless a newly discovered authoritative-document mismatch materially affects the build. At this point, additional unexecuted Unity code is more likely to increase first-build risk than reduce it.
+
 ## Next step
 
-Inspect repository ignore/client state and the headless Contracts/Content/Sync surfaces, then create the dedicated Milestone 4 branch. Do not trigger Unity Build Automation yet.
+Do **not** merge PR #6 yet.
+
+Do not retry the unchanged failing commit `406e1e22…`. Verify PR #6 static CI for corrective commit `6af71571…`. The user mentioned another Unity build already running; confirm its exact SHA before making any further cloud attempt. When no build is running, manually build from the corrected PR head, record exact Unity compilation/IL2CPP/test/APK results, and complete Android device validation according to `docs/PLAYABLE_BUILD_1_VALIDATION.md` before merging.
+
+---
+
+## 2026-10-27 Unity Build Automation compiler failure and recovery
+
+**Active task:** Still Milestone 4 — Unity mobile client. No unrelated work authorized.
+
+**Observed source/build path:** Unity Build Automation checked out `feat/unity-client-foundation` at `406e1e22f2c6c82d47ee33a3780737ac7197ce68`, opened `client/LifePlayed.Unity` in Unity `6000.3.25f1`, resolved Unity packages, and fetched/generated the Android keystore successfully. Unity C# compilation failed at 2026-10-27 13:54 UTC, prior to pre-export, tests, APK export, or device validation. Source evidence: user-provided Build Automation log `2476054906477-life-played-default-android-1.log.txt` (not checked into the repository).
+
+**Root causes confirmed from error locations and current source:**
+
+- Unqualified `Application` references in several client assemblies bind to the sibling namespace `LifePlayed.Client.Application`, rather than the intended `UnityEngine.Application` type (CS0234).
+- Unqualified `GraphicsTier` in two World source files collides with `UnityEngine.Rendering.GraphicsTier`, which breaks interface type matching (CS0104/CS0535/CS0738).
+
+**Scoped correction:** Commit `6af71571a0a2ea63d1c55c13aaed7b0908841ee8` on PR #6 qualifies Unity `Application` references across all affected build and runtime callers, including bootstrap and editor paths, and aliases domain `GraphicsTier` explicitly in the two World classes. Seven existing .cs files changed; domain model, behavior, signing, and build configuration unchanged.
+
+**Validation:** First-build toolchain and keystore steps passed, but Editor compilation, tests, pre-export, IL2CPP APK, Android runtime are still unvalidated for the new commit. Unity Scaffold CI checks file/scaffold structure and does **not** compile Unity C#; do not equate its success with a Unity build pass. Inspect the exact-head PR check after committing this record. No automatic Unity builds or automatic retries are authorized.
+
+**Cleanup/conflicts:** Exact commit diff checked for scope: only the seven affected existing files, 20 insertions and 18 deletions in the correction; no generated artifacts, app signing secrets, or unrelated features. All 22 existing Unity C# source files were scanned for unqualified `Application.` and `GraphicsTier` usages relevant to the namespace conflict. No duplicate workaround was introduced.
+
+**Blockers/risks:** A second cloud build was reported as running by the user when the failure log was supplied, but its SHA and outcome were not provided. Its status must not be inferred. An unchanged build of `406e1e22…` would hit the same compiler errors; only a fresh build from the corrected commit can validate the fix. Unity Dashboard access and Android device testing remain user-operated.
+
+**Backlog:** No new items; Milestone 5 and unrelated features remain blocked by Milestone 4 DoD.
+
+**Next action:** Verify corrected PR head, static check and any in-flight cloud build's SHA/outcome; then obtain one purposeful Android validation build from the corrected source and test APK on the phone. Keep PR #6 draft until the actual merge gate is proven.

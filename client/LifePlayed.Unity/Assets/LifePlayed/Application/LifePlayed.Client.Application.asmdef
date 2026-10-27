@@ -1,0 +1,16 @@
+{
+  "name": "LifePlayed.Client.Application",
+  "rootNamespace": "LifePlayed.Client.Application",
+  "references": [
+    "LifePlayed.Client.DomainBridge"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}
