@@ -12,9 +12,9 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / runtime foundation built, Unity import/build proof pending
+**State:** ACTIVE — Milestone 4 / first Unity cloud build failed at C# compilation; targeted correction committed, Editor/device validation pending
 
-**Unity cloud usage so far:** **0 minutes**
+**Unity cloud usage:** At least one manual Unity Build Automation attempt ran on 2026-10-27. Actual billed minutes have not been independently verified.
 
 No cloud build should be triggered merely to prove that files exist. The first Unity Build Automation use must satisfy the repository's impactful-build policy.
 
@@ -387,7 +387,7 @@ The static validator currently protects:
 
 ## Playable Build #1 readiness
 
-Repository-side readiness is **GREEN**.
+Prior Unity scaffold static validation was **GREEN**. The first real Unity build exposed compiler errors not detected by that static validator; patch validation remains pending.
 
 The first Unity build is now expected to prove all remaining Editor/device-only facts in one attempt:
 
@@ -416,8 +416,8 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 
 ## Still unvalidated
 
-- Unity Editor package resolution/import
-- Unity C# compilation
+- Unity package resolution: confirmed succeeded during first cloud build
+- Unity C# compilation: first cloud build failed (targeted source correction committed; revalidation pending)
 - actual Active Input Handling serialized state
 - Editor-generated URP/scenes
 - EditMode/PlayMode execution inside Unity
@@ -430,7 +430,7 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 
 ## Current blocker
 
-This ChatGPT workspace has no connected Unity Build Automation action/connector and GitHub reports no external Unity build check for PR #6. Repository preparation can be completed directly, but true Unity Editor/import/build/device proof must come from the configured Unity Build Automation target.
+A manual Unity Build Automation run checked out PR #6 at `406e1e22f2c6c82d47ee33a3780737ac7197ce68`, resolved Unity packages and signing, then failed in Unity C# compilation. There is no connected Unity Build Automation action available in this workspace; Editor revalidation must be performed through the user's Unity Dashboard.
 
 ---
 
@@ -446,4 +446,29 @@ Do not add speculative code-only features before Playable Build #1 unless a newl
 
 Do **not** merge PR #6 yet.
 
-Run exactly one manual Build Automation attempt using `docs/UNITY_BUILD_AUTOMATION_SETUP.md`, then validate the resulting APK with `docs/PLAYABLE_BUILD_1_VALIDATION.md`. Capture the build ID, exact commit SHA, test summary, first compiler/import/Gradle error if any, and Android runtime observations. Repair only evidence-backed failures under this same Milestone 4 task.
+Do not retry the unchanged failing commit `406e1e22…`. Verify PR #6 static CI for corrective commit `6af71571…`. The user mentioned another Unity build already running; confirm its exact SHA before making any further cloud attempt. When no build is running, manually build from the corrected PR head, record exact Unity compilation/IL2CPP/test/APK results, and complete Android device validation according to `docs/PLAYABLE_BUILD_1_VALIDATION.md` before merging.
+
+---
+
+## 2026-10-27 Unity Build Automation compiler failure and recovery
+
+**Active task:** Still Milestone 4 — Unity mobile client. No unrelated work authorized.
+
+**Observed source/build path:** Unity Build Automation checked out `feat/unity-client-foundation` at `406e1e22f2c6c82d47ee33a3780737ac7197ce68`, opened `client/LifePlayed.Unity` in Unity `6000.3.25f1`, resolved Unity packages, and fetched/generated the Android keystore successfully. Unity C# compilation failed at 2026-10-27 13:54 UTC, prior to pre-export, tests, APK export, or device validation. Source evidence: user-provided Build Automation log `2476054906477-life-played-default-android-1.log.txt` (not checked into the repository).
+
+**Root causes confirmed from error locations and current source:**
+
+- Unqualified `Application` references in several client assemblies bind to the sibling namespace `LifePlayed.Client.Application`, rather than the intended `UnityEngine.Application` type (CS0234).
+- Unqualified `GraphicsTier` in two World source files collides with `UnityEngine.Rendering.GraphicsTier`, which breaks interface type matching (CS0104/CS0535/CS0738).
+
+**Scoped correction:** Commit `6af71571a0a2ea63d1c55c13aaed7b0908841ee8` on PR #6 qualifies Unity `Application` references across all affected build and runtime callers, including bootstrap and editor paths, and aliases domain `GraphicsTier` explicitly in the two World classes. Seven existing .cs files changed; domain model, behavior, signing, and build configuration unchanged.
+
+**Validation:** First-build toolchain and keystore steps passed, but Editor compilation, tests, pre-export, IL2CPP APK, Android runtime are still unvalidated for the new commit. Unity Scaffold CI checks file/scaffold structure and does **not** compile Unity C#; do not equate its success with a Unity build pass. Inspect the exact-head PR check after committing this record. No automatic Unity builds or automatic retries are authorized.
+
+**Cleanup/conflicts:** Exact commit diff checked for scope: only the seven affected existing files, 20 insertions and 18 deletions in the correction; no generated artifacts, app signing secrets, or unrelated features. All 22 existing Unity C# source files were scanned for unqualified `Application.` and `GraphicsTier` usages relevant to the namespace conflict. No duplicate workaround was introduced.
+
+**Blockers/risks:** A second cloud build was reported as running by the user when the failure log was supplied, but its SHA and outcome were not provided. Its status must not be inferred. An unchanged build of `406e1e22…` would hit the same compiler errors; only a fresh build from the corrected commit can validate the fix. Unity Dashboard access and Android device testing remain user-operated.
+
+**Backlog:** No new items; Milestone 5 and unrelated features remain blocked by Milestone 4 DoD.
+
+**Next action:** Verify corrected PR head, static check and any in-flight cloud build's SHA/outcome; then obtain one purposeful Android validation build from the corrected source and test APK on the phone. Keep PR #6 draft until the actual merge gate is proven.
