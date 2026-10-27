@@ -223,6 +223,10 @@ namespace LifePlayed.Client.Editor
                     rendererData =
                         ScriptableObject.CreateInstance<UniversalRendererData>();
                     rendererData.name = "LifePlayedMobileRenderer";
+                    rendererData.postProcessData =
+                        AssetDatabase.LoadAssetAtPath<PostProcessData>(
+                            UniversalRenderPipelineAsset.packagePath +
+                            "/Runtime/Data/PostProcessData.asset");
                     AssetDatabase.CreateAsset(rendererData, RendererPath);
                 }
 
