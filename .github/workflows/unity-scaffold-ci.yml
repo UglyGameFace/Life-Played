@@ -4,22 +4,26 @@ on:
   pull_request:
     paths:
       - "client/LifePlayed.Unity/**"
+      - "content/releases/**"
       - "tools/validate_unity_scaffold.py"
       - "docs/UNITY_BUILD_AUTOMATION_SETUP.md"
       - "docs/PLAYABLE_BUILD_1_VALIDATION.md"
       - "ACTIVE_TASK.md"
       - ".gitignore"
+      - ".gitattributes"
       - ".github/workflows/unity-scaffold-ci.yml"
   push:
     branches:
       - main
     paths:
       - "client/LifePlayed.Unity/**"
+      - "content/releases/**"
       - "tools/validate_unity_scaffold.py"
       - "docs/UNITY_BUILD_AUTOMATION_SETUP.md"
       - "docs/PLAYABLE_BUILD_1_VALIDATION.md"
       - "ACTIVE_TASK.md"
       - ".gitignore"
+      - ".gitattributes"
       - ".github/workflows/unity-scaffold-ci.yml"
   workflow_dispatch:
 

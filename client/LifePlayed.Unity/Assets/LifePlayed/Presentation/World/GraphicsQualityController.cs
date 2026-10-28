@@ -1,8 +1,8 @@
 using System;
 using LifePlayed.Client.Application;
 using GraphicsTier = LifePlayed.Client.Application.GraphicsTier;
+using ShadowQuality = UnityEngine.ShadowQuality;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace LifePlayed.Client.Presentation.World

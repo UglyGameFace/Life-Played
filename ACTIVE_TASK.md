@@ -12,7 +12,7 @@ This is the **only active implementation task** until its Definition of Done is 
 
 ## Status
 
-**State:** ACTIVE — Milestone 4 / first Unity cloud build failed at C# compilation; targeted correction committed, Editor/device validation pending
+**State:** ACTIVE — Milestone 4 / build #6 compiled, both test runs passed, and content integrity staging passed; pre-export stopped on renderer asset ownership; targeted generator correction prepared, APK/device validation pending
 
 **Unity cloud usage:** At least one manual Unity Build Automation attempt ran on 2026-10-27. Actual billed minutes have not been independently verified.
 
@@ -430,11 +430,11 @@ Use `docs/PLAYABLE_BUILD_1_VALIDATION.md` as the authoritative one-build test sh
 
 ## Current blocker
 
-A manual Unity Build Automation run checked out PR #6 at `406e1e22f2c6c82d47ee33a3780737ac7197ce68`, resolved Unity packages and signing, then failed in Unity C# compilation. There is no connected Unity Build Automation action available in this workspace; Editor revalidation must be performed through the user's Unity Dashboard.
+Unity Build Automation build #6 checked out `408be31c3e8aadc49dd81f1522e41c5b3469c6ad`. Compilation and both test invocations passed, and pre-export completed content integrity staging. It then failed because LoadBuiltinRendererData created Assets/UniversalRenderer.asset and the configurator attempted to add that already-persistent object into the pipeline asset. The pending correction creates a renderer in the generated directory and supplies it to Unity's public URP factory.
 
 ---
 
-## Repository freeze point
+## Initial repository freeze point (before compiler repairs)
 
 Repository-side Milestone 4 preparation is now frozen at:
 
@@ -444,9 +444,7 @@ Do not add speculative code-only features before Playable Build #1 unless a newl
 
 ## Next step
 
-Do **not** merge PR #6 yet.
-
-Do not retry the unchanged failing commit `406e1e22…`. Verify PR #6 static CI for corrective commit `6af71571…`. The user mentioned another Unity build already running; confirm its exact SHA before making any further cloud attempt. When no build is running, manually build from the corrected PR head, record exact Unity compilation/IL2CPP/test/APK results, and complete Android device validation according to `docs/PLAYABLE_BUILD_1_VALIDATION.md` before merging.
+PR #6 was merged into main at `011ed21401d84ad07292ff9e82277783efdd4867` on 2026-10-27; the milestone remains active because the APK/device gate was not passed. Validate the accumulated build-blocker corrections in PR #7 (`fix/unity-shadow-quality-compile`) with its static check and one purposeful Unity build at the exact updated commit. Keep automatic/scheduled builds off. Record pre-export, IL2CPP, APK, and Android runtime results before closing Milestone 4.
 
 ---
 
@@ -472,3 +470,49 @@ Do not retry the unchanged failing commit `406e1e22…`. Verify PR #6 static CI 
 **Backlog:** No new items; Milestone 5 and unrelated features remain blocked by Milestone 4 DoD.
 
 **Next action:** Verify corrected PR head, static check and any in-flight cloud build's SHA/outcome; then obtain one purposeful Android validation build from the corrected source and test APK on the phone. Keep PR #6 draft until the actual merge gate is proven.
+
+## 2026-10-27 Build #4 — corrected-revision validation
+
+**Active task / scope:** Milestone 4 remains the single active task. Produce and validate the first Android client; do not start Milestone 5 or add features.
+
+**Current repository state:** PR #6 was merged at `011ed21401d84ad07292ff9e82277783efdd4867`. Its head was `c2b403684da3af776a67858240d90e960a0683f9`. Earlier draft/merge instructions above describe historical checkpoints and do not establish completed build/device validation.
+
+**Dashboard configuration:** The Life Played target had an empty pre-export hook and disabled project tests. Saved the documented `LifePlayed.Client.Editor.LifePlayedProjectConfigurator.PreExport` hook, development builds, EditMode tests, PlayMode tests, and fail-on-test-failure. APK, Windows Micro, Unity 6000.3.25f1, the existing signing configuration, and disabled automatic/scheduled builds were preserved.
+
+**Execution evidence:** Build #4 was manually launched with an explicit corrected-commit override. Its checkout log at 15:19:55 UTC confirms `c2b403684da3af776a67858240d90e960a0683f9`. The Unity compiler at 15:22:07 UTC reports CS0104 at GraphicsQualityController.cs lines 35, 45, and 55: ShadowQuality is ambiguous between UnityEngine.ShadowQuality and UnityEngine.Rendering.Universal.ShadowQuality. The earlier Application/GraphicsTier errors are absent from this build's compiler output. Both test invocations were blocked by compilation, so there are no passing test results or APK from this attempt.
+
+**Confirmed cause / correction:** GraphicsQualityController imports both enum namespaces and uses unqualified ShadowQuality for QualitySettings.shadows. Explicitly alias the UnityEngine enum, matching the property type. Remove the now-unused UnityEngine.Rendering import. No graphics-tier values, rendering behavior, packages, signing, or fallback logic changed.
+
+**Validation / cleanup:** Existing Unity scaffold validation passes locally; `git diff --check` passes. All ShadowQuality references are in this controller. Bootstrap, UI, world presenter callers and the existing GraphicsTiersCanSwitchAtRuntime PlayMode test were inspected. That test remains enabled and must run in Unity. The source diff is limited to the enum alias/import cleanup; the other changed file is this task record. No generated assets, temporary code, or credentials are included.
+
+**Blockers / next step:** Exact corrected-commit Unity compilation, EditMode/PlayMode, pre-export, IL2CPP/Gradle APK, and Android device evidence remain pending. Push `fix/unity-shadow-quality-compile`, confirm its static CI, then run one purposeful build at that exact corrected head after build #4 finishes. Record and address any further build blocker within this task. No unchanged retries.
+
+**Backlog:** Unchanged; Milestone 5 and unrelated work stay deferred.
+
+## 2026-10-27 Build #5 — compilation/tests passed; release checkout blocker
+
+**Scope:** Same Milestone 4 Android build task; this correction is required to pass the existing content-integrity preflight.
+
+**Evidence:** Build #5 checked out `2af2f3a82dfbba5b4742e3ace745e5179c507eb0` at 15:39:31 UTC. EditMode exited 0 at 15:42:13 UTC; PlayMode exited 0 at 15:43:08 UTC. The published Tests tab confirms **7 EditMode passed** (six project tests plus the builder's RequiredTest) and **3 PlayMode passed**, including GraphicsTiersCanSwitchAtRuntime. At 15:43:56 UTC the documented pre-export hook aborted in CopyAuthoritativeContent because content.json did not match its manifest SHA-256. No APK was exported. Final result: Failed; billable build time 7:39.
+
+**Reproduction / mechanism:** The committed Wild Renewal content has LF bytes and verifies against manifest hash `B0C4397495163E31328BA7CC799A9656D6A209707F6B9F08FD0B1A06239FC4F3`. There was no Git attributes policy for releases. A real temporary checkout using `git -c core.autocrlf=true checkout-index` converted all 870 content lines to CRLF and produced `2FCEED15240A30DCBF1FA18C90ED0BB751A45C9A4A99446646596742B6FBCA98`, reproducing the preflight mismatch. The cloud's actual checkout bytes were not separately downloaded; the Windows conversion mechanism is reproduced locally and the next cloud build must validate the correction.
+
+**Correction:** `.gitattributes` marks `content/releases/** -text` so Git preserves the exact committed bytes. The manifest, authored content, SHA-256 verification, runtime cache verification, packages, and platform settings are unchanged. Unity Scaffold CI now exercises a Windows-style Git checkout and verifies every release-manifest hash, and it also runs for release/attributes changes.
+
+**Regression evidence:** The new checkout validation failed before the attributes rule and passed after it. Existing Unity scaffold validation and `git diff --check` pass. The test uses a temporary output directory and leaves the working tree and index unchanged. No normalization, hash rewrite, integrity bypass, temporary logging, or generated asset is introduced.
+
+**Next:** Update the same PR #7, inspect exact-head CI and final diff, then run a single updated-commit build after #5 is terminal. Pre-export/URP/scenes, ARM64 IL2CPP APK, and Android device validation remain pending. Milestone 5 remains deferred.
+
+## 2026-10-27 Build #6 — content staging passed; renderer ownership blocker
+
+**Evidence:** Checkout confirmed `408be31c3e8aadc49dd81f1522e41c5b3469c6ad` at 16:06:28 UTC. EditMode exited 0 at 16:08:55 UTC and PlayMode at 16:09:46 UTC. CopyAuthoritativeContent completed, confirming that the checkout correction preserves the release hash in the real Windows builder. At 16:10:28 UTC EnsureRenderPipeline failed: LifePlayedMobileRenderer was already an asset at Assets/UniversalRenderer.asset when AddObjectToAsset attempted to attach it to LifePlayedMobileURP. APK export did not run.
+
+**Confirmed cause:** URP 17.3's LoadBuiltinRendererData creates a persistent renderer asset itself. Reparenting it with AddObjectToAsset is invalid. Unity's official source and public Create(ScriptableRendererData) API were checked before changing this path.
+
+**Correction:** Create/reuse LifePlayedMobileRenderer.asset inside Assets/LifePlayed/Generated and supply it to UniversalRenderPipelineAsset.Create. Initialize a new renderer with the same default PostProcessData asset that Unity's built-in renderer creation uses; the official loader path and public packagePath were verified. Retain existing pipeline assets and their references; remove the incompatible loader/reparent sequence. PreExport, the configure menu, and LifePlayedAndroidBuild continue to use the same authoritative EnsureConfigured implementation. No serialized assets were rewritten or deleted.
+
+**Affected generated-output cleanup:** The existing generated/scene/meta ignore rules were one literal-backslash-n line, so Git ignored none of the checked generated paths. Split the rules into real lines and ignore the default volume profile generated by the existing URP global-settings initializer. Add actual git check-ignore coverage for these outputs. The new behavioral check failed before the ignore repair and passes afterward.
+
+**Validation:** Unity scaffold and checkout/ignore checks pass locally; git diff --check passes. Generated renderer/pipeline/scene/content artifacts remain untracked/ignored. Engine packages, hashes, rendering values, settings, tests, and signing are unchanged. New renderer creation still requires a real Unity execution test.
+
+**Next:** Publish this correction to the same PR #7, verify exact-head CI and #6's terminal state, then run one corrected build. Complete preflight/scene generation, ARM64 IL2CPP APK, and device checks. No new feature work or unchanged retries.

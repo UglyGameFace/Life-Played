@@ -1,9 +1,41 @@
 #!/usr/bin/env python3
+import hashlib
 import json
+import subprocess
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 UNITY = ROOT / "client" / "LifePlayed.Unity"
+
+# A Windows Git checkout must preserve bytes covered by release manifests.
+# Exercise checkout conversion even when this validation runs on Linux.
+with tempfile.TemporaryDirectory() as checkout_directory:
+    checkout_root = Path(checkout_directory)
+    for release_manifest in (ROOT / "content" / "releases").rglob("manifest.json"):
+        release = json.loads(release_manifest.read_text(encoding="utf-8"))
+        for filename, expected_hash in release["fileHashes"].items():
+            source_path = (release_manifest.parent / filename).resolve()
+            source_path.relative_to(release_manifest.parent.resolve())
+            relative_path = source_path.relative_to(ROOT).as_posix()
+            subprocess.run(
+                [
+                    "git", "-c", "core.autocrlf=true", "checkout-index",
+                    "--prefix=" + checkout_root.as_posix() + "/",
+                    "--", relative_path,
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+            )
+            actual_hash = hashlib.sha256(
+                (checkout_root / relative_path).read_bytes()
+            ).hexdigest()
+            if actual_hash.casefold() != expected_hash.casefold():
+                raise SystemExit(
+                    "Windows-style Git checkout changed hashed release bytes: "
+                    + relative_path
+                )
 
 required = [
     UNITY / "ProjectSettings" / "ProjectVersion.txt",
@@ -342,6 +374,29 @@ for generated_pattern in (
         raise SystemExit(
             f"Missing generated Unity asset ignore rule: {generated_pattern}"
         )
+
+generated_outputs = [
+    "client/LifePlayed.Unity/Assets/LifePlayed/Generated/LifePlayedMobileURP.asset",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Generated/LifePlayedMobileRenderer.asset",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Generated.meta",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Scenes/Bootstrap.unity",
+    "client/LifePlayed.Unity/Assets/LifePlayed/Scenes.meta",
+    "client/LifePlayed.Unity/Assets/StreamingAssets/LifePlayed/Content.meta",
+    "client/LifePlayed.Unity/Assets/DefaultVolumeProfile.asset",
+    "client/LifePlayed.Unity/Assets/DefaultVolumeProfile.asset.meta",
+]
+ignored = subprocess.run(
+    ["git", "check-ignore", "--no-index", "--stdin"],
+    input="\n".join(generated_outputs) + "\n",
+    cwd=ROOT,
+    text=True,
+    capture_output=True,
+).stdout.splitlines()
+missing_ignores = sorted(set(generated_outputs) - set(ignored))
+if missing_ignores:
+    raise SystemExit(
+        "Generated Unity assets are not ignored: " + ", ".join(missing_ignores)
+    )
 
 for fragment in (
     "EditorUserBuildSettings.development = true;",

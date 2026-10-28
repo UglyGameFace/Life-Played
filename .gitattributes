@@ -1,0 +1,2 @@
+# Release manifests verify exact bytes; Git must not rewrite them at checkout.
+content/releases/** -text

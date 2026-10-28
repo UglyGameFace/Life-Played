@@ -20,6 +20,8 @@ namespace LifePlayed.Client.Editor
         private const string SettingsDirectory = "Assets/LifePlayed/Generated";
         private const string PipelinePath =
             SettingsDirectory + "/LifePlayedMobileURP.asset";
+        private const string RendererPath =
+            SettingsDirectory + "/LifePlayedMobileRenderer.asset";
         private const string GlobalSettingsPath =
             SettingsDirectory + "/LifePlayedURPGlobalSettings.asset";
         private const string GeneratedContentDirectory =
@@ -213,17 +215,24 @@ namespace LifePlayed.Client.Editor
 
             if (pipeline == null)
             {
-                pipeline = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
-                pipeline.name = "LifePlayedMobileURP";
-                var rendererData = pipeline.LoadBuiltinRendererData();
-                AssetDatabase.CreateAsset(pipeline, PipelinePath);
-
-                if (rendererData != null)
+                var rendererData =
+                    AssetDatabase.LoadAssetAtPath<UniversalRendererData>(
+                        RendererPath);
+                if (rendererData == null)
                 {
+                    rendererData =
+                        ScriptableObject.CreateInstance<UniversalRendererData>();
                     rendererData.name = "LifePlayedMobileRenderer";
-                    AssetDatabase.AddObjectToAsset(rendererData, pipeline);
+                    rendererData.postProcessData =
+                        AssetDatabase.LoadAssetAtPath<PostProcessData>(
+                            UniversalRenderPipelineAsset.packagePath +
+                            "/Runtime/Data/PostProcessData.asset");
+                    AssetDatabase.CreateAsset(rendererData, RendererPath);
                 }
 
+                pipeline = UniversalRenderPipelineAsset.Create(rendererData);
+                pipeline.name = "LifePlayedMobileURP";
+                AssetDatabase.CreateAsset(pipeline, PipelinePath);
             }
 
             pipeline.renderScale = 0.90f;
